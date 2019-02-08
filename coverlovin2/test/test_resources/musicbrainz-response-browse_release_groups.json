@@ -1,0 +1,27 @@
+{
+  ".comment": "result of python request mb.browse_release_groups(artist='846f8032-9a85-3f4f-b7f5-28c86573d044', limit=3) (artist ID of 'Bob Dylan')",
+  "release-group-list": [
+    {
+      "type": "Album",
+      "id": "169b62aa-c3a5-3ed9-bed1-cc47c4bc51ad",
+      "title": "The Freewheelin\u2019 Bob Dylan",
+      "first-release-date": "1963-05-27",
+      "primary-type": "Album"
+    },
+    {
+      "id": "6ac612a5-e815-3fed-b341-8b3faa351df4",
+      "type": "Album",
+      "title": "Bob Dylan",
+      "first-release-date": "1962-03-19",
+      "primary-type": "Album"
+    },
+    {
+      "type": "Album",
+      "id": "846f8032-9a85-3f4f-b7f5-28c86573d044",
+      "title": "The Times They Are A\u2010Changin\u2019",
+      "first-release-date": "1964-02-10",
+      "primary-type": "Album"
+    }
+  ],
+  "release-group-count": 734
+}

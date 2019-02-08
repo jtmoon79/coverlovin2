@@ -1,0 +1,7 @@
+.mypy_cache/
+.pytest_cache/
+build/
+dist/
+CoverLovin2.egg-info/
+Notes.md
+.idea/

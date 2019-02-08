@@ -1,0 +1,206 @@
+{
+ "kind": "customsearch#search",
+ "url": {
+  "type": "application/json",
+  "template": "https://www.googleapis.com/customsearch/v1?q={searchTerms}&num={count?}&start={startIndex?}&lr={language?}&safe={safe?}&cx={cx?}&sort={sort?}&filter={filter?}&gl={gl?}&cr={cr?}&googlehost={googleHost?}&c2coff={disableCnTwTranslation?}&hq={hq?}&hl={hl?}&siteSearch={siteSearch?}&siteSearchFilter={siteSearchFilter?}&exactTerms={exactTerms?}&excludeTerms={excludeTerms?}&linkSite={linkSite?}&orTerms={orTerms?}&relatedSite={relatedSite?}&dateRestrict={dateRestrict?}&lowRange={lowRange?}&highRange={highRange?}&searchType={searchType}&fileType={fileType?}&rights={rights?}&imgSize={imgSize?}&imgType={imgType?}&imgColorType={imgColorType?}&imgDominantColor={imgDominantColor?}&alt=json"
+ },
+ "queries": {
+  "request": [
+   {
+    "title": "Google Custom Search - Bob Dylan Biograph (Disc 1)",
+    "totalResults": "2150",
+    "searchTerms": "Bob Dylan Biograph (Disc 1)",
+    "count": 8,
+    "startIndex": 1,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "off",
+    "cx": "039596701923894446871:ik5kdqpetze",
+    "fileType": "jpg",
+    "searchType": "image",
+    "imgSize": "medium",
+    "imgColorType": "color"
+   }
+  ],
+  "nextPage": [
+   {
+    "title": "Google Custom Search - Bob Dylan Biograph (Disc 1)",
+    "totalResults": "2150",
+    "searchTerms": "Bob Dylan Biograph (Disc 1)",
+    "count": 8,
+    "startIndex": 9,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "off",
+    "cx": "039596701923894446871:ik5kdqpetze",
+    "fileType": "jpg",
+    "searchType": "image",
+    "imgSize": "medium",
+    "imgColorType": "color"
+   }
+  ]
+ },
+ "context": {
+  "title": "freegalmusic amazon discogs"
+ },
+ "searchInformation": {
+  "searchTime": 1.721292,
+  "formattedSearchTime": "1.72",
+  "totalResults": "2150",
+  "formattedTotalResults": "2,150"
+ },
+ "items": [
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation, Reissue) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue) | Discogs",
+   "link": "https://img.discogs.com/Up2Uwaatap6zRwy3PMVebffPx4w=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-1957297-1255561691.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation, Reissue) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/1957297",
+    "height": 300,
+    "width": 300,
+    "byteSize": 9117,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJJ7lIsxChCE8wQ_Znl09TSQnd43eIVPz2wpiWNESZe1n6oDvB5Zj4YXI",
+    "thumbnailHeight": 116,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation, Reissue, Remastered) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue, Remastered) | Discogs",
+   "link": "https://img.discogs.com/EiyCIRj_HpPRdALDgpfo0i6TVyk=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-2820073-1314726739.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation, Reissue, Remastered) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue, Remastered) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/2820073",
+    "height": 264,
+    "width": 300,
+    "byteSize": 9119,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3oeyCOaFJ2CjOMAPdi3FkjMf2Q6azMlPONUIKft9e9urwq5ryhHIdrw0",
+    "thumbnailHeight": 102,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation) | Discogs",
+   "link": "https://img.discogs.com/QRCNp-TLxsezoxr0-Vrk5hrA204=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-5741384-1401523824-5902.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/5741384",
+    "height": 295,
+    "width": 300,
+    "byteSize": 11074,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLlnFBN3cPZZQyKHRtzHYdcC_RIXS9yHoac4z767YJn1iSwKi2yOOxntk",
+    "thumbnailHeight": 114,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation, Remastered) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Remastered) | Discogs",
+   "link": "https://img.discogs.com/rdLtkLlyn8h72ojO8GS3Scu5uwg=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-2241174-1284569001.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation, Remastered) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Remastered) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/2241174",
+    "height": 300,
+    "width": 300,
+    "byteSize": 10399,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNr57XjlMcmCTsEmq0W7YfGEJBVemnTWyEiM9ba9HUI4Uly5POyv4Q2jc",
+    "thumbnailHeight": 116,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation, Reissue, Remastered) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue, Remastered) | Discogs",
+   "link": "https://img.discogs.com/IUv3iJ5zKS3lT4xlgesz6smww2s=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-8745748-1467863580-5765.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation, Reissue, Remastered) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue, Remastered) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/8745748",
+    "height": 258,
+    "width": 300,
+    "byteSize": 9102,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmHJ9YoPoDYSoC_ohZDwo4qgVIoEaXjVhv0L2NnLJ4ZviyTi0AnXcNSuU",
+    "thumbnailHeight": 100,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (Vinyl, LP, Compilation) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (Vinyl, LP, Compilation) | Discogs",
+   "link": "https://img.discogs.com/cVHwnJgTchWbSdaCg9aUNgdfqwM=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-1958121-1427971130-4937.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (Vinyl, LP, Compilation) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (Vinyl, LP, Compilation) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/1958121",
+    "height": 297,
+    "width": 300,
+    "byteSize": 10601,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu4ghPf_7Lw6qlG3UdZc6FCw8ckTCatEhXz3L3kD5SnRvtxWUFlJVksg",
+    "thumbnailHeight": 115,
+    "thumbnailWidth": 116
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD, Compilation, Reissue) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue) | Discogs",
+   "link": "https://img.discogs.com/1_86oDUMf7DWORZlSiTT7yXKz_0=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-2879040-1305356022.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD, Compilation, Reissue) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e, Compilation, Reissue) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/2879040",
+    "height": 300,
+    "width": 220,
+    "byteSize": 7049,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB2j4Etenav_aplSi8360zKeqk0pwZ-kop9Ol2PYon9ks0lZPbXf8c3NM",
+    "thumbnailHeight": 116,
+    "thumbnailWidth": 85
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Bob Dylan - Biograph (CD) | Discogs",
+   "htmlTitle": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e) | Discogs",
+   "link": "https://img.discogs.com/fXHU_xyGXsiVeapvpOvsNXXPlqc=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-6270463-1416075034-1985.jpeg.jpg",
+   "displayLink": "www.discogs.com",
+   "snippet": "Bob Dylan - Biograph (CD) | Discogs",
+   "htmlSnippet": "\u003cb\u003eBob Dylan\u003c/b\u003e - \u003cb\u003eBiograph\u003c/b\u003e (\u003cb\u003eCD\u003c/b\u003e) | Discogs",
+   "mime": "image/jpeg",
+   "image": {
+    "contextLink": "https://www.discogs.com/Bob-Dylan-Biograph/release/6270463",
+    "height": 266,
+    "width": 300,
+    "byteSize": 10865,
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDvcQ6M08yf-3W41nd-UHy6QdbckwaUHOyWDkliUQSkol_HeiQIuRdf1I",
+    "thumbnailHeight": 103,
+    "thumbnailWidth": 116
+   }
+  }
+ ]
+}

@@ -1,0 +1,102 @@
+{
+  ".comment": "result of python request mb.get_release_group_image_list('846f8032-9a85-3f4f-b7f5-28c86573d044') (one artist ID of 'Bob Dylan')",
+  "images": [
+    {
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292404923.jpg",
+      "front": false,
+      "types": [
+        "Medium"
+      ],
+      "back": false,
+      "comment": "",
+      "approved": true,
+      "edit": 41981839,
+      "thumbnails": {
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292404923-500.jpg",
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292404923-250.jpg"
+      },
+      "id": 15292404923
+    },
+    {
+      "edit": 41981840,
+      "approved": true,
+      "comment": "",
+      "back": false,
+      "thumbnails": {
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292406437-250.jpg",
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292406437-500.jpg"
+      },
+      "id": 15292406437,
+      "front": false,
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292406437.jpg",
+      "types": [
+        "Liner"
+      ]
+    },
+    {
+      "back": false,
+      "edit": 41981841,
+      "approved": true,
+      "comment": "",
+      "id": 15292407393,
+      "thumbnails": {
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292407393-250.jpg",
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292407393-500.jpg"
+      },
+      "front": true,
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292407393.jpg",
+      "types": [
+        "Front"
+      ]
+    },
+    {
+      "types": [
+        "Liner"
+      ],
+      "front": false,
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292408530.jpg",
+      "thumbnails": {
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292408530-500.jpg",
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292408530-250.jpg"
+      },
+      "id": 15292408530,
+      "edit": 41981843,
+      "comment": "",
+      "approved": true,
+      "back": false
+    },
+    {
+      "edit": 41981846,
+      "approved": true,
+      "comment": "",
+      "back": false,
+      "thumbnails": {
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292409521-500.jpg",
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292409521-250.jpg"
+      },
+      "id": 15292409521,
+      "front": false,
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292409521.jpg",
+      "types": [
+        "Liner"
+      ]
+    },
+    {
+      "image": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292411229.jpg",
+      "front": false,
+      "types": [
+        "Medium"
+      ],
+      "back": false,
+      "approved": true,
+      "comment": "",
+      "edit": 41981847,
+      "thumbnails": {
+        "large": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292411229-500.jpg",
+        "small": "http://coverartarchive.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb/15292411229-250.jpg"
+      },
+      "id": 15292411229
+    }
+  ],
+  "release": "https://musicbrainz.org/release/0442def1-1c4b-40a7-adfb-83ca09e047bb"
+}

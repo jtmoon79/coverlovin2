@@ -1,0 +1,75 @@
+$ curl -v 'https://www.googleapis.com/customsearch/v1?key=fekzSyBEXz3Ui523csa_dKDOWN03Nlwe03casq&cx=009219280122304456713:dmwwsa921ms&prettyPrint=true&q=Bob%20Dylan+Biograph%20%28Disc%201%29&fileType=jpg&imgSize=medium&imgColorType=color&searchType=image&fields=items(title,link,image(thumbnailLink))&num=2'
+*   Trying 172.217.14.234...
+* TCP_NODELAY set
+* Connected to www.googleapis.com (172.217.14.234) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* TLSv1.2 (OUT), TLS header, Certificate Status (22):
+* TLSv1.2 (OUT), TLS handshake, Client hello (1):
+* TLSv1.2 (IN), TLS handshake, Server hello (2):
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+* TLSv1.2 (OUT), TLS change cipher, Client hello (1):
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+* TLSv1.2 (IN), TLS change cipher, Client hello (1):
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+* SSL connection using TLSv1.2 / ECDHE-ECDSA-AES128-GCM-SHA256
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: C=US; ST=California; L=Mountain View; O=Google LLC; CN=*.googleapis.com
+*  start date: Jan 15 13:15:00 2019 GMT
+*  expire date: Apr  9 13:15:00 2019 GMT
+*  subjectAltName: host "www.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=Google Internet Authority G3
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+* Using Stream ID: 1 (easy handle 0x13b2e88)
+> GET /customsearch/v1?key=fekzSyBEXz3Ui523csa_dKDOWN03Nlwe03casq&cx=009219280122304456713:dmwwsa921ms&prettyPrint=true&q=Bob%20Dylan+Biograph%20%28Disc%201%29&fileType=jpg&imgSize=medium&imgColorType=color&searchType=image&fields=items(title,link,image(thumbnailLink))&num=2 HTTP/1.1
+> Host: www.googleapis.com
+> User-Agent: curl/7.52.1
+> Accept: */*
+>
+* Connection state changed (MAX_CONCURRENT_STREAMS updated)!
+< HTTP/2 200
+< expires: Sun, 03 Feb 2019 23:45:00 GMT
+< date: Sun, 03 Feb 2019 23:45:00 GMT
+< cache-control: private, max-age=0, must-revalidate, no-transform
+< etag: "50yAxllu0_WwwEHICQQ506dCy_w/RZVyR_TuoGr9Y_sFWx_1PxJvZGA"
+< vary: Origin
+< vary: X-Origin
+< content-type: application/json; charset=UTF-8
+< x-content-type-options: nosniff
+< x-frame-options: SAMEORIGIN
+< x-xss-protection: 1; mode=block
+< content-length: 616
+< server: GSE
+< alt-svc: quic=":443"; ma=2592000; v="44,43,39"
+<
+{
+ "items": [
+  {
+   "title": "Mint (M) Rock Bob Dylan 33RPM Vinyl Music Records | eBay",
+   "link": "https://i.ebayimg.com/thumbs/images/g/WnIAAOSwT6Va13W~/s-l225.jpg",
+   "image": {
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUdTxUrczyB7lIzAxRB3rf5z2ZZMl6xwh4yEb7UgjuvoHZgUQJDDDkumU"
+   }
+  },
+  {
+   "title": "FINKSVILLE | eBay Stores",
+   "link": "https://i.ebayimg.com/thumbs/images/g/UTYAAOSwVRxb5lUE/s-l225.jpg",
+   "image": {
+    "thumbnailLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsFh5cnv30EyAz0KidFfP8ZrdpRpKsgziUkpkntnBHKUHjqFs5rFYJAhs"
+   }
+  }
+ ]
+}
+* Curl_http_done: called premature == 0
+* Connection #0 to host www.googleapis.com left intact

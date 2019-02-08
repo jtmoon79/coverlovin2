@@ -1,0 +1,106 @@
+{
+  ".comment": "result of python request mb.browse_releases(artist='1b2d966e-a563-48a3-aa9a-9533845b8c72', limit=200) (artist ID of 'Cadallaca')",
+  "release-list": [
+    {
+      "id": "0b7edef7-9881-4877-a7e9-01ee76231033",
+      "title": "2000-12-13: Spare Room, Portland, OR, USA",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "2000-12-13",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "2000-12-13",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "332cc0e1-30fd-490a-8ba8-42cba986176c",
+      "title": "Out West",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1999",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1999",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "759656036221",
+      "asin": "B00003ZAHJ",
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "9237ec27-6f1c-4c5a-9b1b-2708107836ef",
+      "title": "Introducing Cadallaca",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1998-09-29",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1998-09-29",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "789856108626",
+      "asin": "B00000BIBL",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    }
+  ],
+  "release-count": 3
+}

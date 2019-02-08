@@ -1,0 +1,3251 @@
+{
+  ".comment": "result of python request mb.browse_releases(artist='72c536dc-7137-4477-a521-567eeb840fa8', limit=200) (artist ID of 'Bob Dylan')",
+  "release-list": [
+    {
+      "id": "03c53f58-4674-48fa-95a6-de7d4c6ba614",
+      "title": "Mixed Up Confusion / Corrina, Corrina",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1962-12-14",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1962-12-14",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "0442def1-1c4b-40a7-adfb-83ca09e047bb",
+      "title": "The Times They Are A\u2010Changin\u2019",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964-02-10",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1964-02-10",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "6",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "050fec95-1332-42bd-baad-059e0dfa0247",
+      "title": "John Wesley Harding",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1968-11",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1968-11",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "0888b51e-777e-36e0-bb09-d0f5d64549f0",
+      "title": "Subterranean Homesick Blues",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "0f10781d-88b7-38f9-bea5-ec19512922dd",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974",
+      "country": "JP",
+      "release-event-list": [
+        {
+          "date": "1974",
+          "area": {
+            "id": "2db42837-c832-3c27-b4a3-08198f75693c",
+            "name": "Japan",
+            "sort-name": "Japan",
+            "iso-3166-1-code-list": [
+              "JP"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "10f9ee40-c45b-498a-adad-84f27fe79d53",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "AU",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "106e0bec-b638-3b37-b731-f53d507dc00e",
+            "name": "Australia",
+            "sort-name": "Australia",
+            "iso-3166-1-code-list": [
+              "AU"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "1138abc1-77f4-4ba9-900d-5cf52baaf4bf",
+      "title": "Desire",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1976-01-05",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1976-01-05",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "6",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "12382c64-8804-4c22-8cfc-b11ac9c33369",
+      "title": "Like a Rolling Stone",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-06",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965-06",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "1857355f-dfa5-4d59-8412-968b361a8a43",
+      "title": "Take a Message to Mary / Like a Rolling Stone (live)",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970",
+      "country": "JP",
+      "release-event-list": [
+        {
+          "date": "1970",
+          "area": {
+            "id": "2db42837-c832-3c27-b4a3-08198f75693c",
+            "name": "Japan",
+            "sort-name": "Japan",
+            "iso-3166-1-code-list": [
+              "JP"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "189efa45-def2-3b1c-b619-ba1640774705",
+      "title": "Blonde on Blonde",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-09",
+      "country": "IT",
+      "release-event-list": [
+        {
+          "date": "1966-09",
+          "area": {
+            "id": "c6500277-9a3d-349b-bf30-41afdbf42add",
+            "name": "Italy",
+            "sort-name": "Italy",
+            "iso-3166-1-code-list": [
+              "IT"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "1b051a10-7268-3773-a9ba-660765056ae3",
+      "title": "Blonde on Blonde",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-05-16",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1966-05-16",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "1cff78a4-18b5-489d-ae52-28a2d0ef4c0b",
+      "title": "The Times They Are A\u2010Changin\u2019",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "2006ff8a-dc81-4ffa-910d-91b0b5b0550a",
+      "title": "New Morning",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970-10-21",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1970-10-21",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "25b55dab-0b27-4f13-aaf7-f2bbc5c94ee6",
+      "title": "Nashville Skyline",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970",
+      "country": "ES",
+      "release-event-list": [
+        {
+          "date": "1970",
+          "area": {
+            "id": "471c46a7-afc5-31c4-923c-d0444f5053a4",
+            "name": "Spain",
+            "sort-name": "Spain",
+            "iso-3166-1-code-list": [
+              "ES"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "263a8ba4-cbc2-4fbd-9aa3-1de457c717a1",
+      "title": "Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "2b670020-5afd-42fd-9a56-552b8cdf06d0",
+      "title": "A Rare Batch of Little White Wonder, Volume 2",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974",
+      "country": "IT",
+      "release-event-list": [
+        {
+          "date": "1974",
+          "area": {
+            "id": "c6500277-9a3d-349b-bf30-41afdbf42add",
+            "name": "Italy",
+            "sort-name": "Italy",
+            "iso-3166-1-code-list": [
+              "IT"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "2c3938c1-896f-3963-8588-828e733e895c",
+      "title": "Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-09",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1965-09",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "2c7695e5-18d3-410f-8468-4d12bc17723b",
+      "title": "Blind Boy Grunt",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1972",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1972",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "2e707bfd-94f1-3885-8c7f-aea97258284f",
+      "title": "Subterranean Homesick Blues",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "DE",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "85752fda-13c4-31a3-bee5-0e5cb1f51dad",
+            "name": "Germany",
+            "sort-name": "Germany",
+            "iso-3166-1-code-list": [
+              "DE"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "2ffaba3d-840c-4e46-aa66-a3beaf6723eb",
+      "title": "Another Side of Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1964",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "3020d468-48e7-36c7-8ae5-8cf7b139974c",
+      "title": "Blonde on Blonde",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-08",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1966-08",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "32d06b3f-e76c-4264-ba6e-d41ec7315f74",
+      "title": "Blonde on Blonde, Volume 1",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "33be9ca6-eb95-44bc-874b-41d8392c53ee",
+      "title": "Nashville Skyline",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1969-04-09",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1969-04-09",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "33f63b52-23bc-3c29-946d-1c120d98e8c2",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-05",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1965-05",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "37f19476-beff-43ce-beda-8b8a00bcc6c2",
+      "title": "Bob Dylan\u2019s Greatest Hits, Volume III",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "3919baeb-bfd2-3b7a-8d06-95f4814550d3",
+      "title": "Can You Please Crawl Out Your Window? / Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-01",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1966-01",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "3eaf71ed-853f-4f68-9623-b6f0a64ecf40",
+      "title": "The Basement Tapes",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-06-26",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1975-06-26",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "3f2f83f9-3548-4154-85be-47b378f7767b",
+      "title": "Self Portrait",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970-06-08",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1970-06-08",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "40d5470c-2030-4e7b-9fc2-40b346a65043",
+      "title": "Bob Dylan's Greatest Hits 2",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "47c5d5ec-01e8-4f14-9d14-5fd629abe4a5",
+      "title": "The Basement Tapes",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1975",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "asin": "B000W3YLN2",
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "497aad97-3277-33c4-b49a-1ccaf80c5e78",
+      "title": "Can You Please Crawl Out Your Window? / Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-01",
+      "country": "FR",
+      "release-event-list": [
+        {
+          "date": "1966-01",
+          "area": {
+            "id": "08310658-51eb-3801-80de-5a0739207115",
+            "name": "France",
+            "sort-name": "France",
+            "iso-3166-1-code-list": [
+              "FR"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "4aabd511-2a02-35d8-a58f-20fe8f101826",
+      "title": "Bob Dylan\u2019s Greatest Hits, Volume III",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "AU",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "106e0bec-b638-3b37-b731-f53d507dc00e",
+            "name": "Australia",
+            "sort-name": "Australia",
+            "iso-3166-1-code-list": [
+              "AU"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "4af45962-edc1-36e0-85e7-b225a68c039c",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "AR",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "0df04709-c7d8-3b55-a6ea-f3e5069a947b",
+            "name": "Argentina",
+            "sort-name": "Argentina",
+            "iso-3166-1-code-list": [
+              "AR"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "4b5db958-0948-4151-8e1f-2d5b8cc35975",
+      "title": "Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "stereo",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1962-03-19",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1962-03-19",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "55f7f778-95d7-3173-b085-816489906eb9",
+      "title": "Bob Dylan\u2019s Greatest Hits, Vol. II",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1971-11-17",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1971-11-17",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "5a79e4c4-07e0-4311-b558-f7308b1ba7eb",
+      "title": "Positively 4th Street",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-09",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965-09",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "2",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "5b3ec538-cbe7-4f5c-8a79-4d3b1a550295",
+      "title": "Bob Dylan\u2019s Greatest Hits",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-03-27",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1966-03-27",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "5",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "5c27829f-ef9b-4a51-8b75-d4670ebc26e0",
+      "title": "1974-02-14: Early Show, The Forum, Inglewood, CA, USA",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974-02-14",
+      "release-event-list": [
+        {
+          "date": "1974-02-14"
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "6057a1bb-1d87-4d92-b592-5a53c5888f3f",
+      "title": "George Jackson",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1971-11-12",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1971-11-12",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "asin": "B000LY5RMQ",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "66d53427-ba49-4e88-833a-ac30d0ba80b0",
+      "title": "Wigwam / Copper Kettle",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1970",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "67bbc160-ac45-4caf-baae-a7e9f5180429",
+      "title": "Dylan\u2013Harrison Sessions",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1970",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "67e7ab93-d5c1-442f-b8c0-dbfad52e2d34",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-03-22",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965-03-22",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "3",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "68550b82-2290-4bab-b8d3-7c7dd75fa328",
+      "title": "Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973-11-16",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1973-11-16",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "5",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "694c9087-7d2c-34e8-b005-a4b43b2ea6eb",
+      "title": "Like a Rolling Stone",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-06",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1965-06",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "69bf2f82-5d9e-3969-b41e-72e171b186c8",
+      "title": "Nashville Skyline",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1974",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "6aa417db-6643-3ac6-88ae-626ebdac1bbd",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "6c5d96f9-a406-4b50-a68b-acbd507900e6",
+      "title": "Can You Please Crawl Out Your Window? / Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966-01",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1966-01",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "71b3e1ca-adaa-4ade-ad35-26ee5408ab2b",
+      "title": "A Rare Batch of Little White Wonder",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973",
+      "country": "IT",
+      "release-event-list": [
+        {
+          "date": "1973",
+          "area": {
+            "id": "c6500277-9a3d-349b-bf30-41afdbf42add",
+            "name": "Italy",
+            "sort-name": "Italy",
+            "iso-3166-1-code-list": [
+              "IT"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "732755a9-7612-396a-a846-5d88cc9a8e68",
+      "title": "Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1975",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "73d2f6e6-dcdd-4c3f-a422-d5258e5daaeb",
+      "title": "I Threw It All Away",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1968",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1968",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "7538487b-3c6a-4cb5-aa15-d3c2ad852dd7",
+      "title": "The Dylan Cash Session",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1975",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "7c7b1884-15ef-4da2-a0df-ddbc99a33fc8",
+      "title": "[untitled]",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1956-12-24",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1956-12-24",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "80ed6ec8-77ee-3e63-9d25-ea2a53d5a39a",
+      "title": "Subterranean Homesick Blues",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1975",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "8c66385d-4fb7-4182-8e9e-298359c62ade",
+      "title": "Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973",
+      "country": "AU",
+      "release-event-list": [
+        {
+          "date": "1973",
+          "area": {
+            "id": "106e0bec-b638-3b37-b731-f53d507dc00e",
+            "name": "Australia",
+            "sort-name": "Australia",
+            "iso-3166-1-code-list": [
+              "AU"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "8d796162-1589-4293-a335-97f8c3d5923e",
+      "title": "John Wesley Harding",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1968",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1968",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "8e7e12b2-46ff-4e6b-8384-2ce538d90dcc",
+      "title": "John Wesley Harding",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967-12-27",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1967-12-27",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "93afe926-de9c-34ca-ac51-9e175a2c4819",
+      "title": "Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973-11",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1973-11",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "asin": "B00000252A",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "942be4b0-12a2-4264-93a3-b45fa94c95c0",
+      "title": "The Freewheelin\u2019 Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "stereo",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1963-05-27",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1963-05-27",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "9801918d-b912-4951-a7f3-21a9103c5ff8",
+      "title": "Bob Dylan\u2019s Greatest Hits",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967-03-27",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1967-03-27",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "2",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "9c06eac8-40bf-3b9d-88b7-3c1d573b91a7",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "JP",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "2db42837-c832-3c27-b4a3-08198f75693c",
+            "name": "Japan",
+            "sort-name": "Japan",
+            "iso-3166-1-code-list": [
+              "JP"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "a352e31c-9fa7-38c2-ab1d-58413b1e3458",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1968",
+      "country": "JP",
+      "release-event-list": [
+        {
+          "date": "1968",
+          "area": {
+            "id": "2db42837-c832-3c27-b4a3-08198f75693c",
+            "name": "Japan",
+            "sort-name": "Japan",
+            "iso-3166-1-code-list": [
+              "JP"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "a6558335-a869-4afe-a95d-dcbf34d98418",
+      "title": "The Freewheelin\u2019 Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1963",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1963",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "a8342f0e-d1a0-31bf-a643-20b2250ccad8",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-03",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965-03",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "3",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "aa16d84b-743b-428a-b14c-8d858116d8e8",
+      "title": "More Bob Dylan Greatest Hits",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1971-12",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1971-12",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ae9b3ddd-4139-335c-be52-8a4299866260",
+      "title": "Positively 4th Street",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-09",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1965-09",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b13937fa-2737-3d31-a40d-45f5bc21e850",
+      "title": "Blood on the Tracks",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-01",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1975-01",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b1bda68a-bd7c-4d69-9507-0ac482515b95",
+      "title": "Mixed Up Confusion",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1962-12-14",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1962-12-14",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "b20b9d53-aa07-395f-b129-0140c85bbbc8",
+      "title": "John Wesley Harding",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967-12-27",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1967-12-27",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b2c80ff3-426e-329d-b8c6-b8c4f306ba31",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "DE",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "85752fda-13c4-31a3-bee5-0e5cb1f51dad",
+            "name": "Germany",
+            "sort-name": "Germany",
+            "iso-3166-1-code-list": [
+              "DE"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b3cf3ec6-c5af-4b9f-9a69-2cdab0370abf",
+      "title": "Greatest Hits",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b6f2f378-d7a7-4de3-bbd2-61545ef5a1f9",
+      "title": "Watching the River Flow / Spanish Is the Loving Tongue",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1971-06",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1971-06",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b8958250-4c44-4f6c-b73f-436c219d3107",
+      "title": "Bob Dylan\u2019s Greatest Hits",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1972",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1972",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "b9454b46-5e41-33d4-82a2-a2ea53a116b4",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "b955b9a9-77b7-4c90-a282-c3a06007dd1b",
+      "title": "If You Gotta Go, Go Now / To Ramona",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967-08",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967-08",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "4",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "beb8751d-0aef-3b2f-89c2-4dc582b5a822",
+      "title": "Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1962-03-19",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1962-03-19",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c04dd1df-8cd6-4fee-9e97-cdb76c9fc86d",
+      "title": "The Freewheelin' Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1964",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c1b5b7cc-99c2-4387-8c38-11adaf15a760",
+      "title": "Hard Rain",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1976-09",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1976-09",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c3662839-8729-4719-8494-bd9d30a8085f",
+      "title": "The Times They Are A\u2010Changin\u2019",
+      "status": "Official",
+      "quality": "normal",
+      "packaging": "Cardboard/Paper Sleeve",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964-02-10",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1964-02-10",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c5218c7d-1847-3b4e-adb7-0465dd42bc5a",
+      "title": "New Morning",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1970-10",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1970-10",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c5f460cd-4564-40d9-b684-0d499429d0a0",
+      "title": "Knockin' on Heaven's Door",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1973",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c65242d0-596d-4ff5-9097-293dca0d4703",
+      "title": "Bringing It All Back Home",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965",
+      "country": "CA",
+      "release-event-list": [
+        {
+          "date": "1965",
+          "area": {
+            "id": "71bbafaa-e825-3e15-8ca9-017dcad1748b",
+            "name": "Canada",
+            "sort-name": "Canada",
+            "iso-3166-1-code-list": [
+              "CA"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c70a68b7-8bd9-3eed-841c-54dca501f4d8",
+      "title": "Another Side of Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964-08",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1964-08",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "c96d6546-25e4-4717-b514-62684245675f",
+      "title": "Blonde on Blonde",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1966",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1966",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ca754c1d-8254-4516-84b6-cb91559196e7",
+      "title": "Subterranean Homesick Blues",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1965",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ccb90f69-08da-335a-84de-46af3a76e1d1",
+      "title": "Hurricane",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-11",
+      "country": "ES",
+      "release-event-list": [
+        {
+          "date": "1975-11",
+          "area": {
+            "id": "471c46a7-afc5-31c4-923c-d0444f5053a4",
+            "name": "Spain",
+            "sort-name": "Spain",
+            "iso-3166-1-code-list": [
+              "ES"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "d4cf0b92-f3c1-3dee-94c7-eda4475ba1ee",
+      "title": "Before the Flood",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974-06-20",
+      "country": "GB",
+      "release-event-list": [
+        {
+          "date": "1974-06-20",
+          "area": {
+            "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+            "name": "United Kingdom",
+            "sort-name": "United Kingdom",
+            "iso-3166-1-code-list": [
+              "GB"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "d61a2bd9-81ac-4023-bd22-1c884d4a176c",
+      "title": "Highway 61 Revisited",
+      "status": "Official",
+      "quality": "normal",
+      "disambiguation": "mono",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-08-30",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1965-08-30",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "5",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "d6ab8ae2-fec4-3e2d-8761-9f62f3d7ef0b",
+      "title": "Planet Waves",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974-01-17",
+      "country": "CA",
+      "release-event-list": [
+        {
+          "date": "1974-01-17",
+          "area": {
+            "id": "71bbafaa-e825-3e15-8ca9-017dcad1748b",
+            "name": "Canada",
+            "sort-name": "Canada",
+            "iso-3166-1-code-list": [
+              "CA"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "d9cd67bc-29cb-3d11-aa04-802716735982",
+      "title": "Positively 4th Street",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1965-09",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1965-09",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "dba3d119-577f-3dbe-992d-98eba3a234b6",
+      "title": "Subterranean Homesick Blues",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1976",
+      "country": "GR",
+      "release-event-list": [
+        {
+          "date": "1976",
+          "area": {
+            "id": "803db0ca-b6ed-3bbc-aeb8-f89efd0a2168",
+            "name": "Greece",
+            "sort-name": "Greece",
+            "iso-3166-1-code-list": [
+              "GR"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "dc91c2b3-4461-4ce9-a9db-aecc3ed0f45b",
+      "title": "Planet Waves",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974-01-17",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1974-01-17",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "5",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "dcfde612-352a-31d2-a03c-b0e20927bf44",
+      "title": "A Rare Batch of Little White Wonder, Volume 3",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975",
+      "country": "IT",
+      "release-event-list": [
+        {
+          "date": "1975",
+          "area": {
+            "id": "c6500277-9a3d-349b-bf30-41afdbf42add",
+            "name": "Italy",
+            "sort-name": "Italy",
+            "iso-3166-1-code-list": [
+              "IT"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "df92850f-2a3e-44ba-bdb2-d3d96beea3ae",
+      "title": "Great White Wonder",
+      "status": "Bootleg",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1969",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1969",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "e3632a58-09f0-4226-bd51-35cc79e3a8a0",
+      "title": "Before the Flood",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1974-06-20",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1974-06-20",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "5",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "e43f8845-d04c-4fa2-9e79-a8c96b6d102d",
+      "title": "Blonde on Blonde, Volume 2",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1967",
+      "country": "NL",
+      "release-event-list": [
+        {
+          "date": "1967",
+          "area": {
+            "id": "ef1b7cc0-cd26-36f4-8ea0-04d9623786c7",
+            "name": "Netherlands",
+            "sort-name": "Netherlands",
+            "iso-3166-1-code-list": [
+              "NL"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ea91f392-11d5-3acf-8ca2-bb5ea6c02206",
+      "title": "Nashville Skyline",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1969-04",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1969-04",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "false",
+        "count": "0",
+        "front": "false",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ec4cf6e4-4e24-49b8-9fd6-fad64393e3e5",
+      "title": "Another Side of Bob Dylan",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1964-08-08",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1964-08-08",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "ee7f79c0-f52b-45e5-800e-daa8e1d69144",
+      "title": "Blood on the Tracks",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1975-01-20",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1975-01-20",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "2",
+        "front": "true",
+        "back": "true"
+      }
+    },
+    {
+      "id": "f6e19c02-1d76-43a2-aa06-9ef195fe0c9e",
+      "title": "Bob Dylan\u2019s Greatest Hits, Vol. II",
+      "status": "Official",
+      "quality": "normal",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1971-11-17",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1971-11-17",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "1",
+        "front": "true",
+        "back": "false"
+      }
+    },
+    {
+      "id": "fcf16c46-1b7c-4c98-b4e4-32295dce3639",
+      "title": "Pat Garrett & Billy the Kid",
+      "status": "Official",
+      "quality": "high",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "date": "1973-07-13",
+      "country": "US",
+      "release-event-list": [
+        {
+          "date": "1973-07-13",
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "name": "United States",
+            "sort-name": "United States",
+            "iso-3166-1-code-list": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "release-event-count": 1,
+      "cover-art-archive": {
+        "artwork": "true",
+        "count": "2",
+        "front": "true",
+        "back": "false"
+      }
+    }
+  ],
+  "release-count": 1482
+}

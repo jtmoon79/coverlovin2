@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+mypy = "*"
+pytest-dependency = "*"
+
+[packages]
+musicbrainzngs = "==0.6"
+mutagen = "==1.42.0"
+
+[requires]
+python_version = "3.7"

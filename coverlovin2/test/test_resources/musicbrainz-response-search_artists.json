@@ -1,0 +1,217 @@
+{
+  ".comment": "result of python request mb.search_artists(query='Bob Dylan', limit=1)",
+  "artist-list": [
+    {
+      "id": "72c536dc-7137-4477-a521-567eeb840fa8",
+      "type": "Person",
+      "ext:score": "100",
+      "name": "Bob Dylan",
+      "sort-name": "Dylan, Bob",
+      "gender": "male",
+      "country": "US",
+      "area": {
+        "id": "489ce91b-6658-3307-9877-795b68554c98",
+        "type": "Country",
+        "name": "United States",
+        "sort-name": "United States",
+        "life-span": {
+          "ended": "false"
+        }
+      },
+      "begin-area": {
+        "id": "04e60741-b1ae-4078-80bb-ffe8ae643ea7",
+        "type": "City",
+        "name": "Duluth",
+        "sort-name": "Duluth",
+        "life-span": {
+          "ended": "false"
+        }
+      },
+      "ipi-list": [
+        "00008955074",
+        "00008955172"
+      ],
+      "life-span": {
+        "begin": "1941-05-24",
+        "ended": "false"
+      },
+      "alias-list": [
+        {
+          "sort-name": "Zimmerman, Robert Allen",
+          "alias": "Robert Allen Zimmerman"
+        },
+        {
+          "sort-name": "Bobby Zimmerman",
+          "alias": "Bobby Zimmerman"
+        },
+        {
+          "sort-name": "Robert Zimmerman",
+          "alias": "Robert Zimmerman"
+        },
+        {
+          "sort-name": "B",
+          "type": "Search hint",
+          "alias": "B"
+        },
+        {
+          "sort-name": "Dylan",
+          "alias": "Dylan"
+        },
+        {
+          "sort-name": "Boy Dylan",
+          "alias": "Boy Dylan"
+        },
+        {
+          "locale": "ru",
+          "sort-name": "\u0414\u0438\u043b\u0430\u043d, \u0411\u043e\u0431",
+          "primary": "primary",
+          "alias": "\u0411\u043e\u0431 \u0414\u0438\u043b\u0430\u043d"
+        },
+        {
+          "locale": "en",
+          "sort-name": "Dylan, Bob",
+          "type": "Artist name",
+          "primary": "primary",
+          "alias": "Bob Dylan"
+        },
+        {
+          "sort-name": "Robert Dylan",
+          "alias": "Robert Dylan"
+        },
+        {
+          "sort-name": "DYLYN Bob",
+          "alias": "DYLYN Bob"
+        },
+        {
+          "sort-name": "Grunt, Blind Boy",
+          "type": "Artist name",
+          "begin-date": "1962",
+          "end-date": "1963",
+          "alias": "Blind Boy Grunt"
+        },
+        {
+          "sort-name": "Jack Frost",
+          "type": "Artist name",
+          "alias": "Jack Frost"
+        },
+        {
+          "sort-name": "Bob",
+          "type": "Search hint",
+          "alias": "Bob"
+        },
+        {
+          "sort-name": "Bob D",
+          "type": "Search hint",
+          "alias": "Bob D"
+        }
+      ],
+      "tag-list": [
+        {
+          "count": "6",
+          "name": "rock"
+        },
+        {
+          "count": "5",
+          "name": "folk"
+        },
+        {
+          "count": "1",
+          "name": "american"
+        },
+        {
+          "count": "2",
+          "name": "blues"
+        },
+        {
+          "count": "1",
+          "name": "singer-songwriter"
+        },
+        {
+          "count": "1",
+          "name": "country"
+        },
+        {
+          "count": "3",
+          "name": "folk rock"
+        },
+        {
+          "count": "5",
+          "name": "blues rock"
+        },
+        {
+          "count": "2",
+          "name": "country rock"
+        },
+        {
+          "count": "0",
+          "name": "1980s"
+        },
+        {
+          "count": "0",
+          "name": "1990s"
+        },
+        {
+          "count": "0",
+          "name": "1970s"
+        },
+        {
+          "count": "0",
+          "name": "icon"
+        },
+        {
+          "count": "0",
+          "name": "1960s"
+        },
+        {
+          "count": "0",
+          "name": "2000s"
+        },
+        {
+          "count": "1",
+          "name": "pop rock"
+        },
+        {
+          "count": "2",
+          "name": "contemporary folk"
+        },
+        {
+          "count": "0",
+          "name": "classic pop and rock"
+        },
+        {
+          "count": "-1",
+          "name": "rare"
+        },
+        {
+          "count": "-2",
+          "name": "siple twist of fate"
+        },
+        {
+          "count": "-3",
+          "name": "1 13 165900 150 7672 22647 34612 48720 59280 74602 87545 95495 107182 131087 141522 153710"
+        },
+        {
+          "count": "-2",
+          "name": "teater konsert"
+        },
+        {
+          "count": "2",
+          "name": "singer/songwriter"
+        },
+        {
+          "count": "0",
+          "name": "pop/rock"
+        },
+        {
+          "count": "-3",
+          "name": "dylan bootleg series"
+        },
+        {
+          "count": "-2",
+          "name": "pledging my time"
+        }
+      ]
+    }
+  ],
+  "artist-count": 5085
+}

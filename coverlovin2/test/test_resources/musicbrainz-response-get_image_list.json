@@ -1,0 +1,22 @@
+{
+  ".comment": "result of python request mb.get_image_list('178c96b6-3516-4b65-a4f0-254138898b7d') (release ID of Pearl Jam's 'Fanclub 1991 Single')",
+  "release": "http://musicbrainz.org/release/178c96b6-3516-4b65-a4f0-254138898b7d",
+  "images": [
+    {
+      "back": false,
+      "approved": true,
+      "comment": "",
+      "edit": 18428951,
+      "id": "1520374106",
+      "front": true,
+      "image": "http://coverartarchive.org/release/178c96b6-3516-4b65-a4f0-254138898b7d/1520374106.jpg",
+      "thumbnails": {
+        "small": "http://coverartarchive.org/release/178c96b6-3516-4b65-a4f0-254138898b7d/1520374106-250.jpg",
+        "large": "http://coverartarchive.org/release/178c96b6-3516-4b65-a4f0-254138898b7d/1520374106-500.jpg"
+      },
+      "types": [
+        "Front"
+      ]
+    }
+  ]
+}
