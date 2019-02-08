@@ -123,11 +123,19 @@ Installation
 
 * Within a python virtual environment using `pipenv`:
 
-      pipenv shell
-      pipenv install https://github.com/jtmoon79/coverlovin2/archive/master.zip
+      pipenv --python 3.7 shell
+      pipenv --python 3.7 install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* uses non-standard libraries [mutagen](https://pypi.org/project/mutagen/)
 and [musicbrainzngs](https://pypi.org/project/musicbrainzngs/).
+
+* To manually install dependencies using `pipenv`:
+
+      pipenv --python 3.7 install Pipfile
+
+  or with `pip`:
+
+      pip install Pipfile
 
 Development
 -----------
@@ -141,8 +149,8 @@ Clone the repository:
 Start the python virtual environment and install the dependencies:
 
     cd coverlovin2
-    pipenv shell
-    pipenv install --dev
+    pipenv --python 3.7 shell
+    pipenv --python 3.7 install --dev
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
 
