@@ -1,0 +1,11 @@
+language: python
+branches:
+  only:
+  - master
+matrix:
+  include:
+  - name: "3.7 Unit Test"
+    python: "3.7"
+  - name: "3.6 Fail Check"
+    python: "3.6"
+script: python .
