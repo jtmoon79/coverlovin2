@@ -1,0 +1,17 @@
+[run]
+  branch = True
+# this must use the same import pattern used by test_coverlovin2
+#source = ..coverlovin2,coverlovin2,.coverlovin2,./coverlovin2/*
+  source = coverlovin2
+#include = coverlovin2
+
+[report]
+#exclude_lines =
+#    if self.debug:
+#    pragma: no cover
+#    raise NotImplementedError
+#    if __name__ == .__main__.:
+#ignore_errors = True
+omit =
+    coverlovin2/test/*
+    coverlovin2/__init__.py

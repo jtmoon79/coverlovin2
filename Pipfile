@@ -7,6 +7,8 @@ verify_ssl = true
 pytest = "*"
 mypy = "*"
 pytest-dependency = "*"
+pytest-cov = "*"
+codecov = "*"
 
 [packages]
 musicbrainzngs = "==0.6"
