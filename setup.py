@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Setup program for coverlovin2 package.
- Based on sample https://github.com/pypa/sampleproject/blob/master/setup.py
- and instructions at
- https://packaging.python.org/guides/distributing-packages-using-setuptools/
- https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
+Python setup for coverlovin2 package.
+
+Based on sample https://github.com/pypa/sampleproject/blob/master/setup.py
+and instructions at
+https://packaging.python.org/guides/distributing-packages-using-setuptools/
+https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 """
 
 import os
@@ -57,7 +58,7 @@ setup(
     packages=find_packages(exclude=['test/', 'Notes.md', 'dist/', 'Pipfile',
                                     'Pipfile.lock']),
     scripts=['coverlovin2/coverlovin2.py'],
-    # TODO: this needs work
+    # TODO: does this need work?
     entry_points={
         'console_scripts': [
             'coverlovin2=coverlovin2.coverlovin2:main',
