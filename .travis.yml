@@ -4,8 +4,9 @@ branches:
   - master
 matrix:
   include:
-  - name: "3.7 Unit Test"
-    python: "3.7"
-  - name: "3.6 Fail Check"
+  - name: "3.7 pytest"
+    # should be 3.7 but Travis CI doesn't have that!
     python: "3.6"
-script: python .
+script: bash ./run-test.sh
+git:
+  depth: 1
