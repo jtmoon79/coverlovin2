@@ -14,11 +14,11 @@ __url__ = 'https://github.com/jtmoon79/coverlovin2/test'
 
 # standard library imports
 import os
-import re
 import logging
 from pathlib import Path
 import pytest
 import tempfile
+import typing
 
 # non-standard library imports
 from mutagen.id3 import ID3NoHeaderError
@@ -38,9 +38,9 @@ from ..coverlovin2 import similar
 from ..coverlovin2 import log_new
 from ..coverlovin2 import LOGFORMAT
 from ..coverlovin2 import get_artist_album_mp3
-#from ..coverlovin2 import get_artist_album_mp4
+from ..coverlovin2 import get_artist_album_mp4
 from ..coverlovin2 import get_artist_album_flac
-#from ..coverlovin2 import get_artist_album_ogg
+from ..coverlovin2 import get_artist_album_ogg
 from ..coverlovin2 import get_artist_album_asf
 from ..coverlovin2 import audio_type_get_artist_album
 from ..coverlovin2 import ImageSearcher
@@ -58,6 +58,7 @@ def join_test_rp(*args) -> Path:
 
 
 def exists_or_skip(*args) -> typing.Tuple[Path, None]:
+    """helper for easily skipping a test if path is not available"""
     fp = join_test_rp(*args)
     if not fp.exists():
         pytest.skip('test resource not available "%s"' % fp)
@@ -65,91 +66,98 @@ def exists_or_skip(*args) -> typing.Tuple[Path, None]:
     return fp
 
 
-class Test_CoverLovin2_GoogleCSE_Opts(object):
+class Test_GoogleCSE_Opts(object):
 
-    def test_1a_False(self):
-        gc = GoogleCSE_Opts('', '', '')
+    @pytest.mark.parametrize('ti',
+        (
+            pytest.param(('', '', '',), id='empty param 1 2 3'),
+            pytest.param(('foo', '', '',), id='empty param 2 3'),
+            pytest.param(('foo', 'bar', '',), id='empty param 3'),
+            pytest.param(('foo', 'bar', None,), id='None param 3'),
+            pytest.param((None, 'bar', None,), id='None param 1 3'),
+            pytest.param((None, None, None,), id='None param 1 2 3'),
+        )
+    )
+    def test_init_False(self, ti):
+        gc = GoogleCSE_Opts(*ti)
         assert not gc
 
-    def test_1b_False(self):
-        gc = GoogleCSE_Opts('foo', '', '')
-        assert not gc
-
-    def test_1c_False(self):
-        gc = GoogleCSE_Opts('foo', 'bar', '')
-        assert not gc
-
-    def test_1d_False(self):
-        gc = GoogleCSE_Opts('foo', 'bar', None)
-        assert not gc
-
-    def test_1e_False(self):
-        gc = GoogleCSE_Opts(None, 'bar', None)
-        assert not gc
-
-    def test_2a_True(self):
-        gc = GoogleCSE_Opts('foo', 'bar', 'baz')
+    @pytest.mark.parametrize('ti',
+        (
+            pytest.param(('foo', 'bar', 'baz',), id='basic case #1'),
+            pytest.param(('foo', r'as jo2u3 lj;las;  :L@)(* ;23', 'baz',), id='basic case #2'),
+        )
+    )
+    def test_init_True(self, ti):
+        gc = GoogleCSE_Opts(*ti)
         assert gc
 
-    def test_2b_True(self):
-        gc = GoogleCSE_Opts('foo', r'as jo2u3 lj;las;  :L@)(* ;23', 'baz')
-        assert gc
-
-    def test_3a_raise(self):
+    @pytest.mark.parametrize('ti',
+        (
+            pytest.param((), id='()'),
+            pytest.param(('',), id='("")'),
+            pytest.param(('', ''), id='("","")'),
+            pytest.param(('', '', '', '',), id='("","","","")'),
+        )
+    )
+    def test_init_TypeError(self, ti):
         with pytest.raises(TypeError):
-            GoogleCSE_Opts()
-
-    def test_3b_raise(self):
-        with pytest.raises(TypeError):
-            GoogleCSE_Opts('')
-
-    def test_3c_raise(self):
-        with pytest.raises(TypeError):
-            GoogleCSE_Opts('', '')
-
-    def test_3d_raise(self):
-        with pytest.raises(TypeError):
-            GoogleCSE_Opts('', '', '', '')
+            GoogleCSE_Opts(*ti)
 
 
-class Test_CoverLovin2_helpers(object):
+class Test_helpers(object):
 
-    def test_str_AA_1(self):
-        saa1 = str_AA(Artist(''), Album(''))
-        assert saa1 == '''｛ "" • "" ｝'''
+    @pytest.mark.parametrize('tiAr, tiAl, ti_exp',
+        (
+            pytest.param('', '', '''｛ "" • "" ｝''', id='empty'),
+            pytest.param('Foo', 'Bar', '''｛ "Foo" • "Bar" ｝''', id='Foo Bar'),
+        )
+    )
+    def test_str_AA(self, tiAr, tiAl, ti_exp):
+        saa1 = str_AA(Artist(tiAr), Album(tiAl))
+        assert saa1 == ti_exp
 
-    def test_str_AA_2(self):
-        saa1 = str_AA(Artist('Foo'), Album('Bar'))
-        assert saa1 == '''｛ "Foo" • "Bar" ｝'''
+    @pytest.mark.parametrize('ti',
+        (
+            pytest.param('http://', id='http'),
+            pytest.param('https://', id='https'),
+            pytest.param('https://foo', id='https://foo'),
+        )
+    )
+    def test_URL_init(self, ti):
+        URL(ti)
 
-    def test_URL_is_http_1_True(self):
-        _ = URL('https://')
-
-    def test_URL_is_http_2_True(self):
-        _ = URL('http://')
-
-    def test_URL_is_http_3_False(self):
+    @pytest.mark.parametrize('ti',
+        (
+            pytest.param('foo', id='foo'),
+            pytest.param('', id='""'),
+            #pytest.param(bytes('https://', encoding='utf8'), id='type<bytes>'),
+        )
+    )
+    def test_URL_ValueError(self, ti):
         with pytest.raises(ValueError):
-            _ = URL('foo')
+            URL(ti)
 
-    def test_URL_is_http_4_False(self):
-        with pytest.raises(ValueError):
-            _ = URL('')
+    def test_URL_TypeErrpr(self):
+        with pytest.raises(TypeError):
+            URL(bytes('https://', encoding='utf8'))
 
-    def test_URL_is_http_5_False(self):
-        url = URL()
-        assert not url
+    def test_URL_False(self):
+        assert not URL()
 
-    def test_str_log_new_1(self):
+    def test_URL_True(self):
+        assert URL('https://foo.com')
+
+    def test_log_new_1(self):
         log1 = log_new('log1', logging.DEBUG)
         assert log1.hasHandlers()
 
-    def test_str_log_new_2(self):
+    def test_log_new_2(self):
         log2a = log_new('log2a', logging.DEBUG)
         log2b = log_new('log2b', logging.DEBUG)
         assert log2a is log2b
 
-    def test_str_log_2_same_id(self):
+    def test_log_new_same_id(self):
         log3a = log_new('log3', logging.DEBUG)
         log3b = log_new('log3', logging.DEBUG)
         assert log3a is log3b
@@ -159,82 +167,64 @@ class Test_CoverLovin2_helpers(object):
         assert func_name() == 'test_func_name_1'
 
     def test_similar_type(self):
-        s1 = similar('', '')
-        assert type(s1) is float
+        assert type(similar('', '')) is float
 
-    # try this using @pytest.fixture
-    # convenient place to set each test entry on one line
     _str_odd1 = \
         r'an874987()#&_@( 87398skjEQhe]w?a]fuheusn-09- klnknd\#(!  njbBIOE'
     _str_un2 = r'''¶棲摓Ⲫ⸙Ａ'''
     _str_long3 = 'abkjadliuewoijkblhlkjaoiquweaghbkjhkljhldkjhaldkh'
 
-    sim_fixture_entries = (
-        #((string1, string2), expected_value),  # passed as `fixture_5_` in
-        #                                       # `test_similar`
-        #                       explanatory_string_id_printed_in_results)
-        #
-        # `expected_value` may be an int value for `a == score` comparison
-        #  or it is a two-element tuple for `a ≤ score ≤ b` comparison
-        ((('', ''), 1.0),                   '""≟"" == 1.0'),
-        ((('a', 'a'), 1.0),                 '"a"≟"a" == 1.0'),
-        (((_str_odd1, _str_odd1), 1.0),     '_str_odd1 ≟ _str_odd1 == 1.0'),
-        (((_str_un2, _str_un2), 1.0),       '_str_un2 ≟ _str_un2 == 1.0'),
-        ((('abcdefg', 'defghijk'), (0.5333, 0.534)), '0.533 ≤ overlap ≤ 0.534'),
-        ((('', _str_long3), (0, 0.001)),    '""≟"jslkjsdlkjf…"'),
-        (((_str_long3, ''), (0, 0.001)),    '"jslkjsdlkjf…"≟""'),
+    @pytest.mark.parametrize('ti_a, ti_b, ti_exp',
+        (
+            pytest.param('', '', 1.0, id='""≟"" == 1.0'),
+            pytest.param('a', 'a', 1.0, id='"a"≟"a" == 1.0'),
+            pytest.param(_str_odd1, _str_odd1, 1.0, id='_str_odd1 ≟ _str_odd1 == 1.0'),
+            pytest.param(_str_un2, _str_un2, 1.0, id='_str_un2 ≟ _str_un2 == 1.0'),
+            pytest.param('abcdefg', 'defghijk', (0.5333, 0.534), id='0.533 ≤ overlap ≤ 0.534'),
+            pytest.param('', _str_long3, (0, 0.001), id='""≟"jslkjsdlkjf…"'),
+            pytest.param(_str_long3, '', (0, 0.001), id='"jslkjsdlkjf…"≟""'),
+        )
     )
-
-    @pytest.fixture(params=[p[0] for p in sim_fixture_entries],
-                    ids=[p[1] for p in sim_fixture_entries])
-    def fixture_5_(self, request):
-        return request.param
-
-    def test_similar(self, fixture_5_):
-        s1, s2 = fixture_5_[0]
-        score = similar(s1, s2)
-        compare = fixture_5_[1]
-        if type(compare) is int or type(compare) is float:
-            assert score == compare
-        elif type(compare) is tuple and len(compare) == 2:
-            assert compare[0] <= score <= compare[1]
+    def test_similar(self, ti_a, ti_b, ti_exp):
+        score = similar(ti_a, ti_b)
+        if type(ti_exp) is int or type(ti_exp) is float:
+            assert score == ti_exp
+        elif type(ti_exp) is tuple and len(ti_exp) == 2:
+            assert ti_exp[0] <= score <= ti_exp[1]
         else:
-            raise ValueError('test_case[1] entry is not correct')
+            raise TypeError('bad test case input type %s' % type(ti_exp))
 
 
-class Test_CoverLovin2_ImageType(object):
+class Test_ImageType(object):
 
-    def test_2a_raise(self):
+    @pytest.mark.parametrize('ti',
+        (
+            'unknown type',
+            '',
+            5,
+            {},
+            '.gif'
+        )
+    )
+    def test_init_ValueError(self, ti):
         with pytest.raises(ValueError):
             ImageType('unknown type')
 
-    def test_2b_raise(self):
-        with pytest.raises(ValueError):
-            ImageType('')
+    @pytest.mark.parametrize('ti',
+        (
+            'jpg',
+            ImageType.PNG,
+            ImageType.GIF,
+            ImageType.JPG
+        )
+    )
+    def test_init(self, ti):
+        ImageType(ti)
 
-    def test_2c_raise(self):
-        with pytest.raises(ValueError):
-            ImageType(5)
-
-    def test_2d_raise(self):
-        with pytest.raises(ValueError):
-            ImageType({})
-
-    def test_2e_raise(self):
-        with pytest.raises(ValueError):
-            ImageType('.gif')
-
-    def test_3a_okay(self):
-        ImageType('jpg')
-
-    def test_3b_okay(self):
-        ImageType(ImageType.PNG)
-
-    def test_3c_okay(self):
-        ImageType(ImageType.GIF)
-
-    def test_3d_okay(self):
-        """ensure previous `test_3*_okay` tests cover possible cases"""
+    def test_check_len_types(self):
+        """ensure previous tests cover all possible cases. If not then new test
+        cases will need to be added.
+        """
         assert len(ImageType.list()) == 3
 
 
@@ -243,7 +233,7 @@ gif = ImageType.GIF
 png = ImageType.PNG
 
 
-class Test_CoverLovin2_overrides(object):
+class Test_overrides(object):
     """
     Cannot test @overrides because @overrides check runs at some point prior to
     run-time, during some sort of Python pre-run phase. Prior to pytest being
@@ -254,59 +244,62 @@ class Test_CoverLovin2_overrides(object):
 # placeholder image url for testing downloading
 image_url = 'http://via.placeholder.com/2'
 
-class Test_CoverLovin2_ImageSearcher(object):
+
+class Test_ImageSearcher(object):
 
     # make `log` class-wide (can not implement `__init__` for pytest processed
     # class)
     log = log_new(LOGFORMAT, logging.DEBUG, __qualname__)
 
-    @pytest.mark.dependency(name=['net_access_ping'])
+    @pytest.mark.dependency(name='net_access_ping')
     def test_net_access_ping(self):
         """check Internet access. ping of known stable IP."""
         # TODO: complete this!
         pass
 
-    @pytest.mark.dependency(name=['net_access_dns'],
+    @pytest.mark.dependency(name='net_access_dns',
                             depends=['net_access_ping'])
     def test_net_access_dns(self):
         """check Internet access. attempt DNS lookup."""
         # TODO: complete this!
         pass
 
-    @pytest.mark.dependency(name=['net_access'], depends=['net_access_ping',
-                                                          'net_access_dns'])
+    @pytest.mark.dependency(name='net_access', depends=['net_access_ping',
+                                                        'net_access_dns'])
     def test_net_access(self):
         """Wrapper of two net access dependency for simpler `depends` params"""
         pass
 
     @pytest.mark.dependency(name='init_is')
-    def test_ImageSearcher_init(self):
+    def test_init(self):
         with pytest.raises(TypeError):
             ImageSearcher('', False)
 
-    def test_ImageSearcher_download_url__assert(self):
-        with pytest.raises(AssertionError):
+    def test_download_url_ValueError(self):
+        with pytest.raises(ValueError):
             """bad url should raise"""
             ImageSearcher.download_url('', self.log)
 
-    def test_ImageSearcher_download_url__None(self):
+    def test_download_url_return_None(self):
         """non-exists download URL should return None"""
         assert not ImageSearcher.download_url('http://NOTEXISTURL.TESTFOO',
                                               self.log)
 
-    def test_ImageSearcher_download_url__1(self):
+    def test_download_url__1(self):
         assert ImageSearcher.download_url(image_url, self.log)
 
-    def test_ImageSearcher_download_url__2(self):
+    def test_download_url__2(self):
         data = ImageSearcher.download_url(image_url, self.log)
         assert type(data) is bytes
 
+class Test_ImageSearcher_LikelyCover(object):
+
     @pytest.mark.dependency(name='init_likelyc')
-    def test_ImageSearcher_LikelyCover_1_init(self):
+    def test_init(self):
         ImageSearcher_LikelyCover(Path(''), '', False)
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_1_WrongUseError(self):
+    def test_LikelyCover_WrongUseError(self):
         is_ = ImageSearcher_LikelyCover(Path(''), '', False)
         with pytest.raises(ImageSearcher_LikelyCover.WrongUseError):
             is_.write_album_image(Path(''), True, True)
@@ -315,7 +308,7 @@ class Test_CoverLovin2_ImageSearcher(object):
     A_Mp3 = 'ID3v1 [Bob Dylan] [Highway 61 Revisited].mp3'  # actual test file
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_2_empty_ArtAlb(self):
+    def test_empty_ArtAlb(self):
         """There should be no image files in the directory."""
         fp = exists_or_skip(self.A_Dir, self.A_Mp3)
         is_ = ImageSearcher_LikelyCover(fp, 'my referred', False)
@@ -324,63 +317,36 @@ class Test_CoverLovin2_ImageSearcher(object):
                                               ImageType(it))
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_3_assert_TypeError(self):
+    def test_match_likely_name__TypeError(self):
         is_ = ImageSearcher_LikelyCover(Path(), '', False)
         with pytest.raises(TypeError):
             _ = is_._match_likely_name(jpg, None)
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_3_assert_AttributeError(self):
+    def test_match_likely_name__AttributeError(self):
         is_ = ImageSearcher_LikelyCover(Path(), '', False)
         with pytest.raises(AttributeError):
             _ = is_._match_likely_name(None, None)
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_3_match__empty_file_list(self):
+    def test_match_likely_name_empty__file_list(self):
         fp = exists_or_skip(self.A_Dir, self.A_Mp3)
         is_ = ImageSearcher_LikelyCover(fp, '', False)
         assert not is_._match_likely_name(jpg, [])
 
     @pytest.fixture(params=[it for it in ImageType], ids=ImageType.list())
-    def _fixture_3(self, request):
-        return request.param
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_3_nomatch_(self, _fixture_3):
-        image_type = _fixture_3
+    @pytest.mark.parametrize('ti',
+        (pytest.param(it, ids=it.value) for it in ImageType)
+    )
+    def test_match_likely_name__no_match(self, ti):
         fp = exists_or_skip(self.A_Dir, self.A_Mp3)
         is_ = ImageSearcher_LikelyCover(fp, '', False)
-        files = [Path.joinpath(test_resource_path, 'foo' + image_type.suffix),
-                 Path.joinpath(test_resource_path, 'bar' + image_type.suffix)
-                 ]
-        assert not is_._match_likely_name(image_type, files)
-
-    # def test_ImageSearcher_LikelyCover_3_nomatch_png(self):
-    #     fp = exists_or_skip(Test_CoverLovin2_ImageSearcher.A_Dir,
-    #                         Test_CoverLovin2_ImageSearcher.A_Mp3)
-    #     is_ = ImageSearcher_LikelyCover(fp, '', False)
-    #     files = [Path.joinpath(test_resource_path, 'foo' + jpg.suffix),
-    #              Path.joinpath(test_resource_path, 'bar' + jpg.suffix)
-    #              ]
-    #     assert not is_._match_likely_name(jpg, files)
-    # 
-    # def test_ImageSearcher_LikelyCover_3_match_nomatch_gif(self):
-    #     fp = exists_or_skip(Test_CoverLovin2_ImageSearcher.A_Dir,
-    #                         Test_CoverLovin2_ImageSearcher.A_Mp3)
-    #     is_ = ImageSearcher_LikelyCover(fp, '', False)
-    #     files = [Path.joinpath(test_resource_path, 'foo' + gif.suffix),
-    #              Path.joinpath(test_resource_path, 'bar' + gif.suffix)
-    #              ]
-    #     assert not is_._match_likely_name(gif, files)
-
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_3_match__no_matches(self):
-        fp = exists_or_skip(self.A_Dir, self.A_Mp3)
-        files = [Path.joinpath(test_resource_path, 'foo' + jpg.suffix),
-                 Path.joinpath(test_resource_path, 'bar' + jpg.suffix)
-                 ]
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        assert not is_._match_likely_name(jpg, files)
+        files = (Path.joinpath(test_resource_path, 'foo' + ti.suffix),
+                 Path.joinpath(test_resource_path, 'bar' + ti.suffix),
+                 )
+        assert not is_._match_likely_name(ti, files)
 
     # Each following `pytest.fixture` entry within `_LikelyCover_4_entries` is:
     # (
@@ -566,7 +532,7 @@ class Test_CoverLovin2_ImageSearcher(object):
     B_Img = 'album.jpg'  # actual test file in that sub-directory
     B_fp = join_test_rp(B_Dir, B_Img)  # file path test resource .../album.jpg
 
-    @pytest.mark.dependency(name=['test_res_B'])
+    @pytest.mark.dependency(name='test_res_B')
     def test_B_resources(self):
         assert self.B_fp.exists()
 
@@ -621,6 +587,12 @@ class Test_CoverLovin2_ImageSearcher(object):
 
         assert m.name == fp.name
 
+
+C_Artist = Artist('Bob Dylan')
+C_Album = Album('Biograph (Disc 1)')
+
+
+class Test_ImageSearcher_GoogleCSE(object):
     """
     Google CSE is tedious to test live so just use dummy data. Requires
     secret values for Key and Search ID. Which then requires adding secret
@@ -630,7 +602,6 @@ class Test_CoverLovin2_ImageSearcher(object):
     C_Dir = 'test_ImageSearcher_GoogleCSE1'  # actual sub-directory
     C_Img = 'album.jpg'  # actual test file in that sub-directory
     C_fp = join_test_rp(C_Dir, C_Img)
-
     # create these once with short names
     C_sz = ImageSize.SML
     C_testinput = test_resource_path.joinpath('googlecse-response1.json')
@@ -638,25 +609,25 @@ class Test_CoverLovin2_ImageSearcher(object):
     C_Album = Album('Biograph (Disc 1)')
 
     @pytest.mark.dependency(name='test_res_C')
-    def test_ImageSearcher_GoogleCSE_test_res(self):
+    def test_resources_exist(self):
         assert self.C_fp.exists()
         assert self.C_testinput.exists()
 
-    def test_ImageSearcher_GoogleCSE_1_init(self):
+    def test_init(self):
         gco = GoogleCSE_Opts('fake+key', 'fake+ID', self.C_sz)
         ImageSearcher_GoogleCSE(gco, 'referrer!', False)
 
-    def test_ImageSearcher_GoogleCSE_1_false(self):
+    def test_False(self):
         gco = GoogleCSE_Opts('', '', self.C_sz)
         assert not ImageSearcher_GoogleCSE(gco, 'referrer!', False)
 
     def _stub_response1(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE._search_response_json`"""
-        return open(str(Test_CoverLovin2_ImageSearcher.C_testinput))
+        return open(str(Test_ImageSearcher_GoogleCSE.C_testinput))
 
     def _stub_download_url(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE.download_url`"""
-        return bytes('fake image date', encoding='utf8')
+        return bytes('this is fake image date', encoding='utf8')
 
     # create ImageSearcher_GoogleCSE with stubbed methods
     C_gopt = GoogleCSE_Opts('fake+key', 'fake+ID', ImageSize.SML)
@@ -664,24 +635,17 @@ class Test_CoverLovin2_ImageSearcher(object):
     C_isg._search_response_json = _stub_response1
     C_isg.download_url = _stub_download_url
 
-    def test_ImageSearcher_GoogleCSE_2_search_basic(self):
-        assert self.C_isg.search_album_image(self.C_Artist, self.C_Album, jpg)
-
-    def test_ImageSearcher_GoogleCSE_2_search_basic_diff_ArtAlb1(self):
-        """
-        This implementation of search_album_image doesn't look directly
-        at Artist and Album value, it only hands it off.
-        """
-        assert self.C_isg.search_album_image(Artist('A'), Album('B'), jpg)
-
-    def test_ImageSearcher_GoogleCSE_2_search_basic_diff_ArtAlb2(self):
-        assert self.C_isg.search_album_image(Artist('A'), Album(''), jpg)
-
-    def test_ImageSearcher_GoogleCSE_2_search_basic_diff_ArtAlb3(self):
-        assert self.C_isg.search_album_image(Artist(''), Album('A'), jpg)
-
-    def test_ImageSearcher_GoogleCSE_2_search_empty_False(self):
-        assert not self.C_isg.search_album_image(Artist(''), Album(''), jpg)
+    @pytest.mark.parametrize('ti_Ar, ti_Al, ti_it, ti_ex',
+        (
+            pytest.param(C_Artist, C_Album, jpg, True, id=str_AA(C_Artist, C_Album)),
+            pytest.param(Artist('A'), Album('B'), jpg, True, id=str_AA(Artist('A'), Album('B'))),
+            pytest.param(Artist('A'), Album(''), jpg, True, id=str_AA(Artist('A'), Album(''))),
+            pytest.param(Artist(''), Album('B'), jpg, True, id=str_AA(Artist(''), Album('B'))),
+            pytest.param(Artist(''), Album(''), jpg, False, id=str_AA(Artist(''), Album(''))),
+        )
+    )
+    def test_search_album_image(self, ti_Ar, ti_Al, ti_it, ti_ex):
+        assert self.C_isg.search_album_image(ti_Ar, ti_Al, ti_it) == ti_ex
 
     def _stub_response2(*args, **kwargs):
         testinput2 = test_resource_path.joinpath(
@@ -692,7 +656,6 @@ class Test_CoverLovin2_ImageSearcher(object):
     _6_testfile = Path(tempfile.gettempdir(), tempfile.gettempprefix() +
                        __qualname__)
 
-    #XXX: how to pass in the Path to this fixture finalizer?
     def _6_rm_testfile(self):
         try:
             os.remove(self._6_testfile)
@@ -704,8 +667,8 @@ class Test_CoverLovin2_ImageSearcher(object):
         request.addfinalizer(self._6_rm_testfile)
 
     @pytest.mark.dependency(depends=['net_access'])
-    def test_ImageSearcher_GoogleCSE_2_search_use_altgooglecache(self,
-                                                                 _6_fixture):
+    @pytest.mark.usefixtures("_6_fixture")
+    def test_search_album_image__use_altgooglecache(self, _6_fixture):
         """test download from alternate google image cache location"""
 
         is_ = ImageSearcher_GoogleCSE(self.C_gopt, 'referrer!', False)
@@ -723,49 +686,41 @@ class Test_CoverLovin2_ImageSearcher(object):
     # TODO: XXX: need tests for other ImageSearcher classes
 
 
-class Test_CoverLovin2_media(object):
+class Test_media(object):
 
-    def test_mp3_ID3v1_(self):
-        fp = exists_or_skip('ID3v1 _.mp3')
+    @pytest.mark.parametrize('ti_fname, ti_ar, ti_al',
+        (
+            # mp3
+            pytest.param('ID3v1 _.mp3', '', '', id='mp3 ID3v1 "" ""'),
+            pytest.param('ID3v1 artist album.mp3', 'my artist', 'my album', id='mp3 ID3v1 "my artist" "my album"'),
+            pytest.param('ID3v1 artist.mp3', 'my artist', '', id='mp3 ID3v1 "my artist" ""'),
+            pytest.param('ID3v1 ID3v2 artist album.mp3', 'my artist', 'my album', id='mp3 ID3v1 ID3v2 "my artist" "my album"'),
+            pytest.param('ID3v2 artist album.mp3', 'my artist', 'my album', id='mp3 ID3v2 "my artist" "my album"'),
+            pytest.param('ID3v1 albumartist album.mp3', 'my albumartist', 'my album', id='mp3 ID3v1 "my artist" "my album"'),
+            pytest.param('_.mp3', '', '', id='mp3 no ID'),
+            # ogg
+            pytest.param('_.ogg', '', '', id='ogg "" ""'),
+            pytest.param('artist.ogg', 'my artist', '', id='ogg "my artist" ""'),
+            pytest.param('album.ogg', '', 'my album', id='ogg "" "my album"'),
+            pytest.param('artist album.ogg', 'my artist', 'my album', id='ogg "my artist" "my album"'),
+            # wma
+            pytest.param('_.wma', '', '', id='wma "" ""'),
+            pytest.param('author.wma', 'my artist', '', id='wma "my artist" ""'),
+            pytest.param('WM-AlbumTitle.wma', '', 'my album', id='wma "" "my album"'),
+            pytest.param('author WM-AlbumTitle.wma', 'my artist', 'my album', id='wma "my artist" "my album"'),
+            # flac
+            pytest.param('_.flac', '', '', id='flac "" ""'),
+            pytest.param('ARTIST.flac', 'my artist', '', id='flac "my artist" ""'),
+            pytest.param('ALBUM.flac', '', 'my album', id='flac "" "my album"'),
+            pytest.param('ARTIST ALBUM.flac', 'my artist', 'my album', id='flac "my artist" "my album"'),
+            #pytest.param('', '', '', id='"" ""'),
+        )
+    )
+    def test_parse_media_file(self, ti_fname, ti_ar, ti_al):
+        fp = exists_or_skip(ti_fname)
         ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == ''
-
-    def test_mp3_ID3v1_artist_album(self):
-        fp = exists_or_skip('ID3v1 artist album.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
-    def test_mp3_ID3v1_artist(self):
-        fp = exists_or_skip('ID3v1 artist.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == ''
-
-    def test_mp3_ID3v1_ID3v2_artist_album(self):
-        fp = exists_or_skip('ID3v1 ID3v2 artist album.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
-    def test_mp3_ID3v2_artist_album(self):
-        fp = exists_or_skip('ID3v2 artist album.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
-    def test_mp3_ID3v1_albumartist_album(self):
-        fp = exists_or_skip('ID3v1 albumartist album.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my albumartist'
-        assert al == 'my album'
-
-    def test_mp3__(self):
-        fp = exists_or_skip('_.mp3')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == ''
+        assert ar == ti_ar
+        assert al == ti_al
 
     def test_ogg_as_mp3_fail(self):
         fp = exists_or_skip('_.ogg')
@@ -782,78 +737,6 @@ class Test_CoverLovin2_media(object):
         with pytest.raises(FLACNoHeaderError):
             get_artist_album_flac(fp)
 
-    def test_ogg__(self):
-        fp = exists_or_skip('_.ogg')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == ''
-
-    def test_ogg_artist(self):
-        fp = exists_or_skip('artist.ogg')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == ''
-
-    def test_ogg_album(self):
-        fp = exists_or_skip('album.ogg')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == 'my album'
-
-    def test_ogg_artist_album(self):
-        fp = exists_or_skip('artist album.ogg')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
-    def test_wma__(self):
-        fp = exists_or_skip('_.wma')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == ''
-
-    def test_wma_artist(self):
-        fp = exists_or_skip('author.wma')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == ''
-
-    def test_wma_album(self):
-        fp = exists_or_skip('WM-AlbumTitle.wma')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == 'my album'
-
-    def test_wma_artist_album(self):
-        fp = exists_or_skip('author WM-AlbumTitle.wma')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
-    def test_flac__(self):
-        fp = exists_or_skip('_.flac')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == ''
-
-    def test_flac_artist(self):
-        fp = exists_or_skip('ARTIST.flac')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == ''
-
-    def test_flac_album(self):
-        fp = exists_or_skip('ALBUM.flac')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == ''
-        assert al == 'my album'
-
-    def test_flac_artist_album(self):
-        fp = exists_or_skip('ARTIST ALBUM.flac')
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
-        assert ar == 'my artist'
-        assert al == 'my album'
-
     def test_bad_file_suffix(self):
         with pytest.raises(KeyError):
-            _ = audio_type_get_artist_album['.bad']
+            _ = audio_type_get_artist_album['foo.bad']

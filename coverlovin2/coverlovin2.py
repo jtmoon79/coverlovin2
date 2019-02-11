@@ -25,6 +25,9 @@ __doc__ = \
 # stdlib imports
 #
 import sys
+# XXX: PEP8 complains about this occurring. But do this check sooner so the
+#      user does not install non-standard libraries (due to import failures)
+#      only to find out they used the wrong version of Python 3.
 if sys.version_info < (3, 7):
     raise Exception('This script is meant for python 3.7 or newer and will fail'
                     ' using this python version %s' % sys.version)
@@ -50,7 +53,9 @@ from pprint import pprint as pp  # for help live-debugging
 #
 # non-standard imports
 #
-import mutagen  # not used, just check ahead of time
+# XXX: PEP8 complaint that this is not used.  But try this import before going
+#      too far.
+import mutagen  # see README.md for installation help
 
 #
 # type hints and type precision
@@ -71,9 +76,6 @@ DirArtAlb_List = typing.List[DirArtAlb]
 Path_List = typing.List[Path]
 
 
-# TODO: how to assert a constraint ?
-#URL = typing.NewType('URL', str)
-#_URL = typing.NewType('_URL', str)
 class URL(str):
     """string type with constraints on values.
     The value must look like an http* URL string.
@@ -83,17 +85,16 @@ class URL(str):
     """
     def __new__(cls, *value):
         if value:
-            if type(*value) is str:
-                v0 = value[0]
-                if not (v0.startswith('http://') or v0.startswith('https://')):
-                    raise ValueError('Passed string value "%s" is not an'
-                                     ' "http*://" URL' % (v0,))
-        # else allow None to be passed. This allows an "empty" URL, `URL()`.
-
+            v0 = value[0]
+            if not type(v0) is str:
+                raise TypeError('Unexpected type for URL: "%s"' % type(v0))
+            if not (v0.startswith('http://') or v0.startswith('https://')):
+                raise ValueError('Passed string value "%s" is not an'
+                                 ' "http*://" URL' % (v0,))
+        # else allow None to be passed. This allows an "empty" URL, `URL()` that
+        # evaluates False
         return str.__new__(cls, *value)
 
-    def __str__(self):
-        return str.__str__(self)
 
 #
 # Google CSE Options
@@ -559,15 +560,15 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         super().__init__(referer, debug)
 
     def _match_likely_name(self, image_type: ImageType,
-                           files: typing.List[Path])\
+                           files: typing.Sequence[Path])\
             -> typing.Union[None, Path]:
         """
-        Given a list of image files (Paths), find the most likely album cover
+        Given a sequence of image files (Paths), find the most likely album cover
         match by analyzing the image file name.
 
         This function makes no changes to the class instance.
 
-        :param files: list of Paths. Each .name is checked against some re
+        :param files: sequence of Paths. Each .name is checked against some re
                       patterns to see if it is likely an album cover file name.
                       e.g. 'album cover.jpg' or
                            'ACDC Let There Be Rock (front).jpg'
@@ -1375,7 +1376,7 @@ Given a list of directories, DIRS, recursively identify "album" directories.
 "Album" directories have audio files, e.g. files with extensions like .mp3 or
 .flac.  For each "album" directory, attempt to determine the Artist and Album.
 Then find an album image file using the requested --search providers.  If an
-album image file is found then write it to IMAGE_NAME.TYPE within each
+album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
 "album" directory.
 
 A common use-case would be creating a "folder.jpg" file for a collection of
@@ -1394,18 +1395,18 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     argg = parser.add_argument_group('Recommended')
     argg.add_argument('-n', '--image-name', dest='image_name', action='store',
                       default='cover',
-                      help='cover image file name. This is the file name '
-                           'that will be created within passed DIRS. '
-                           'This will be appended with the preferred image TYPE'
-                           ', e.g. "jpg", "png", etc. '
-                           '(default: "%(default)s")')
+                      help='cover image file name IMAGE_NAME. This is the file'
+                           ' name that will be created within passed DIRS. '
+                           ' This will be appended with the preferred image'
+                           ' TYPE, e.g. "jpg", "png", etc.'
+                           ' (default: "%(default)s")')
     argg.add_argument('-i', '--image-type', dest='image_type', action='store',
                       default=ImageType.list()[0], choices=ImageType.list(),
-                      help='image format TYPE (default: "%(default)s")')
+                      help='image format IMAGE_TYPE (default: "%(default)s")')
     argg.add_argument('-o', '--overwrite', dest='overwrite',
                       action='store_true', default=False,
                       help='overwrite any previous file of the same file'
-                           ' IMAGE_NAME and image TYPE (default: %(default)s)')
+                           ' IMAGE_NAME and IMAGE_TYPE (default: %(default)s)')
 
     argg = parser.add_argument_group('Search all')
     argg.add_argument('-s*', '--search-all', dest='search_all',
@@ -1419,24 +1420,22 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     argg.add_argument('-sl', '--search-likely-cover', dest='search_likely',
                       action='store_true', default=False,
                       help='For any directory with audio media files but no'
-                           ' file "NAME.TYPE", search the directory for files'
-                           ' that are likely album cover images. For example,'
-                           ' given options: --name "cover" --type "jpg", and a'
-                           ' directory of .mp3 files with a file "album.jpg",'
-                           ' it is reasonable to guess "album.jpg" is a an'
-                           ' album cover image file. So copy file "album.jpg"'
-                           ' to "cover.jpg" . This will skip an internet image'
-                           ' lookup and download and could be a more reliable'
-                           ' way to retrieve the correct image.'
-                           ' (default: %(default)s)')
+                           ' file "IMAGE_NAME.IMAGE_TYPE", search the directory'
+                           ' for files that are likely album cover images. For'
+                           ' example, given options: --name "cover" --type'
+                           ' "jpg", and a directory of .mp3 files with a file'
+                           ' "album.jpg", it is reasonable to guess'
+                           ' "album.jpg" is a an album cover image file. So'
+                           ' copy file "album.jpg" to "cover.jpg" . This will'
+                           ' skip an internet image lookup and download and'
+                           ' could be a more reliable way to retrieve the'
+                           ' correct image. (default: %(default)s)')
 
     argg = parser.add_argument_group('Search Musicbrainz NGS webservice')
     argg.add_argument('-sm', '--search-musicbrainz', dest='search_musicbrainz',
                       action='store_true', default=False,
                       help='Search for album images using musicbrainz NGS'
-                           ' webservice. Requires python module musicbrainzngs.'
-                           ' See '
-                           ' https://musicbrainz.org/doc/Developer_Resources'
+                           ' webservice.'
                            ' MusicBrainz lookup is the most reliable search'
                            ' method.'
                       )
@@ -1487,8 +1486,10 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     parser.epilog = '''\
 This program attempts to create album cover image files for the passed DIRS.  It
 does this several ways, searching for album cover image files already present in
-the directory.  If not found, it attempts to figure out the Artist and Album for
-that directory then searches online services for an album cover image.
+the directory (-sl).  If not found, it attempts to figure out the Artist and
+Album for that directory then searches online services for an album cover image
+(-sm or -sg).
+
 Directories are searched recursively.  Any directory that contains one or more
 with file name extension %s''' % ' or '.join(AUDIO_TYPES) + '''
 is presumed to be an album directory.  Given a directory of such files, file
@@ -1497,11 +1498,17 @@ tags (ID3, Windows Media, etc.).  If no embedded media tags are present then a
 reasonable guess will be made about the Artist and Album based on the directory
 name; specifically this will try to match a directory name with a pattern like
 "Artist - Year - Album" or "Artist - Album".
+From there, online search services are used to search for the required album
+cover image. If found, it is written to the album directory to file name
+IMAGE_NAME.IMAGE_TYPE (-n … -i …).
 
 If option --search-googlecse is chosen then you must create your Google Custom
 Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
 takes about 5 minutes.  This is where your own values for --gid and --gkey can
-be created.
+be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
+under the "Custom Search JSON API" from which you can generate an API Key (URI
+parameter "key"). A key can be generated at
+https://console.developers.google.com/apis/credentials.
 Google CSE settings must have "Image search" as "ON"  and "Search the entire
 web" as "OFF".
 
