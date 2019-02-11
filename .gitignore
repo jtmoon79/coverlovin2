@@ -1,8 +1,20 @@
+# various IDE settings directories
+.idea/
+.vscode/
+
+# various python tool caches
 .mypy_cache/
 .pytest_cache/
+
+# sdist build artifacts
 build/
 dist/
 CoverLovin2.egg-info/
+
+# codecov reports and artifacts
+htmlcov/
+.coverage
+coverage.xml
+
+# just for me
 Notes.md
-.idea/
-.vscode/
