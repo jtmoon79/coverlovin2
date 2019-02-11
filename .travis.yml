@@ -5,8 +5,8 @@ branches:
 matrix:
   include:
   - name: "3.7 pytest"
-    # should be 3.7 but Travis CI doesn't have that!
-    python: "3.6"
+    python: "3.7"
+    dist: xenial  # currently required for Python 3.7 on Travis CI
 script: bash ./run-test.sh
 git:
   depth: 1
