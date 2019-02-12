@@ -28,8 +28,8 @@ echo
 
 export COVERAGE_PROCESS_START=$(readlink -f -- '.coveragerc')
 
-COVERAGE_XML='coverage.xml'
-COVERAGE_RC='./.coveragerc'
+readonly COVERAGE_XML='coverage.xml'
+readonly COVERAGE_RC='./.coveragerc'
 coverage erase
 
 # XXX: several methods of invoking codecov, the uncommented method is the only
