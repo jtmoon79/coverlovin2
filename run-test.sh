@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 #
 # for Travis CI runs
+#
+# this will modify the system is not recommended to be run on a development
+# host.
 
 set -e
 set -u
@@ -8,28 +11,34 @@ set -x
 
 cd "$(dirname -- "${0}")"
 
-py='false'
-if which python3 &>/dev/null; then
-    py='python3'
-elif which python3.7 &>/dev/null; then
-    py='python3.7'
+python='false'
+if which python3.7 &>/dev/null; then
+    python='python3.7'
+elif which python3 &>/dev/null; then
+    python='python3'
 elif which py &>/dev/null; then
-    py='py -3.7'
+    python=$(py -3.7 -c "import sys;import os;print(os.path.abspath(sys.executable));")
+else
+    echo "ERROR: unable to find suitable python" >&2
+    exit 1
 fi
 
-${py} -m pip install pipenv
+if which pipenv &>/dev/null; then
+    echo "ERROR: pipenv is already install!? $(which pipenv)" >&2
+    exit 1
+fi
+"${python}" -m pip install pipenv
 pipenv install --dev
 echo
 echo
 
 #
-# run pytest with codecov tool
+# run pytest with codecov tool, upload the report
 #
-
-export COVERAGE_PROCESS_START=$(readlink -f -- '.coveragerc')
 
 readonly COVERAGE_XML='coverage.xml'
 readonly COVERAGE_RC='./.coveragerc'
+export COVERAGE_PROCESS_START=$(readlink -f -- "${COVERAGE_RC}")
 coverage erase
 
 # XXX: several methods of invoking codecov, the uncommented method is the only
@@ -45,6 +54,22 @@ coverage erase
 # method 3:
 # call codecov at the end, see https://github.com/codecov/example-python#overview
 coverage run "--rcfile=${COVERAGE_RC}" -m pytest ./coverlovin2/test/
-coverage xml "--rcfile=${COVERAGE_RC}"
-codecov --file "${COVERAGE_XML}"
+coverage xml "--rcfile=${COVERAGE_RC}" -o "${COVERAGE_XML}"
 coverage report
+# upload to codecov.io
+codecov --file "${COVERAGE_XML}" 
+
+
+#
+# create and install distributable with pip
+#
+# upgrade installer libraries
+#"${python}" -m pip install --user --upgrade setuptools wheel
+# create the install package
+#"${python}" ./setup.py sdist
+"${python}" setup.py bdist_wheel
+DIST_WHL="./dist/CoverLovin2-*-py3-none-any.whl"
+pip install "${DIST_WHL}"
+
+cd ..
+coverlovin2 --help
