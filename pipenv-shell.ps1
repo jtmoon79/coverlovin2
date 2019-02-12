@@ -1,4 +1,4 @@
-# start pyenv shell within powershell
+# start pipenv shell with decorated window title
 
 $ErrorActionPreference = "Stop"
 #Set-PSDebug -Trace 2
