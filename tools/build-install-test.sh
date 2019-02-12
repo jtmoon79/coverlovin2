@@ -22,11 +22,12 @@ python -m pip uninstall --yes coverlovin2
 
 # build using wheels
 cd -
+version=$(python -B -c 'from coverlovin2 import coverlovin2 as c2;print(c2.__version__)')
 python setup.py bdist_wheel
 
 # install the wheel (must be done outside the project directory)
 cd ..
-python -m pip install ./coverlovin2/dist/CoverLovin2-0.5.0-py3-none-any.whl
+python -m pip install "./coverlovin2/dist/CoverLovin2-${version}-py3-none-any.whl"
 
 # does it run?
-coverlovin2 --help
+coverlovin2 --version
