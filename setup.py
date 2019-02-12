@@ -55,13 +55,33 @@ setup(
     keywords='audio image music',
     python_requires='>=3.7',
     # XXX: should Pipfile* also be distributed???
-    packages=find_packages(exclude=['test/', 'Notes.md', 'dist/', 'Pipfile',
-                                    'Pipfile.lock']),
+    packages=find_packages(
+        exclude=[
+            'coverlovin2/test/',
+            #'Pipfile',
+            #'Pipfile.lock'
+            # the following should match .gitignore
+            #'.idea/',
+            #'.vscode/',
+            #'.mypy_cache/',
+            #'.pytest_cache/',
+            #'build/',
+            #'dist/',
+            #'CoverLovin2.egg-info/',
+            #'htmlcov/',
+            #'.coverage',
+            #'coverage.xml',
+            #'Notes.md',
+            ],
+        include=[
+            'coverlovin2/'
+        ]),
     scripts=['coverlovin2/coverlovin2.py'],
     # TODO: does this need work?
     entry_points={
         'console_scripts': [
-            'coverlovin2=coverlovin2.coverlovin2:main',
+            'coverlovin2=coverlovin2:main',
+            #'coverlovin2=coverlovin2.coverlovin2:main',
         ],
     },
     project_urls={  # Optional

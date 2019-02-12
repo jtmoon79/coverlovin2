@@ -9,10 +9,13 @@ mypy = "*"
 pytest-dependency = "*"
 pytest-cov = "*"
 codecov = "*"
+setuptools = "*"
+wheel = "*"
 
 [packages]
-musicbrainzngs = "==0.6"
-mutagen = "==1.42.0"
+musicbrainzngs = ">=0.6"
+mutagen = ">=1.42.0"
 
 [requires]
 python_version = "3.7"
+# does not support version range https://github.com/pypa/pipfile/issues/87

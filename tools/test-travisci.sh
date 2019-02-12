@@ -9,28 +9,17 @@ set -e
 set -u
 set -x
 
-cd "$(dirname -- "${0}")"
+cd "$(dirname -- "${0}")/.."
 
-python='false'
-if which python3.7 &>/dev/null; then
-    python='python3.7'
-elif which python3 &>/dev/null; then
-    python='python3'
-elif which py &>/dev/null; then
-    python=$(py -3.7 -c "import sys;import os;print(os.path.abspath(sys.executable));")
-else
-    echo "ERROR: unable to find suitable python" >&2
-    exit 1
-fi
+python --version  # record version
+python -B ./tools/is_venv.py  # check if virtual env, script will exit if not
 
-"${python}" --version  # record version
-
-if ! "${python}" -m pip --version; then
+if ! python -m pip --version; then
     echo "ERROR: pip is not installed" >&2
     exit 1
 fi
 if ! which pipenv &>/dev/null; then
-    "${python}" -m pip install pipenv
+    python -m pip install pipenv
 fi
 pipenv --version  # record version
 pipenv install --dev
@@ -67,15 +56,8 @@ codecov --file "${COVERAGE_XML}"
 
 
 #
-# create and install distributable with pip
+# create and install distributable with pip, test it can print --help
 #
-# upgrade installer libraries
-#"${python}" -m pip install --user --upgrade setuptools wheel
-# create the install package
-#"${python}" ./setup.py sdist
-"${python}" setup.py bdist_wheel
-DIST_WHL="./dist/CoverLovin2-*-py3-none-any.whl"
-"${python}" -m pip install "${DIST_WHL}"
-
-cd ..
-coverlovin2 --help
+# upgrade installer libraries first
+python -m pip install --upgrade setuptools wheel
+./tools/build-install-test.sh
