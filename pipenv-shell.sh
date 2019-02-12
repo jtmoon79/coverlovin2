@@ -14,7 +14,9 @@ pipenv=$(py -${ver} -c "import sys;import os;print(os.path.join(os.path.dirname(
 venv=$("${pipenv}" --venv)
 pyver=$(python --version)
 
-# update the prompt with information about the virtual environment 
+# update the prompt with information about the virtual environment
+# XXX: no access to PS1 from here, secondly the exported `PS1` is not used by
+#      the new instance of `pipenv shell` run below 
 export PS1="pipenv: ${venv} (${pyver})
 ${PS1+x}"
 
