@@ -7,6 +7,6 @@ matrix:
   - name: "3.7 pytest"
     python: "3.7"
     dist: xenial  # currently required for Python 3.7 on Travis CI
-script: env && echo && pwd && echo && ls -l && test-travisci.sh
+script: env && echo && pwd && echo && ls -l && echo && ls -l ./tools/ && echo && ./tools/test-travisci.sh
 git:
   depth: 1
