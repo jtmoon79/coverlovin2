@@ -7,6 +7,8 @@ matrix:
   - name: "3.7 pytest"
     python: "3.7"
     dist: xenial  # currently required for Python 3.7 on Travis CI
-script: env && echo && pwd && echo && ls -l && echo && ls -l ./tools/ && echo && ./tools/test-travisci.sh
+# the executable bit is not set on scripts under tools/ , so force it
+before_script: chmod -vR +x,-w -- ./tools/
+script: ./tools/test-travisci.sh
 git:
   depth: 1
