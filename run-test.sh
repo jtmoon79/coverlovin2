@@ -23,11 +23,16 @@ else
     exit 1
 fi
 
-if which pipenv &>/dev/null; then
-    echo "ERROR: pipenv is already install!? $(which pipenv)" >&2
+"${python}" --version  # record version
+
+if ! "${python}" -m pip --version; then
+    echo "ERROR: pip is not installed" >&2
     exit 1
 fi
-"${python}" -m pip install pipenv
+if ! which pipenv &>/dev/null; then
+    "${python}" -m pip install pipenv
+fi
+pipenv --version  # record version
 pipenv install --dev
 echo
 echo
@@ -39,6 +44,7 @@ echo
 readonly COVERAGE_XML='coverage.xml'
 readonly COVERAGE_RC='./.coveragerc'
 export COVERAGE_PROCESS_START=$(readlink -f -- "${COVERAGE_RC}")
+coverage --version  # record version
 coverage erase
 
 # XXX: several methods of invoking codecov, the uncommented method is the only
@@ -69,7 +75,7 @@ codecov --file "${COVERAGE_XML}"
 #"${python}" ./setup.py sdist
 "${python}" setup.py bdist_wheel
 DIST_WHL="./dist/CoverLovin2-*-py3-none-any.whl"
-pip install "${DIST_WHL}"
+"${python}" -m pip install "${DIST_WHL}"
 
 cd ..
 coverlovin2 --help
