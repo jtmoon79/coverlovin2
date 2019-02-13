@@ -1369,8 +1369,6 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
 def parse_args_opts():
     """parse command line arguments and options"""
 
-    ver = 'coverlovin2 version %s' % __version__
-
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter)
     parser.description = '''\
@@ -1473,7 +1471,7 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     #                  help='image lookup count (default: %(default)s)')
 
     argg = parser.add_argument_group('Debugging and Miscellanea')
-    argg.add_argument('-v', '--version', action='version', version=ver)
+    argg.add_argument('-v', '--version', action='version', version=__version__)
     argg.add_argument('-r', '--referer', dest='referer', action='store',
                       default=REFERER_DEFAULT,
                       help='Referer url used in HTTP GET requests '
