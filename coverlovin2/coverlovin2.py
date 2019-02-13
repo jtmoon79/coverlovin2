@@ -1395,9 +1395,9 @@ Compact Disc albums.
 Given a list of directories, DIRS, recursively identify "album" directories.
 "Album" directories have audio files, e.g. files with extensions like .mp3 or
 .flac.  For each "album" directory, attempt to determine the Artist and Album.
-Then find an album image file using the requested --search providers.  If an
-album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
-"album" directory.
+Then find an album cover image file using the requested --search providers.  If
+an album cover image file is found then write it to IMAGE_NAME.IMAGE_TYPE within
+each "album" directory.
 
 Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
 
@@ -1428,7 +1428,7 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     argg = parser.add_argument_group('Search all')
     argg.add_argument('-s*', '--search-all', dest='search_all',
                       action='store_true', default=False,
-                      help='Search for album images using all methods and'
+                      help='Search for album cover images using all methods and'
                            ' services'
                       )
 
@@ -1446,12 +1446,12 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' copy file "album.jpg" to "cover.jpg" . This will'
                            ' skip an internet image lookup and download and'
                            ' could be a more reliable way to retrieve the'
-                           ' correct image. (default: %(default)s)')
+                           ' correct album cover image. (default: %(default)s)')
 
     argg = parser.add_argument_group('Search Musicbrainz NGS webservice')
     argg.add_argument('-sm', '--search-musicbrainz', dest='search_musicbrainz',
                       action='store_true', default=False,
-                      help='Search for album images using musicbrainz NGS'
+                      help='Search for album cover images using musicbrainz NGS'
                            ' webservice.'
                            ' MusicBrainz lookup is the most reliable search'
                            ' method.'
@@ -1461,7 +1461,7 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     gio = ImageSize.list()
     argg.add_argument('-sg', '--search-googlecse', dest='search_googlecse',
                       action='store_true', default=False,
-                      help='Search for album images using Google CSE.'
+                      help='Search for album cover images using Google CSE.'
                            ' Using the Google CSE requires an Engine ID and API'
                            ' Key. Google CSE reliability entirely depends upon'
                            ' the added "Sites to search".'
@@ -1474,15 +1474,15 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                       help='Google CSE optional image file size '
                       '(default: "%(default)s")')
     argg.add_argument('--gid', dest='gid', action='store',
-                      help='Google CSE Search Engine ID (URL parameter "cx") '
-                      'typically looks like '
-                      '"009494817879853929660:efj39xwwkng".  REQUIRED to use '
-                      'Google CSE.')
+                      help='Google CSE ID (URL parameter "cx")'
+                      ' typically looks like'
+                      ' "009494817879853929660:efj39xwwkng".  REQUIRED to use'
+                      ' Google CSE.')
     argg.add_argument('--gkey', dest='gkey', action='store',
-                      help='Google CSE Search Engine API Key (URL parameter '
-                      '"key") typically looks like '
-                      '"KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst". REQUIRED to '
-                      'use Google CSE.')
+                      help='Google CSE API Key (URL parameter "key") typically'
+                      ' looks like'
+                      ' "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst". REQUIRED to'
+                      ' use Google CSE.')
     #argg.add_argument('-c', '--count', dest='count', action='store',
     #                  default='8', type=int,
     #                  help='image lookup count (default: %(default)s)')
@@ -1491,15 +1491,15 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     argg.add_argument('-v', '--version', action='version', version=__version__)
     argg.add_argument('-r', '--referer', dest='referer', action='store',
                       default=REFERER_DEFAULT,
-                      help='Referer url used in HTTP GET requests '
-                           '(default: "%(default)s")')
+                      help='Referer url used in HTTP GET requests'
+                           ' (default: "%(default)s")')
     argg.add_argument('-d', '--debug', dest='debug', action='store_true',
                       default=False,
                       help='Print debug logs (default: %(default)s)')
     argg.add_argument('--test-only', dest='test', action='store_true',
                       default=False,
-                      help='Only test, do not write any files '
-                           '(default: %(default)s)')
+                      help='Only test, do not write any files'
+                           ' (default: %(default)s)')
 
     parser.epilog = '''\
 This program attempts to create album cover image files for the passed DIRS.  It

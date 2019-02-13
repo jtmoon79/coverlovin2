@@ -27,9 +27,9 @@ Script Usage
     Given a list of directories, DIRS, recursively identify "album" directories.
     "Album" directories have audio files, e.g. files with extensions like .mp3 or
     .flac.  For each "album" directory, attempt to determine the Artist and Album.
-    Then find an album image file using the requested --search providers.  If an
-    album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
-    "album" directory.
+    Then find an album cover image file using the requested --search providers.  If
+    an album cover image file is found then write it to IMAGE_NAME.IMAGE_TYPE within
+    each "album" directory.
     
     Audio files supported are .mp3, .m4a, .mp4, .flac, .ogg, .wma, .asf.
     
@@ -51,7 +51,8 @@ Script Usage
                             IMAGE_NAME and IMAGE_TYPE (default: False)
     
     Search all:
-      -s*, --search-all     Search for album images using all methods and services
+      -s*, --search-all     Search for album cover images using all methods and
+                            services
     
     Search the local directory for likely album cover images:
       -sl, --search-likely-cover
@@ -64,31 +65,29 @@ Script Usage
                             image file. So copy file "album.jpg" to "cover.jpg" .
                             This will skip an internet image lookup and download
                             and could be a more reliable way to retrieve the
-                            correct image. (default: False)
+                            correct album cover image. (default: False)
     
     Search Musicbrainz NGS webservice:
       -sm, --search-musicbrainz
-                            Search for album images using musicbrainz NGS
+                            Search for album cover images using musicbrainz NGS
                             webservice. MusicBrainz lookup is the most reliable
                             search method.
     
     Search Google Custom Search Engine (CSE):
       -sg, --search-googlecse
-                            Search for album images using Google CSE. Using the
-                            Google CSE requires an Engine ID and API Key. Google
-                            CSE reliability entirely depends upon the added "Sites
-                            to search". The end of this help message has more
-                            advice around using Google CSE. (default: False)
+                            Search for album cover images using Google CSE. Using
+                            the Google CSE requires an Engine ID and API Key.
+                            Google CSE reliability entirely depends upon the added
+                            "Sites to search". The end of this help message has
+                            more advice around using Google CSE. (default: False)
       -s {small,medium,large}, --gsize {small,medium,large}
                             Google CSE optional image file size (default: "large")
-      --gid GID             Google CSE Search Engine ID (URL parameter "cx")
-                            typically looks like
-                            "009494817879853929660:efj39xwwkng". REQUIRED to use
-                            Google CSE.
-      --gkey GKEY           Google CSE Search Engine API Key (URL parameter "key")
-                            typically looks like
-                            "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst". REQUIRED to
+      --gid GID             Google CSE ID (URL parameter "cx") typically looks
+                            like "009494817879853929660:efj39xwwkng". REQUIRED to
                             use Google CSE.
+      --gkey GKEY           Google CSE API Key (URL parameter "key") typically
+                            looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst".
+                            REQUIRED to use Google CSE.
     
     Debugging and Miscellanea:
       -v, --version         show program's version number and exit
