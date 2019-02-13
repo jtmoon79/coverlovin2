@@ -19,6 +19,7 @@ set -x
 # uninstall any previous install (must be done outside the project directory)
 cd ..
 python -m pip uninstall --yes coverlovin2
+rm -rf -- ./dist/ ./CoverLovin2.egg-info/
 
 # build using wheels
 cd -
