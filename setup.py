@@ -34,8 +34,8 @@ setup(
     long_description_content_type='text/markdown',
     license='Apache License 2.0 (Apache-2.0)',
     install_requires=[
-        'musicbrainzngs == 0.6',
-        'mutagen == 1.42.0',
+        'musicbrainzngs >= 0.6',
+        'mutagen >= 1.42.0',
     ],
     # see https://pypi.org/classifiers/
     classifiers=[
