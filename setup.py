@@ -45,10 +45,9 @@ setup(
         'Natural Language :: English',
         # XXX: as of 2019/02/07, the Apache-2.0 License is an OSI approved
         #      license: https://opensource.org/licenses/alphabetical
-        #      However the following classifier string is not listed at
+        #      However the listed classifier string is not listed at
         #      https://pypi.org/classifiers/
-        #      Hopefully, the classifier string doesn't cause problems.
-        'License :: OSI Approved :: Apache License 2.0 (Apache-2.0)',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.7',
         'Topic :: Multimedia :: Sound/Audio'
     ],
