@@ -28,8 +28,8 @@ setup(
     version=__version__,
     author=__author__,
     url=__url__,
-    description='Recursively parse directories with audio files and download'
-                ' album cover art.',
+    description='Find local music albums and automatically download music album'
+                ' cover art.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     license='Apache License 2.0 (Apache-2.0)',
