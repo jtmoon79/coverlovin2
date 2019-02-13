@@ -19,6 +19,7 @@ from pathlib import Path
 import pytest
 import tempfile
 import typing
+import queue
 
 # non-standard library imports
 from mutagen.id3 import ID3NoHeaderError
@@ -46,6 +47,7 @@ from ..coverlovin2 import audio_type_get_artist_album
 from ..coverlovin2 import ImageSearcher
 from ..coverlovin2 import ImageSearcher_LikelyCover
 from ..coverlovin2 import ImageSearcher_GoogleCSE
+from ..coverlovin2 import process_dir
 
 
 # all committed test resources should be under this directory
@@ -193,6 +195,12 @@ class Test_helpers(object):
             assert ti_exp[0] <= score <= ti_exp[1]
         else:
             raise TypeError('bad test case input type %s' % type(ti_exp))
+
+
+class Test_ImageSize(object):
+
+    def test_list(self):
+        assert ImageSize.list()
 
 
 class Test_ImageType(object):
@@ -360,173 +368,203 @@ class Test_ImageSearcher_LikelyCover(object):
     # ),
     # where `Path_expected_to_match` is a Path to be compared against return
     # value of `_match_likely_name([Path_to_match1, Path_to_match2, ...])`.
-    _LikelyCover_4_fixture_entries = (
+    @pytest.mark.parametrize('ti_it, ti_paths, ti_path_match',
         (
-            jpg,
+            pytest.param
             (
-                Path('nope' + jpg.suffix),
-                Path('nope' + png.suffix)
+                jpg,
+                (
+                    Path('nope' + jpg.suffix),
+                    Path('nope' + png.suffix),
+                ),
+                None,
+                id='(no match) nope' + png.suffix
             ),
-            None
-        ),
-        (
-            jpg,
+            pytest.param
             (
-                Path('AlbumArt_Small' + jpg.suffix),
-                Path('AlbumArt_Large' + jpg.suffix)
+                jpg,
+                (
+                    Path('AlbumArt_Small' + jpg.suffix),
+                    Path('AlbumArt_Large' + jpg.suffix)
+                ),
+                Path('AlbumArt_Large' + jpg.suffix),
+                id='AlbumArt_Large' + jpg.suffix
             ),
-            Path('AlbumArt_Large' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
+                jpg,
+                (
+                    Path('front-here' + jpg.suffix),
+                    Path('here-front' + jpg.suffix)
+                ),
                 Path('front-here' + jpg.suffix),
-                Path('here-front' + jpg.suffix)
+                id='front-here' + jpg.suffix
             ),
-            Path('front-here' + jpg.suffix)
-        ),
-        (
-            png,
+            pytest.param
             (
-                Path('fronthere' + png.suffix),
-                Path('here-front' + png.suffix)
+                png,
+                (
+                    Path('fronthere' + png.suffix),
+                    Path('here-front' + png.suffix)
+                ),
+                Path('here-front' + png.suffix),
+                id='here-front' + png.suffix
             ),
-            Path('here-front' + png.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
+                jpg,
+                (
+                    Path('foo (front)' + jpg.suffix),
+                    Path('folder' + jpg.suffix)
+                ),
                 Path('foo (front)' + jpg.suffix),
-                Path('folder' + jpg.suffix)
-            ),
-            Path('foo (front)' + jpg.suffix)
-         ),
-        (
-            jpg,
+                id='foo (front)' + jpg.suffix
+             ),
+            pytest.param
             (
+                jpg,
+                (
+                    Path('AlbumArt01' + jpg.suffix),
+                    Path('foo (front)' + jpg.suffix)
+                ),
                 Path('AlbumArt01' + jpg.suffix),
-                Path('foo (front)' + jpg.suffix)
+                id='AlbumArt01' + jpg.suffix
             ),
-            Path('AlbumArt01' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
-                Path('foo (front)' + jpg.suffix),
-                Path('AlbumArt01' + jpg.suffix)
+                jpg,
+                (
+                    Path('foo (front)' + jpg.suffix),
+                    Path('AlbumArt01' + jpg.suffix)
+                ),
+                Path('AlbumArt01' + jpg.suffix),
+                id='AlbumArt01' + jpg.suffix
             ),
-            Path('AlbumArt01' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
+                jpg,
+                (
+                    Path('R-3512668-1489953889-2577 cover.jpeg' + jpg.suffix),
+                    Path('nomatch' + jpg.suffix)
+                ),
                 Path('R-3512668-1489953889-2577 cover.jpeg' + jpg.suffix),
-                Path('nomatch' + jpg.suffix)
+                id='R-3512668-1489953889-2577 cover.jpeg' + jpg.suffix
             ),
-            Path('R-3512668-1489953889-2577 cover.jpeg' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
+                jpg,
+                (
+                    Path('album_cover.jpeg' + jpg.suffix),
+                    Path('nomatch' + jpg.suffix)
+                ),
                 Path('album_cover.jpeg' + jpg.suffix),
-                Path('nomatch' + jpg.suffix)
+                id='album_cover.jpeg' + jpg.suffix
             ),
-            Path('album_cover.jpeg' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
-                Path('nomatch' + jpg.suffix),
-                Path('Something (front) blarg' + jpg.suffix)
-            ),
-            Path('Something (front) blarg' + jpg.suffix)
-        ),
-        (
-            jpg,
-            (
-                Path('Something-front-blarg' + jpg.suffix),
-                Path('Something (front) blarg' + jpg.suffix)
-            ),
-            Path('Something (front) blarg' + jpg.suffix)
-        ),
-        (
-            png,
-            (
-                Path('Something-front-blarg' + png.suffix),
-                Path('Something (front) blarg' + png.suffix)
-            ),
-            Path('Something (front) blarg' + png.suffix)
-        ),
-        (
-            gif,
-            (
-                Path('Something-front-blarg' + gif.suffix),
-                Path('Something (front) blarg' + gif.suffix)
-            ),
-            Path('Something (front) blarg' + gif.suffix)
-        ),
-        (
-            jpg,
-            (
-                Path('Something-front-blarg' + jpg.suffix),
-                Path('Something' + png.suffix),
-                Path('Something' + jpg.suffix),
-                Path('Something' + gif.suffix)
-            ),
-            Path('Something-front-blarg' + jpg.suffix)
-        ),
-        (
-            jpg,
-            (
-                Path('folder' + png.suffix),
-                Path('folder' + jpg.suffix),
-                Path('folder' + gif.suffix)
-            ),
-            Path('folder' + jpg.suffix)
-        ),
-        (
-            png,
-            (
-                Path('folder' + png.suffix),
-                Path('folder' + jpg.suffix),
-                Path('folder' + gif.suffix)
-            ),
-            Path('folder' + png.suffix)
-        ),
-        (
-            jpg,
-            (
-                Path('Something-front-blarg' + png.suffix),
-                Path('Something-front-blarg' + jpg.suffix),
-                Path('Something-front-blarg' + gif.suffix),
-                Path('Something (front) blarg' + png.suffix),
+                jpg,
+                (
+                    Path('nomatch' + jpg.suffix),
+                    Path('Something (front) blarg' + jpg.suffix)
+                ),
                 Path('Something (front) blarg' + jpg.suffix),
-                Path('Something (front) blarg' + gif.suffix),
+                id='Something (front) blarg' + jpg.suffix
             ),
-            Path('Something (front) blarg' + jpg.suffix)
-        ),
-        (
-            jpg,
+            pytest.param
             (
-                Path('Something-front-blarg' + jpg.suffix),
-                Path('Something (front) blarg' + '.jpeg'),
+                jpg,
+                (
+                    Path('Something-front-blarg' + jpg.suffix),
+                    Path('Something (front) blarg' + jpg.suffix)
+                ),
+                Path('Something (front) blarg' + jpg.suffix),
+                id='Something (front) blarg' + jpg.suffix
             ),
-            Path('Something (front) blarg' + '.jpeg')
-        ),
+            pytest.param
+            (
+                png,
+                (
+                    Path('Something-front-blarg' + png.suffix),
+                    Path('Something (front) blarg' + png.suffix)
+                ),
+                Path('Something (front) blarg' + png.suffix),
+                id='Something (front) blarg' + png.suffix
+            ),
+            pytest.param
+            (
+                gif,
+                (
+                    Path('Something-front-blarg' + gif.suffix),
+                    Path('Something (front) blarg' + gif.suffix)
+                ),
+                Path('Something (front) blarg' + gif.suffix),
+                id='Something (front) blarg' + gif.suffix
+            ),
+            pytest.param
+            (
+                jpg,
+                (
+                    Path('Something-front-blarg' + jpg.suffix),
+                    Path('Something' + png.suffix),
+                    Path('Something' + jpg.suffix),
+                    Path('Something' + gif.suffix)
+                ),
+                Path('Something-front-blarg' + jpg.suffix),
+                id='Something-front-blarg' + jpg.suffix
+            ),
+            pytest.param
+            (
+                jpg,
+                (
+                    Path('folder' + png.suffix),
+                    Path('folder' + jpg.suffix),
+                    Path('folder' + gif.suffix)
+                ),
+                Path('folder' + jpg.suffix),
+                id='folder' + jpg.suffix
+            ),
+            pytest.param
+            (
+                png,
+                (
+                    Path('folder' + png.suffix),
+                    Path('folder' + jpg.suffix),
+                    Path('folder' + gif.suffix)
+                ),
+                Path('folder' + png.suffix),
+                id='folder' + png.suffix
+            ),
+            pytest.param
+            (
+                jpg,
+                (
+                    Path('Something-front-blarg' + png.suffix),
+                    Path('Something-front-blarg' + jpg.suffix),
+                    Path('Something-front-blarg' + gif.suffix),
+                    Path('Something (front) blarg' + png.suffix),
+                    Path('Something (front) blarg' + jpg.suffix),
+                    Path('Something (front) blarg' + gif.suffix),
+                ),
+                Path('Something (front) blarg' + jpg.suffix),
+                id='Something (front) blarg' + jpg.suffix
+            ),
+            pytest.param
+            (
+                jpg,
+                (
+                    Path('Something-front-blarg' + jpg.suffix),
+                    Path('Something (front) blarg' + '.jpeg'),
+                ),
+                Path('Something (front) blarg' + '.jpeg'),
+                id='Something (front) blarg' + '.jpeg'
+            ),
+        )
     )
-
-    @pytest.fixture(params=_LikelyCover_4_fixture_entries)
-    def _fixture_4(self, request):
-        return request.param
-
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_4_match__(self, _fixture_4):
-        image_type = _fixture_4[0]
-        files = _fixture_4[1]
+    def test_match_likely_name__match(self, ti_it, ti_paths, ti_path_match):
         is_ = ImageSearcher_LikelyCover(Path(), '', False)
-        m = is_._match_likely_name(image_type, files)
-
-        assert m == _fixture_4[2]
+        m = is_._match_likely_name(ti_it, ti_paths)
+        assert m == ti_path_match
 
     B_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
     B_Img = 'album.jpg'  # actual test file in that sub-directory
@@ -537,7 +575,7 @@ class Test_ImageSearcher_LikelyCover(object):
         assert self.B_fp.exists()
 
     @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B'])
-    def test_ImageSearcher_LikelyCover_5_nomatch_same_file_exist(self):
+    def test_match_likely_name__nomatch_same_file_exist(self):
         """Do not match actual file to itself."""
         files = (self.B_fp,)
         is_ = ImageSearcher_LikelyCover(self.B_fp, '', False)
@@ -546,7 +584,7 @@ class Test_ImageSearcher_LikelyCover(object):
         assert not m
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_5_match_same_file_notexist(self):
+    def test_match_likely_name__same_file_notexist(self):
         """Do match non-existent same file."""
         fp = Path(r'C:/THIS FILE DOES NOT EXIST 298389325 (album_cover)' +
                   jpg.suffix)
@@ -557,34 +595,32 @@ class Test_ImageSearcher_LikelyCover(object):
         assert m
         assert m.name == fp.name
 
+    @pytest.mark.parametrize('ti_path',
+        (
+            pytest.param
+            (
+                r'C:/ACDC TNT/ACDC TNT' + png.value,
+                id='C:/ACDC TNT/ACDC TNT' + png.value
+            ),
+            pytest.param
+            (
+                r'C:/Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix,
+                id='C:/Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix
+            ),
+            pytest.param
+            (
+                r'C:/Kraftwerk - Minimum Maximum/Kraftwerk' + png.suffix,
+                id='C:/Kraftwerk - Minimum Maximum/Kraftwerk' + png.suffix
+            ),
+        )
+    )
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_6_match_similar1(self):
+    def test_match_likely_name__similar_dirname_to_filename(self, ti_path):
         """Do match similar file name to similar parent directory name."""
-        fp = Path(r'C:/ACDC TNT/ACDC TNT' + png.value)
+        fp = Path(ti_path)
         files = (fp,)
         is_ = ImageSearcher_LikelyCover(fp, '', False)
         m = is_._match_likely_name(png, files)
-
-        assert m.name == fp.name
-
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_ImageSearcher_LikelyCover_6_match_similar2(self):
-        """Do match similar file name to similar parent directory name."""
-        fp = Path(r'C:/Kraftwerk - Minimum Maximum/Minimum Maximum' +
-                  gif.suffix)
-        files = (fp,)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        m = is_._match_likely_name(gif, files)
-
-        assert m.name == fp.name
-
-    def test_ImageSearcher_LikelyCover_6_match_similar3(self):
-        """Do match similar file name to similar parent directory name."""
-        fp = Path(r'C:/Kraftwerk - Minimum Maximum/Kraftwerk' + png.suffix)
-        files = (fp,)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        m = is_._match_likely_name(png, files)
-
         assert m.name == fp.name
 
 
@@ -656,6 +692,10 @@ class Test_ImageSearcher_GoogleCSE(object):
     _6_testfile = Path(tempfile.gettempdir(), tempfile.gettempprefix() +
                        __qualname__)
 
+    #
+    # create a finalizer fixture to remove test file after test runs
+    #
+
     def _6_rm_testfile(self):
         try:
             os.remove(self._6_testfile)
@@ -686,6 +726,33 @@ class Test_ImageSearcher_GoogleCSE(object):
     # TODO: XXX: need tests for other ImageSearcher classes
 
 
+class Test_complex_funcs(object):
+
+    def test_process_dir_ValueError(self):
+        """image_path is not child of dirp so raise ValueError"""
+        dirp = Path('/')
+        image_path = dirp.joinpath('foo', 'bar')
+        with pytest.raises(ValueError):
+            process_dir(dirp, image_path, False, queue.SimpleQueue(), [])
+
+    @pytest.mark.parametrize('ti_dirp, ti_image_path',
+        (
+            pytest.param(join_test_rp('test_process_dir_1_empty'),
+                         join_test_rp('test_process_dir_1_empty', 'not exist.jpg'),
+                         id='test_process_dir_1_empty'),
+        )
+    )
+    def test_process_dir(self, ti_dirp, ti_image_path):
+        daa_list = []
+        sq = queue.SimpleQueue()
+        process_dir(ti_dirp, ti_image_path, False, sq, daa_list)
+        assert not daa_list
+        assert sq.empty()
+
+    # TODO: add testing of process_dir that exercises more code
+    #       need to add test "album" directories
+
+
 class Test_media(object):
 
     @pytest.mark.parametrize('ti_fname, ti_ar, ti_al',
@@ -698,6 +765,11 @@ class Test_media(object):
             pytest.param('ID3v2 artist album.mp3', 'my artist', 'my album', id='mp3 ID3v2 "my artist" "my album"'),
             pytest.param('ID3v1 albumartist album.mp3', 'my albumartist', 'my album', id='mp3 ID3v1 "my artist" "my album"'),
             pytest.param('_.mp3', '', '', id='mp3 no ID'),
+            # m4a
+            pytest.param('_.m4a', '', '', id='m4a "" ""'),
+            pytest.param('artist.m4a', 'my artist', '', id='m4a "my artist" ""'),
+            pytest.param('album.m4a', '', 'my album', id='m4a "" "my album"'),
+            pytest.param('artist album.m4a', 'my artist', 'my album', id='m4a "my artist" "my album"'),
             # ogg
             pytest.param('_.ogg', '', '', id='ogg "" ""'),
             pytest.param('artist.ogg', 'my artist', '', id='ogg "my artist" ""'),

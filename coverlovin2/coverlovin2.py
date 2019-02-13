@@ -256,16 +256,22 @@ def get_artist_album_mp3(ffp: Path) -> typing.Tuple[Artist, Album]:
         artist = media['artist'][0]
     except KeyError:
         pass
+    except IndexError:
+        pass
     try:
         if not artist:
             artist = media['albumartist'][0]
     except KeyError:
+        pass
+    except IndexError:
         pass
 
     album = ''
     try:
         album = media['album'][0]
     except KeyError:
+        pass
+    except IndexError:
         pass
 
     return Artist(artist), Album(album)
@@ -284,11 +290,15 @@ def get_artist_album_mp4(ffp: Path) -> typing.Tuple[Artist, Album]:
         artist = media['artist'][0]
     except KeyError:
         pass
+    except IndexError:
+        pass
 
     album = ''
     try:
         album = media['album'][0]
     except KeyError:
+        pass
+    except IndexError:
         pass
 
     return Artist(artist), Album(album)
@@ -306,11 +316,15 @@ def get_artist_album_flac(ffp: Path) -> typing.Tuple[Artist, Album]:
         artist = media['ARTIST'][0]
     except KeyError:
         pass
+    except IndexError:
+        pass
 
     album = ''
     try:
         album = media['ALBUM'][0]
     except KeyError:
+        pass
+    except IndexError:
         pass
 
     return Artist(artist), Album(album)
@@ -1082,9 +1096,9 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
         log.error('path is not a directory: "%s"', dirp)
         return daa_list
 
-    assert dirp == image_path.parent, 'Expected directory and ' \
-                                      'image_path to be related "%s" ≠ "%s"' \
-                                      % (dirp, image_path)
+    if not dirp == image_path.parent:
+        raise ValueError('Expected directory and image_path to be related'
+                         ' "%s" ≠ "%s"' % (dirp, image_path))
 
     # read dirp directory contents
     try:
