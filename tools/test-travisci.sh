@@ -48,7 +48,7 @@ coverage erase
 #
 # method 3:
 # call codecov at the end, see https://github.com/codecov/example-python#overview
-coverage run "--rcfile=${COVERAGE_RC}" -m pytest ./coverlovin2/test/
+coverage run "--rcfile=${COVERAGE_RC}" -m pytest -v ./coverlovin2/test/
 coverage xml "--rcfile=${COVERAGE_RC}" -o "${COVERAGE_XML}"
 coverage report
 # upload to codecov.io
