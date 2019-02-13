@@ -14,7 +14,7 @@ This also makes use of inheritance decorators @overrides and @abstractmethod.
 
 __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2'
-__version__ = '0.5.1'
+__version__ = '0.5.2'  # canonical version (don't set version anywhere else)
 __doc__ = \
     """Recursively process passed directories of audio media files, attempting
  to create a missing album image file, either via local searching and
