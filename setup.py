@@ -66,7 +66,6 @@ setup(
     entry_points={
         'console_scripts': [
             'coverlovin2=coverlovin2:main',
-            #'coverlovin2=coverlovin2.coverlovin2:main',
         ],
     },
     project_urls={  # Optional
