@@ -5,9 +5,9 @@ CoverLovin2
 [![codecov](https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graph/badge.svg)](https://codecov.io/gh/jtmoon79/coverlovin2)
 <a href="https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graphs/icicle.svg?token=GY2WtpIZ49" data-canonical-src="https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graphs/icicle.svg?token=GY2WtpIZ49"><img src="https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graphs/icicle.svg?token=GY2WtpIZ49" data-canonical-src="https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graphs/icicle.svg?token=GY2WtpIZ49" width="100" height="20" /></a>
 
-*coverlovin2* (Cover Loving!) is a Python script for automating downloading
-album cover art images.  A common use-case is creating a "folder.jpg" file for a
-collection of ripped Compact Disc albums.
+*CoverLovin2* (Cover Loving!), python name *coverlovin2*, is a Python script for
+automating downloading album cover art images.  A common use-case is creating a
+"folder.jpg" file for a collection of ripped Compact Disc albums.
 
 coverlovin2 can only be run by python version 3.7 (or greater).
 
