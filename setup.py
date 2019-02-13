@@ -32,7 +32,7 @@ setup(
                 ' album cover art.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    license='Creative Commons Attribution-ShareAlike 3.0 United States License',
+    license='Apache License 2.0 (Apache-2.0)',
     install_requires=[
         'musicbrainzngs == 0.6',
         'mutagen == 1.42.0',
