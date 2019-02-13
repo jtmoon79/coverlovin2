@@ -19,12 +19,15 @@ set -x
 # uninstall any previous install (must be done outside the project directory)
 cd ..
 python -m pip uninstall --yes coverlovin2
-rm -rf -- ./dist/ ./CoverLovin2.egg-info/
+# remove previous build artifacts
+rm -rfv ./dist/ ./CoverLovin2.egg-info/
 
 # build using wheels
 cd -
 version=$(python -B -c 'from coverlovin2 import coverlovin2 as c2;print(c2.__version__)')
 python setup.py bdist_wheel
+# note the contents of dist
+ls -l ./dist/
 
 # install the wheel (must be done outside the project directory)
 cd ..
