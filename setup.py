@@ -24,7 +24,7 @@ with open(os.path.join(__here, 'README.md'), encoding='utf-8') as f_:
     long_description = f_.read()
 
 setup(
-    name='CoverLovin2',
+    name='coverlovin2',
     version=__version__,
     author=__author__,
     url=__url__,
