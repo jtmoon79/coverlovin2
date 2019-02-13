@@ -16,14 +16,14 @@ Script Usage
 
     usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-sl]
                           [-sm] [-sg] [-s {small,medium,large}] [--gid GID]
-                          [--gkey GKEY] [-r REFERER] [-d] [--test-only]
+                          [--gkey GKEY] [-v] [-r REFERER] [-d] [--test-only]
                           DIRS [DIRS ...]
     
     Given a list of directories, DIRS, recursively identify "album" directories.
     "Album" directories have audio files, e.g. files with extensions like .mp3 or
     .flac.  For each "album" directory, attempt to determine the Artist and Album.
     Then find an album image file using the requested --search providers.  If an
-    album image file is found then write it to IMAGE_NAME.TYPE within each
+    album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
     "album" directory.
     
     A common use-case would be creating a "folder.jpg" file for a collection of
@@ -39,14 +39,14 @@ Script Usage
     
     Recommended:
       -n IMAGE_NAME, --image-name IMAGE_NAME
-                            cover image file name. This is the file name that will
-                            be created within passed DIRS. This will be appended
-                            with the preferred image TYPE, e.g. "jpg", "png", etc.
-                            (default: "cover")
+                            cover image file name IMAGE_NAME. This is the file
+                            name that will be created within passed DIRS. This
+                            will be appended with the preferred image TYPE, e.g.
+                            "jpg", "png", etc. (default: "cover")
       -i {jpg,png,gif}, --image-type {jpg,png,gif}
-                            image format TYPE (default: "jpg")
+                            image format IMAGE_TYPE (default: "jpg")
       -o, --overwrite       overwrite any previous file of the same file
-                            IMAGE_NAME and image TYPE (default: False)
+                            IMAGE_NAME and IMAGE_TYPE (default: False)
     
     Search all:
       -s*, --search-all     Search for album images using all methods and services
@@ -54,22 +54,21 @@ Script Usage
     Search the local directory for likely album cover images:
       -sl, --search-likely-cover
                             For any directory with audio media files but no file
-                            "NAME.TYPE", search the directory for files that are
-                            likely album cover images. For example, given options:
-                            --name "cover" --type "jpg", and a directory of .mp3
-                            files with a file "album.jpg", it is reasonable to
-                            guess "album.jpg" is a an album cover image file. So
-                            copy file "album.jpg" to "cover.jpg" . This will skip
-                            an internet image lookup and download and could be a
-                            more reliable way to retrieve the correct image.
-                            (default: False)
+                            "IMAGE_NAME.IMAGE_TYPE", search the directory for
+                            files that are likely album cover images. For example,
+                            given options: --name "cover" --type "jpg", and a
+                            directory of .mp3 files with a file "album.jpg", it is
+                            reasonable to guess "album.jpg" is a an album cover
+                            image file. So copy file "album.jpg" to "cover.jpg" .
+                            This will skip an internet image lookup and download
+                            and could be a more reliable way to retrieve the
+                            correct image. (default: False)
     
     Search Musicbrainz NGS webservice:
       -sm, --search-musicbrainz
                             Search for album images using musicbrainz NGS
-                            webservice. Requires python module musicbrainzngs. See
-                            https://musicbrainz.org/doc/Developer_Resources
-                            MusicBrainz lookup is the most reliable search method.
+                            webservice. MusicBrainz lookup is the most reliable
+                            search method.
     
     Search Google Custom Search Engine (CSE):
       -sg, --search-googlecse
@@ -90,6 +89,7 @@ Script Usage
                             use Google CSE.
     
     Debugging and Miscellanea:
+      -v, --version         show program's version number and exit
       -r REFERER, --referer REFERER
                             Referer url used in HTTP GET requests (default:
                             "https://github.com/jtmoon79/coverlovin2")
@@ -98,8 +98,10 @@ Script Usage
     
     This program attempts to create album cover image files for the passed DIRS.  It
     does this several ways, searching for album cover image files already present in
-    the directory.  If not found, it attempts to figure out the Artist and Album for
-    that directory then searches online services for an album cover image.
+    the directory (-sl).  If not found, it attempts to figure out the Artist and
+    Album for that directory then searches online services for an album cover image
+    (-sm or -sg).
+    
     Directories are searched recursively.  Any directory that contains one or more
     with file name extension .mp3 or .m4a or .mp4 or .flac or .ogg or .wma or .asf
     is presumed to be an album directory.  Given a directory of such files, file
@@ -108,11 +110,17 @@ Script Usage
     reasonable guess will be made about the Artist and Album based on the directory
     name; specifically this will try to match a directory name with a pattern like
     "Artist - Year - Album" or "Artist - Album".
+    From there, online search services are used to search for the required album
+    cover image. If found, it is written to the album directory to file name
+    IMAGE_NAME.IMAGE_TYPE (-n ▒ -i ▒).
     
     If option --search-googlecse is chosen then you must create your Google Custom
     Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
     takes about 5 minutes.  This is where your own values for --gid and --gkey can
-    be created.
+    be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
+    under the "Custom Search JSON API" from which you can generate an API Key (URI
+    parameter "key"). A key can be generated at
+    https://console.developers.google.com/apis/credentials.
     Google CSE settings must have "Image search" as "ON"  and "Search the entire
     web" as "OFF".
     
@@ -174,7 +182,6 @@ current form in Python 3.7, it feels clumsy and can be difficult to grok. Also,
 PyCharm and mypy seem to catch different type-hint warnings. 
 
 #### run phases
-
 
 coverlovin2 runs in a few phases:
 
