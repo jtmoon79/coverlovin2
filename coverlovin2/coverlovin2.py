@@ -14,6 +14,8 @@ This also makes use of inheritance decorators @overrides and @abstractmethod.
 
 __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2'
+__url_source__ = __url__
+__url_project__ = 'https://pypi.org/project/CoverLovin2/'
 __version__ = '0.5.2'  # canonical version (don't set version anywhere else)
 __doc__ = \
     """Recursively process passed directories of audio media files, attempting
@@ -1372,15 +1374,16 @@ def parse_args_opts():
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter)
     parser.description = '''\
+This Python-based program is for automating downloading album cover art images.
+A common use-case is creating a "folder.jpg" file for a collection of ripped
+Compact Disc albums.
+
 Given a list of directories, DIRS, recursively identify "album" directories.
 "Album" directories have audio files, e.g. files with extensions like .mp3 or
 .flac.  For each "album" directory, attempt to determine the Artist and Album.
 Then find an album image file using the requested --search providers.  If an
 album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
 "album" directory.
-
-A common use-case would be creating a "folder.jpg" file for a collection of
-ripped Compact Disc albums.
 
 Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
 
@@ -1513,7 +1516,10 @@ https://console.developers.google.com/apis/credentials.
 Google CSE settings must have "Image search" as "ON"  and "Search the entire
 web" as "OFF".
 
-Inspired by the program coverlovin.'''
+PyPi project: %s
+Source code: %s
+
+Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
 
     args = parser.parse_args()
 

@@ -19,15 +19,16 @@ Script Usage
                           [--gkey GKEY] [-v] [-r REFERER] [-d] [--test-only]
                           DIRS [DIRS ...]
     
+    This Python-based program is for automating downloading album cover art images.
+    A common use-case is creating a "folder.jpg" file for a collection of ripped
+    Compact Disc albums.
+    
     Given a list of directories, DIRS, recursively identify "album" directories.
     "Album" directories have audio files, e.g. files with extensions like .mp3 or
     .flac.  For each "album" directory, attempt to determine the Artist and Album.
     Then find an album image file using the requested --search providers.  If an
     album image file is found then write it to IMAGE_NAME.IMAGE_TYPE within each
     "album" directory.
-    
-    A common use-case would be creating a "folder.jpg" file for a collection of
-    ripped Compact Disc albums.
     
     Audio files supported are .mp3, .m4a, .mp4, .flac, .ogg, .wma, .asf.
     
@@ -112,7 +113,7 @@ Script Usage
     "Artist - Year - Album" or "Artist - Album".
     From there, online search services are used to search for the required album
     cover image. If found, it is written to the album directory to file name
-    IMAGE_NAME.IMAGE_TYPE (-n ▒ -i ▒).
+    IMAGE_NAME.IMAGE_TYPE (-n … -i …).
     
     If option --search-googlecse is chosen then you must create your Google Custom
     Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
@@ -123,6 +124,9 @@ Script Usage
     https://console.developers.google.com/apis/credentials.
     Google CSE settings must have "Image search" as "ON"  and "Search the entire
     web" as "OFF".
+    
+    PyPi project: https://pypi.org/project/CoverLovin2/
+    Source code: https://github.com/jtmoon79/coverlovin2
     
     Inspired by the program coverlovin.
 
