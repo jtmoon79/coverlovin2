@@ -133,25 +133,16 @@ Script Usage
 Installation
 ------------
 
+* Using `pip` from pypi:
+
+      pip install coverlovin2
+
 * Using `pip` from source:
   
       pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
-* Within a python virtual environment using `pipenv`:
-
-      pipenv --python 3.7 shell
-      pipenv install https://github.com/jtmoon79/coverlovin2/archive/master.zip
-
-*coverlovin2* uses non-standard libraries [mutagen](https://pypi.org/project/mutagen/)
+*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/)
 and [musicbrainzngs](https://pypi.org/project/musicbrainzngs/).
-
-* To manually install dependencies using `pipenv`:
-
-      pipenv --python 3.7 install Pipfile
-
-  or with `pip`:
-
-      pip install Pipfile
 
 Development
 -----------
@@ -177,8 +168,8 @@ coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
 coverlovin2 could be used as a module.
 
-coverlovin2 is also for sake of the author learning more about recent changes
-in the Python Universe.
+coverlovin2 is a practice project for sake of the author learning more about
+recent changes in the Python Universe.
 
 coverlovin2 is very type-hinted code and could be even more so. The author
 thinks type-hinting is a good idea but it still needs improvement. In it's
@@ -196,5 +187,6 @@ directory merely holds audio files of type `.mp3`, `.m4a`, `.mp4`, `.flac`,
 directory.  The most reliable technique is to read available embedded audio tags
 within the directory. (see [`coverlovin2/coverlovin2.py::process_dir`](./coverlovin2/coverlovin2.py))
 3. using user-passed search options, search for the album cover art image file.
-4. if found, create that image file into the "album" directory. The name and
-type of image (`.jpg`, `.png`, `.gif`) is based on user-passed options.
+4. if album cover art is found, create that image file into the "album"
+directory. The name and type of image (`.jpg`, `.png`, `.gif`) is based on
+user-passed options for the `IMAGE_NAME` and `IMAGE_TYPE`.
