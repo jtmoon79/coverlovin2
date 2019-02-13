@@ -128,7 +128,7 @@ Installation
 * Within a python virtual environment using `pipenv`:
 
       pipenv --python 3.7 shell
-      pipenv --python 3.7 install https://github.com/jtmoon79/coverlovin2/archive/master.zip
+      pipenv install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* uses non-standard libraries [mutagen](https://pypi.org/project/mutagen/)
 and [musicbrainzngs](https://pypi.org/project/musicbrainzngs/).
