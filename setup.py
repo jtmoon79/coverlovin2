@@ -57,20 +57,6 @@ setup(
     packages=find_packages(
         exclude=[
             'coverlovin2/test/',
-            #'Pipfile',
-            #'Pipfile.lock'
-            # the following should match .gitignore
-            #'.idea/',
-            #'.vscode/',
-            #'.mypy_cache/',
-            #'.pytest_cache/',
-            #'build/',
-            #'dist/',
-            #'CoverLovin2.egg-info/',
-            #'htmlcov/',
-            #'.coverage',
-            #'coverage.xml',
-            #'Notes.md',
             ],
         include=[
             'coverlovin2/'
