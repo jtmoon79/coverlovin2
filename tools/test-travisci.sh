@@ -12,6 +12,16 @@ set -x
 cd "$(dirname -- "${0}")/.."
 
 python --version  # record version
+
+# for Python 3.6 fail test
+if python --version | grep -Fqe '3.6.'; then
+    if python -Bc 'from coverlovin2 import coverlovin2' &>/dev/null; then
+        echo 'ERROR: Python 3.6 should refuse to work but it worked'
+        exit 1
+    fi
+    exit 0
+fi
+
 python -B ./tools/is_venv.py  # check if virtual env, script will exit if not
 
 if ! python -m pip --version; then
