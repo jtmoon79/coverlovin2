@@ -12,9 +12,8 @@ matrix:
     dist: xenial  # currently required for Python 3.7 on Travis CI
   - name: "3.6 check version failure"
     python: "3.6"
-    os: linux
-# the executable bit is not set on scripts under tools/ , so force it
-before_script: chmod -vR +x,-w -- ./tools/
+# the executable bit is not set on scripts under `tools/`, so force it
+before_script: uname -a; lsb_release -a || true; echo; chmod -vR +x,-w -- ./tools/
 script: ./tools/test-travisci.sh
 git:
   depth: 1
