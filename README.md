@@ -169,7 +169,7 @@ coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 coverlovin2 could be used as a module.
 
 coverlovin2 is a practice project for sake of the author learning more about
-recent changes in the Python Universe.
+recent changes in the Python Universe and the github Universe.
 
 coverlovin2 is very type-hinted code and could be even more so. The author
 thinks type-hinting is a good idea but it still needs improvement. In it's
