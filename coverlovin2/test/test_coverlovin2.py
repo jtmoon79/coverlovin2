@@ -46,22 +46,18 @@ from ..coverlovin2 import get_artist_album_asf
 from ..coverlovin2 import audio_type_get_artist_album
 from ..coverlovin2 import ImageSearcher
 from ..coverlovin2 import ImageSearcher_LikelyCover
+from ..coverlovin2 import ImageSearcher_MusicBrainz
 from ..coverlovin2 import ImageSearcher_GoogleCSE
 from ..coverlovin2 import process_dir
 
 
 # all committed test resources should be under this directory
-test_resource_path = Path.joinpath(Path(__file__).parent, 'test_resources')
-
-
-def join_test_rp(*args) -> Path:
-    """join test_resource_path to any number of path additions"""
-    return Path.joinpath(test_resource_path, *args)
+resources = Path.joinpath(Path(__file__).parent, 'test_resources')
 
 
 def exists_or_skip(*args) -> typing.Tuple[Path, None]:
     """helper for easily skipping a test if path is not available"""
-    fp = join_test_rp(*args)
+    fp = resources.joinpath(*args)
     if not fp.exists():
         pytest.skip('test resource not available "%s"' % fp)
         return None
@@ -300,6 +296,7 @@ class Test_ImageSearcher(object):
         data = ImageSearcher.download_url(image_url, self.log)
         assert type(data) is bytes
 
+
 class Test_ImageSearcher_LikelyCover(object):
 
     @pytest.mark.dependency(name='init_likelyc')
@@ -351,8 +348,8 @@ class Test_ImageSearcher_LikelyCover(object):
     def test_match_likely_name__no_match(self, ti):
         fp = exists_or_skip(self.A_Dir, self.A_Mp3)
         is_ = ImageSearcher_LikelyCover(fp, '', False)
-        files = (Path.joinpath(test_resource_path, 'foo' + ti.suffix),
-                 Path.joinpath(test_resource_path, 'bar' + ti.suffix),
+        files = (Path.joinpath(resources, 'foo' + ti.suffix),
+                 Path.joinpath(resources, 'bar' + ti.suffix),
                  )
         assert not is_._match_likely_name(ti, files)
 
@@ -568,7 +565,7 @@ class Test_ImageSearcher_LikelyCover(object):
 
     B_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
     B_Img = 'album.jpg'  # actual test file in that sub-directory
-    B_fp = join_test_rp(B_Dir, B_Img)  # file path test resource .../album.jpg
+    B_fp = resources.joinpath(B_Dir, B_Img)  # file path test resource .../album.jpg
 
     @pytest.mark.dependency(name='test_res_B')
     def test_B_resources(self):
@@ -599,8 +596,8 @@ class Test_ImageSearcher_LikelyCover(object):
         (
             pytest.param
             (
-                r'C:/ACDC TNT/ACDC TNT' + png.value,
-                id='C:/ACDC TNT/ACDC TNT' + png.value
+                r'C:/ACDC TNT/ACDC TNT' + png.suffix,
+                id='C:/ACDC TNT/ACDC TNT' + png.suffix
             ),
             pytest.param
             (
@@ -637,21 +634,24 @@ class Test_ImageSearcher_GoogleCSE(object):
 
     C_Dir = 'test_ImageSearcher_GoogleCSE1'  # actual sub-directory
     C_Img = 'album.jpg'  # actual test file in that sub-directory
-    C_fp = join_test_rp(C_Dir, C_Img)
+    C_fp = resources.joinpath(C_Dir, C_Img)
     # create these once with short names
     C_sz = ImageSize.SML
-    C_testinput = test_resource_path.joinpath('googlecse-response1.json')
     C_Artist = Artist('Bob Dylan')
     C_Album = Album('Biograph (Disc 1)')
+    test_res1 = resources.joinpath('googlecse-response1.json')
+    test_res2 = resources.joinpath('googlecse-response2.json')
+    test_res3 = resources.joinpath('googlecse-response3-onlygooglecacheimage.json')
 
     @pytest.mark.dependency(name='test_res_C')
-    def test_resources_exist(self):
-        assert self.C_fp.exists()
-        assert self.C_testinput.exists()
+    @pytest.mark.parametrize('test_res', (test_res1, test_res2, test_res3))
+    def test_resources_exist(self, test_res):
+        assert test_res.exists()
 
-    def test_init(self):
+    @pytest.mark.parametrize('debug', (True, False))
+    def test_init(self, debug):
         gco = GoogleCSE_Opts('fake+key', 'fake+ID', self.C_sz)
-        ImageSearcher_GoogleCSE(gco, 'referrer!', False)
+        ImageSearcher_GoogleCSE(gco, 'referrer!', debug)
 
     def test_False(self):
         gco = GoogleCSE_Opts('', '', self.C_sz)
@@ -659,7 +659,7 @@ class Test_ImageSearcher_GoogleCSE(object):
 
     def _stub_response1(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE._search_response_json`"""
-        return open(str(Test_ImageSearcher_GoogleCSE.C_testinput))
+        return open(str(Test_ImageSearcher_GoogleCSE.test_res1))
 
     def _stub_download_url(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE.download_url`"""
@@ -684,9 +684,11 @@ class Test_ImageSearcher_GoogleCSE(object):
         assert self.C_isg.search_album_image(ti_Ar, ti_Al, ti_it) == ti_ex
 
     def _stub_response2(*args, **kwargs):
-        testinput2 = test_resource_path.joinpath(
-            'googlecse-response3-onlygooglecacheimage.json')
-        return open(str(testinput2))
+        return open(
+            str(
+                resources.joinpath(Test_ImageSearcher_GoogleCSE.test_res3)
+            )
+        )
 
     # XXX: presuming only one instance of this test runs at a time
     _6_testfile = Path(tempfile.gettempdir(), tempfile.gettempprefix() +
@@ -726,6 +728,108 @@ class Test_ImageSearcher_GoogleCSE(object):
     # TODO: XXX: need tests for other ImageSearcher classes
 
 
+
+class Test_ImageSearcher_MusicBrainz(object):
+    """
+    Test the ImageSearcher_MusicBrainz class
+    """
+
+    D_Artist = Artist('Bob Dylan')
+    D_Album = Album('Biograph (Disc 1)')
+    D_res_brg = resources.joinpath('musicbrainz-response-browse_release_groups.json')
+    D_res_br1 = resources.joinpath('musicbrainz-response-browse_releases1.json')
+    D_res_br2 = resources.joinpath('musicbrainz-response-browse_releases2.json')
+    D_res_gil = resources.joinpath('musicbrainz-response-get_image_list.json')
+    D_res_grgil = resources.joinpath('musicbrainz-response-get_release_group_image_list.json')
+    D_res_sa = resources.joinpath('musicbrainz-response-search_artists.json')
+
+    @pytest.mark.dependency(name='test_res_C')
+    @pytest.mark.parametrize('test_res_path',
+        (
+            D_res_brg,
+            D_res_br1,
+            D_res_br2,
+            D_res_gil,
+            D_res_grgil,
+            D_res_sa
+        )
+    )
+    def test_resources_exist(self, test_res_path):
+        assert test_res_path.exists()
+
+    @pytest.mark.parametrize('debug', (True, False))
+    def test_init(self, debug):
+        ImageSearcher_MusicBrainz('hello', debug)
+
+    def test_search_album_image_no_Artist_no_Album(self):
+        ismb = ImageSearcher_MusicBrainz('hello', False)
+        assert not ismb.search_album_image(Artist(''), Album(''),  None)
+
+    @pytest.mark.parametrize('sa_ret, br_ret',
+        (
+            pytest.param(None, None, id='None'),
+            pytest.param([], None, id='[]'),
+            pytest.param({}, None, id='{}'),
+            pytest.param({'a': 'A'}, None, id='{"a":"A"}'),
+            pytest.param({'a': 'A', 'b': 'B'}, None, id='{"a":"A",…}'),
+            pytest.param(
+                {
+                    'artist-list': [
+                        'foo',
+                    ]
+                },
+                None,
+                id='artist-list: "foo"'
+            ),
+            pytest.param(
+                {
+                    'artist-list': [
+                        'foo',
+                        'bar',
+                    ]
+                },
+                None,
+                id='artist-list: "foo" "bar"'
+            ),
+            pytest.param(
+                {
+                    'artist-list': [
+                        {'a': 'A'},
+                        {'b': 'B'},
+                    ]
+                },
+                None,
+                id='artist-list: "a:A" "b:B"'
+            ),
+            pytest.param(
+                {
+                    'artist-list': [
+                        {'a': 'A',
+                         'id': 'id of a'},
+                        {'b': 'B',
+                         'id': 'id of b'},
+                    ]
+                },
+                None,
+                id='artist-list: "a:A" "b:B" with "id"'
+            ),
+            # TODO: add more test cases that exercise more of the function
+            #       at this point, add values for br_ret
+        )
+    )
+    def test_search_album_image(self, sa_ret, br_ret):
+        ismb = ImageSearcher_MusicBrainz('hello', False)
+        def _stub_search_artists(*args, **kwargs):
+            return sa_ret
+        def _stub_browse_releases(*args, **kwargs):
+            return br_ret
+        ismb._search_artists = _stub_search_artists
+        ismb._browse_releases = _stub_browse_releases
+        assert not ismb.search_album_image(self.D_Artist, self.D_Album, None)
+
+    # TODO: test remaining functions of ImageSearcher_MusicBrainz
+
+
 class Test_complex_funcs(object):
 
     def test_process_dir_ValueError(self):
@@ -737,8 +841,9 @@ class Test_complex_funcs(object):
 
     @pytest.mark.parametrize('ti_dirp, ti_image_path',
         (
-            pytest.param(join_test_rp('test_process_dir_1_empty'),
-                         join_test_rp('test_process_dir_1_empty', 'not exist.jpg'),
+            pytest.param(resources.joinpath('test_process_dir_1_empty'),
+                         resources.joinpath('test_process_dir_1_empty',
+                                            'not exist.jpg'),
                          id='test_process_dir_1_empty'),
         )
     )

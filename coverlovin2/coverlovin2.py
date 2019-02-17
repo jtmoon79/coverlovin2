@@ -917,6 +917,17 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
 class ImageSearcher_MusicBrainz(ImageSearcher):
     NAME = __qualname__
 
+    def _search_artists(self, mb, artist: Artist) -> dict:
+        """extract this function call to allow for pytest stubbing"""
+        self._log.debug('· mb.search_artists(query="%s", limit=1)', artist)
+        return mb.search_artists(query=artist, limit=1)
+
+    def _browse_releases(self, mb, artist_id: str) -> dict:
+        """extract this function call to allow for pytest stubbing"""
+        self._log.debug('· mb.browse_releases(artist="%s", limit=500)',
+                        artist_id)
+        return mb.browse_releases(artist=artist_id, limit=500)
+
     @overrides(ImageSearcher)
     def search_album_image(self, artist: Artist, album: Album,
                         _: ImageType) -> bool:
@@ -949,8 +960,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         #     non-official and may change at any time
         # as of musicbrainzngs==0.6
         mb.set_format(fmt='xml')
-        self._log.debug('· mb.search_artists(query="%s", limit=1)', artist)
-        artist_list = mb.search_artists(query=artist, limit=1)
+        artist_list = self._search_artists(mb, artist)
 
         # verify results exist before attempting to use them
         if not artist_list:
@@ -970,7 +980,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
             return False
         if 'id' not in artist_list['artist-list'][0]:
             self._log.debug('search_artists("%s")["artist-list"] results do not'
-                            'include an artist "id"', artist)
+                            ' include an artist "id"', artist)
             return False
         # pick the first artist id from the list, this is most likely the
         # correct matching artist
@@ -986,9 +996,21 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         # packaging variations, media types (CD, cassette, etc.) and each has
         # an entry in the MusicBrainz database
         # e.g. Bob Dylan, Beatles, Pearl Jam, etc.
-        self._log.debug('· mb.browse_releases(artist="%s", limit=500)',
-                        artist_id)
-        releases = mb.browse_releases(artist=artist_id, limit=500)
+        releases = self._browse_releases(mb, artist_id)
+        # verify before attempting to use releases
+        if not releases:
+            self._log.debug('browse_releases("%s") returned nothing',
+                            artist_id)
+            return False
+        if type(releases) is not dict:
+            self._log.debug('browse_releases("%s") returned unexpected type %s',
+                            artist_id, type(releases))
+            return False
+        if 'release-list' not in releases:
+            self._log.debug('browse_releases("%s") results do not include a '
+                            '"release-list" entry', artist_id)
+            return False
+
         possible = list(
             filter(lambda rle: similar(rle['title'], album) >= 0.4,
                    releases['release-list'])
@@ -1034,7 +1056,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
             image_list.update(mb.get_release_group_image_list(album_id))
         except musicbrainzngs.musicbrainz.ResponseError:
             pass
-        
+
         # do this once
         dmsg = 'for %s MusicBrainz album  ID "%s"' % (str_AA(artist, album),
                                                       album_id)
