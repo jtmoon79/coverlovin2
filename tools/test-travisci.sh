@@ -19,6 +19,7 @@ if python --version | grep -Fqe '3.6.'; then
         echo 'ERROR: Python 3.6 should refuse to work but it worked'
         exit 1
     fi
+    echo 'Python 3.6 successfully failed' >&2
     exit 0
 fi
 
