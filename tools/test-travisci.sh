@@ -11,6 +11,9 @@ set -x
 
 cd "$(dirname -- "${0}")/.."
 
+# log some things about this environment
+uname -a
+lsb_release -a || true
 python --version  # record version
 
 # for Python 3.6 fail test
