@@ -44,6 +44,7 @@ import shutil  # copy2
 import difflib  # SequenceMatcher
 import collections  # defaultdict
 import abc  # ABC, abstractmethod
+import io  # BytesIO
 # threading stuff
 import threading
 import queue  # Queue, SimpleQueue Empty
@@ -157,6 +158,19 @@ class ImageType(enum.Enum):
     @staticmethod
     def list() -> typing.List:
         return [it.value for it in ImageType]
+
+    @staticmethod
+    def ImageFromFormat(fmt: str):
+        """from PIL.Image.format string to corresponding ImageType instance
+        return None if none found"""
+        fmt = fmt.lower()
+        if fmt == 'jpeg':  # this darn special case!
+            return ImageType.JPG
+        try:
+            ImageType(fmt)
+        except ValueError:
+            return None
+        return ImageType(fmt)
 
 
 def overrides(interface_class):
@@ -584,6 +598,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         This function makes no changes to the class instance.
 
+        :param image_type: ImageType to look for
         :param files: sequence of Paths. Each .name is checked against some re
                       patterns to see if it is likely an album cover file name.
                       e.g. 'album cover.jpg' or
@@ -591,8 +606,6 @@ class ImageSearcher_LikelyCover(ImageSearcher):
                       would match one of the patterns. One of those file Paths
                       would be returned. See the order of matches in this
                       function to see how matches are ranked.
-        :param re_suffix: regular expression ready image file suffix
-                          e.g. '\\.jp[e]?g' or '\\.png'
         :return Path: the most likely candidate Path that is an album cover
                       image
                       if no good candidate files then return None
@@ -808,6 +821,118 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         self.result_message = '%s copied "%s" to "%s"' % \
                                (self.NAME, self.copy_src, self.copy_dst)
+        self._log.debug(self.result_message)
+
+        return True
+
+
+class ImageSearcher_EmbeddedMedia(ImageSearcher):
+    """
+    ImageSearcher that searches the media files for an embedded image.
+    """
+    NAME = __qualname__
+
+    def __init__(self, image_path: Path, referer: str, debug: bool):
+        self.copy_dst = image_path
+        self._image = None
+        self._image_src = None
+        self._image_type = None
+        super().__init__(referer, debug)
+
+    @overrides(ImageSearcher)
+    def search_album_image(self, _1: Artist, _2: Album, image_type: ImageType) \
+            -> bool:
+        """
+        Search `self.copy_dst.parent` for an audio media file that contains
+        an embedded album cover image
+        """
+        self._log.debug('search_album_image(…) self.copy_dst="%s"',
+                        self.copy_dst)
+
+        media_files = []
+        try:
+            for fp in self.copy_dst.parent.iterdir():  # 'fp' means file path
+                if fp.suffix.lower() in AUDIO_TYPES:
+                    media_files.append(fp)
+        except OSError as ose:
+            self._log.exception(ose)
+
+        if not media_files:
+            return False
+
+        # for media files, try to extract an embedded image bytes, constitute
+        # the bytes with a PIL.Image class instance, store that as `self._image`
+        # help from https://stackoverflow.com/a/54773705/471376
+        from mutagen.id3 import ID3
+        from PIL import Image
+        key_apic = 'APIC:'
+        for fp in media_files:
+            try:
+                media = ID3(fp)
+            except:  # XXX: most likely will be ID3NoHeaderError
+                continue
+            if key_apic not in media:
+                continue
+            apic = media.get(key_apic)
+            image_data = apic.data
+            try:
+                image = Image.open(io.BytesIO(image_data))
+            except:
+                continue
+            # the PIL.Image will later be PIL.Image.save to the
+            # self._image_type type (i.e. it will be format converted by the PIL
+            # module)
+            self._image_type = ImageType.ImageFromFormat(image.format)
+            if not self._image_type:
+                continue
+            self._image = image
+            self._image.size_pixels = image.height * image.width
+            self._image_src = fp
+            return True
+
+        return False
+
+    class WrongUseError(Exception):
+        pass
+
+    @overrides(ImageSearcher)
+    def write_album_image(self, _: Path, overwrite: bool, test: bool) \
+            -> bool:
+        """
+        extract embedded image from `self._image`.
+
+        :param _: image_path but is not used by this function override
+        :param overwrite: if (overwrite and file exists) then write new file
+                          else return
+        :param test: if test do not actually write anything
+        """
+        self._log.debug('write_album_image(…)')
+
+        if not self._image:
+            raise self.WrongUseError('self._image is not set, must call'
+                                     ' search_album_image before calling'
+                                     ' write_album_image')
+        if not self._image_type:
+            raise ValueError('self._image_type not set, something is wrong')
+
+        if self.copy_dst.exists() and not overwrite:
+            self._log.info('file already exists and --overwrite not enabled;'
+                           ' skipping "%s"', self.copy_dst)
+            return False
+
+        if test:
+            self.result_message = '(--test-only) %s extracted %d pixels from' \
+                                  ' "%s", wrote to "%s"' \
+                                  % (self.NAME, self._image.size_pixels,
+                                     self._image_src, self.copy_dst)
+            self._log.debug(self.result_message)
+            return True
+
+        self._image.save(self.copy_dst, self._image_type.value.upper())
+
+        self.result_message = '%s extracted %d pixels from "%s", wrote to "%s"'\
+                              % (self.NAME, self._image.size_pixels,
+                                 self._image_src, self.copy_dst)
         self._log.debug(self.result_message)
 
         return True
@@ -1311,10 +1436,13 @@ def search_create_image(image_path: Path, artist: Artist, album: Album,
 
     # TODO: Have order of requested searchers matter. Search in order of passed
     #       script options.
-    search_likely, search_musicbrainz, search_googlecse = searches
+    search_likely, search_embedded, search_musicbrainz, search_googlecse \
+        = searches
     searchers = (
         ImageSearcher_LikelyCover(image_path, referer, debug)
             if search_likely else None,
+        ImageSearcher_EmbeddedMedia(image_path, referer, debug)
+        if search_embedded else None,
         ImageSearcher_MusicBrainz(referer, debug)
             if search_musicbrainz else None,
         ImageSearcher_GoogleCSE(googlecse_opts, referer, debug)
@@ -1370,7 +1498,8 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 image_path,
                 image_type,
                 image_name,
-                (search_likely, search_musicbrainz, search_googlecse),
+                (search_likely, search_embedded, search_musicbrainz,
+                 search_googlecse),
                 googlecse_opts,
                 referer,
                 overwrite,
@@ -1389,7 +1518,8 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 album,
                 image_type,
                 image_name,
-                (search_likely, search_musicbrainz, search_googlecse),
+                (search_likely, search_embedded, search_musicbrainz,
+                 search_googlecse),
                 googlecse_opts,
                 referer,
                 overwrite,
@@ -1468,7 +1598,15 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' copy file "album.jpg" to "cover.jpg" . This will'
                            ' skip an internet image lookup and download and'
                            ' could be a more reliable way to retrieve the'
-                           ' correct album cover image. (default: %(default)s)')
+                           ' correct album cover image.')
+
+    argg = parser.add_argument_group('Search the local directory for an'
+                                     ' embedded album cover image')
+    argg.add_argument('-se', '--search-embedded', dest='search_embedded',
+                      action='store_true', default=False,
+                      help='Search audio media files for embedded images. If'
+                           ' found, attempt to extract the embedded image.'
+                     )
 
     argg = parser.add_argument_group('Search Musicbrainz NGS webservice')
     argg.add_argument('-sm', '--search-musicbrainz', dest='search_musicbrainz',
@@ -1561,11 +1699,12 @@ Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
 
     if args.search_all:
         args.search_likely = True
+        args.search_embedded = True
         args.search_musicbrainz = True
         args.search_googlecse = True
 
     if not (args.search_likely or args.search_musicbrainz
-            or args.search_googlecse):
+            or args.search_googlecse or args.search_embedded):
         parser.error('no selected search method. Select a search, e.g. -sl or '
                      '--search-musicbrainz or -s*')
 
@@ -1590,6 +1729,7 @@ Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
 
     return args.dirs[0], ImageType(args.image_type), args.image_name, \
            args.search_likely, \
+           args.search_embedded, \
            args.search_musicbrainz, \
            args.search_googlecse, \
            GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
@@ -1603,6 +1743,7 @@ def main():
     """
     dirs, image_type, image_name, \
     search_likely, \
+    search_embedded, \
     search_musicbrainz, \
     search_googlecse, googlecse_opts, \
     overwrite, referer, debug, test \
@@ -1635,7 +1776,8 @@ def main():
                 image_path,
                 image_type,
                 image_name,
-                (search_likely, search_musicbrainz, search_googlecse),
+                (search_likely, search_embedded, search_musicbrainz,
+                 search_googlecse),
                 googlecse_opts,
                 referer,
                 overwrite,

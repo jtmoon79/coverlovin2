@@ -46,6 +46,7 @@ from ..coverlovin2 import get_artist_album_asf
 from ..coverlovin2 import audio_type_get_artist_album
 from ..coverlovin2 import ImageSearcher
 from ..coverlovin2 import ImageSearcher_LikelyCover
+from ..coverlovin2 import ImageSearcher_EmbeddedMedia
 from ..coverlovin2 import ImageSearcher_MusicBrainz
 from ..coverlovin2 import ImageSearcher_GoogleCSE
 from ..coverlovin2 import process_dir
@@ -304,7 +305,7 @@ class Test_ImageSearcher_LikelyCover(object):
         ImageSearcher_LikelyCover(Path(''), '', False)
 
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_LikelyCover_WrongUseError(self):
+    def test_WrongUseError(self):
         is_ = ImageSearcher_LikelyCover(Path(''), '', False)
         with pytest.raises(ImageSearcher_LikelyCover.WrongUseError):
             is_.write_album_image(Path(''), True, True)
@@ -623,6 +624,89 @@ class Test_ImageSearcher_LikelyCover(object):
 
 C_Artist = Artist('Bob Dylan')
 C_Album = Album('Biograph (Disc 1)')
+
+
+
+class Test_ImageSearcher_EmbeddedMedia(object):
+    """
+    Test the ImageSearcher_EmbeddedMedia class
+    """
+
+    E_Artist = Artist('my artist')
+    E_Album = Album('my album')
+    E_testdir1 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia1')
+    E_imagepath1 = Path.joinpath(E_testdir1, 'cover.jpg')
+    E_testdir2 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia2')
+    E_imagepath2 = Path.joinpath(E_testdir2, 'cover.jpg')
+    E_testdir3j = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 JPG')
+    E_imagepath3j = Path.joinpath(E_testdir3j, 'cover.jpg')
+    E_testdir3p = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 PNG')
+    E_imagepath3p = Path.joinpath(E_testdir3p, 'cover.png')
+    E_testdir4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia4 PNG multiple')
+    E_imagepath4 = Path.joinpath(E_testdir4, 'cover.png')
+
+    # @pytest.mark.dependency(name='test_res_E')
+    # @pytest.mark.parametrize('test_res_path',
+    #     (
+    #         D_res_brg,
+    #         D_res_br1,
+    #         D_res_br2,
+    #         D_res_gil,
+    #         D_res_grgil,
+    #         D_res_sa
+    #     )
+    # )
+    # def test_resources_exist(self, test_res_path):
+    #     assert test_res_path.exists()
+
+    @pytest.mark.parametrize('debug', (True, False))
+    def test_init(self, debug):
+        ImageSearcher_EmbeddedMedia(Path(), 'hello', debug)
+
+    def test_WrongUseError(self):
+        is_ = ImageSearcher_EmbeddedMedia(Path(), '', False)
+        with pytest.raises(ImageSearcher_EmbeddedMedia.WrongUseError):
+            is_.write_album_image(Path(), True, True)
+
+    def test_ValueError(self):
+        is_ = ImageSearcher_EmbeddedMedia(Path(), '', False)
+        is_._image = True
+        with pytest.raises(ValueError):
+            is_.write_album_image(Path(), True, True)
+
+    @pytest.mark.parametrize(
+        'image_path, artist, album, image_type, test_expect',
+        (
+            (E_imagepath1, E_Artist, E_Album, jpg, False),
+            (E_imagepath2, E_Artist, E_Album, jpg, False),
+            (E_imagepath3j, E_Artist, E_Album, jpg, True),
+            (E_imagepath3j, E_Artist, E_Album, png, True),
+            (E_imagepath3p, E_Artist, E_Album, png, True),
+            (E_imagepath3p, E_Artist, E_Album, jpg, True),
+            (E_imagepath4, E_Artist, E_Album, jpg, True),
+        )
+    )
+    def test_search_album_image(self, image_path, artist, album, image_type,
+                                test_expect):
+        is_ = ImageSearcher_EmbeddedMedia(image_path, '', False)
+        assert test_expect == is_.search_album_image(artist, album, image_type)
+
+    @pytest.mark.parametrize(
+        'image_path, artist, album, image_type, overwrite, test_expect',
+        (
+            (E_imagepath3j, E_Artist, E_Album, jpg, False, False),
+            (E_imagepath3j, E_Artist, E_Album, jpg, True, True),
+        )
+    )
+    def test_write_album_image(self, image_path, artist, album, image_type,
+                               overwrite, test_expect):
+        assert image_path.exists()
+        is_ = ImageSearcher_EmbeddedMedia(image_path, '', False)
+        assert is_.search_album_image(artist, album, image_type)
+        assert test_expect == is_.write_album_image(Path(), overwrite, True)
+    # LAST WORKING HERE: 2019/02/23 - this is decent basic coverage.
+    #                    what else before committing?
+
 
 
 class Test_ImageSearcher_GoogleCSE(object):
