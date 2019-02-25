@@ -746,6 +746,8 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         """
         Search `self.copy_dst.parent` for a file that is very likely an album
         cover image.
+
+        TODO: also check sub-directory .mediaartlocal for an image file
         """
         self._log.debug('search_album_image(…) self.copy_dst="%s"',
                         self.copy_dst)
@@ -1627,7 +1629,6 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' the added "Sites to search".'
                            ' The end of this help message has more advice'
                            ' around using Google CSE.'
-                           ' (default: %(default)s)'
                       )
     argg.add_argument('-s', '--gsize', dest='gsize', action='store',
                       default=gio[len(gio)-1], choices=gio,
@@ -1655,7 +1656,7 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' (default: "%(default)s")')
     argg.add_argument('-d', '--debug', dest='debug', action='store_true',
                       default=False,
-                      help='Print debug logs (default: %(default)s)')
+                      help='Print debugging messages (default: %(default)s)')
     argg.add_argument('--test-only', dest='test', action='store_true',
                       default=False,
                       help='Only test, do not write any files'
