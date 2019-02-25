@@ -15,120 +15,127 @@ coverlovin2 can only be run by python version 3.7 (or greater).
 Script Usage
 ------------
 
-    usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-sl]
-                          [-sm] [-sg] [-s {small,medium,large}] [--gid GID]
-                          [--gkey GKEY] [-v] [-r REFERER] [-d] [--test-only]
-                          DIRS [DIRS ...]
-    
-    This Python-based program is for automating downloading album cover art images.
-    A common use-case is creating a "folder.jpg" file for a collection of ripped
-    Compact Disc albums.
-    
-    Given a list of directories, DIRS, recursively identify "album" directories.
-    "Album" directories have audio files, e.g. files with extensions like .mp3 or
-    .flac.  For each "album" directory, attempt to determine the Artist and Album.
-    Then find an album cover image file using the requested --search providers.  If
-    an album cover image file is found then write it to IMAGE_NAME.IMAGE_TYPE within
-    each "album" directory.
-    
-    Audio files supported are .mp3, .m4a, .mp4, .flac, .ogg, .wma, .asf.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-    
-    Required Arguments:
-      DIRS                  directories to scan for audio files (Required)
-    
-    Recommended:
-      -n IMAGE_NAME, --image-name IMAGE_NAME
-                            cover image file name IMAGE_NAME. This is the file
-                            name that will be created within passed DIRS. This
-                            will be appended with the preferred image TYPE, e.g.
-                            "jpg", "png", etc. (default: "cover")
-      -i {jpg,png,gif}, --image-type {jpg,png,gif}
-                            image format IMAGE_TYPE (default: "jpg")
-      -o, --overwrite       overwrite any previous file of the same file
-                            IMAGE_NAME and IMAGE_TYPE (default: False)
-    
-    Search all:
-      -s*, --search-all     Search for album cover images using all methods and
-                            services
-    
-    Search the local directory for likely album cover images:
-      -sl, --search-likely-cover
-                            For any directory with audio media files but no file
-                            "IMAGE_NAME.IMAGE_TYPE", search the directory for
-                            files that are likely album cover images. For example,
-                            given options: --name "cover" --type "jpg", and a
-                            directory of .mp3 files with a file "album.jpg", it is
-                            reasonable to guess "album.jpg" is a an album cover
-                            image file. So copy file "album.jpg" to "cover.jpg" .
-                            This will skip an internet image lookup and download
-                            and could be a more reliable way to retrieve the
-                            correct album cover image. (default: False)
-    
-    Search Musicbrainz NGS webservice:
-      -sm, --search-musicbrainz
-                            Search for album cover images using musicbrainz NGS
-                            webservice. MusicBrainz lookup is the most reliable
-                            search method.
-    
-    Search Google Custom Search Engine (CSE):
-      -sg, --search-googlecse
-                            Search for album cover images using Google CSE. Using
-                            the Google CSE requires an Engine ID and API Key.
-                            Google CSE reliability entirely depends upon the added
-                            "Sites to search". The end of this help message has
-                            more advice around using Google CSE. (default: False)
-      -s {small,medium,large}, --gsize {small,medium,large}
-                            Google CSE optional image file size (default: "large")
-      --gid GID             Google CSE ID (URL parameter "cx") typically looks
-                            like "009494817879853929660:efj39xwwkng". REQUIRED to
-                            use Google CSE.
-      --gkey GKEY           Google CSE API Key (URL parameter "key") typically
-                            looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst".
-                            REQUIRED to use Google CSE.
-    
-    Debugging and Miscellanea:
-      -v, --version         show program's version number and exit
-      -r REFERER, --referer REFERER
-                            Referer url used in HTTP GET requests (default:
-                            "https://github.com/jtmoon79/coverlovin2")
-      -d, --debug           Print debug logs (default: False)
-      --test-only           Only test, do not write any files (default: False)
-    
-    This program attempts to create album cover image files for the passed DIRS.  It
-    does this several ways, searching for album cover image files already present in
-    the directory (-sl).  If not found, it attempts to figure out the Artist and
-    Album for that directory then searches online services for an album cover image
-    (-sm or -sg).
-    
-    Directories are searched recursively.  Any directory that contains one or more
-    with file name extension .mp3 or .m4a or .mp4 or .flac or .ogg or .wma or .asf
-    is presumed to be an album directory.  Given a directory of such files, file
-    contents will be read for the Artist name and Album name using embedded audio
-    tags (ID3, Windows Media, etc.).  If no embedded media tags are present then a
-    reasonable guess will be made about the Artist and Album based on the directory
-    name; specifically this will try to match a directory name with a pattern like
-    "Artist - Year - Album" or "Artist - Album".
-    From there, online search services are used to search for the required album
-    cover image. If found, it is written to the album directory to file name
-    IMAGE_NAME.IMAGE_TYPE (-n … -i …).
-    
-    If option --search-googlecse is chosen then you must create your Google Custom
-    Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
-    takes about 5 minutes.  This is where your own values for --gid and --gkey can
-    be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
-    under the "Custom Search JSON API" from which you can generate an API Key (URI
-    parameter "key"). A key can be generated at
-    https://console.developers.google.com/apis/credentials.
-    Google CSE settings must have "Image search" as "ON"  and "Search the entire
-    web" as "OFF".
-    
-    PyPi project: https://pypi.org/project/CoverLovin2/
-    Source code: https://github.com/jtmoon79/coverlovin2
-    
-    Inspired by the program coverlovin.
+```Text
+usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-sl]
+                      [-se] [-sm] [-sg] [-s {small,medium,large}] [--gid GID]
+                      [--gkey GKEY] [-v] [-r REFERER] [-d] [--test-only]
+                      DIRS [DIRS ...]
+
+This Python-based program is for automating downloading album cover art images.
+A common use-case is creating a "folder.jpg" file for a collection of ripped
+Compact Disc albums.
+
+Given a list of directories, DIRS, recursively identify "album" directories.
+"Album" directories have audio files, e.g. files with extensions like .mp3 or
+.flac.  For each "album" directory, attempt to determine the Artist and Album.
+Then find an album cover image file using the requested --search providers.  If
+an album cover image file is found then write it to IMAGE_NAME.IMAGE_TYPE within
+each "album" directory.
+
+Audio files supported are .mp3, .m4a, .mp4, .flac, .ogg, .wma, .asf.
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Required Arguments:
+  DIRS                  directories to scan for audio files (Required)
+
+Recommended:
+  -n IMAGE_NAME, --image-name IMAGE_NAME
+                        cover image file name IMAGE_NAME. This is the file
+                        name that will be created within passed DIRS. This
+                        will be appended with the preferred image TYPE, e.g.
+                        "jpg", "png", etc. (default: "cover")
+  -i {jpg,png,gif}, --image-type {jpg,png,gif}
+                        image format IMAGE_TYPE (default: "jpg")
+  -o, --overwrite       overwrite any previous file of the same file
+                        IMAGE_NAME and IMAGE_TYPE (default: False)
+
+Search all:
+  -s*, --search-all     Search for album cover images using all methods and
+                        services
+
+Search the local directory for likely album cover images:
+  -sl, --search-likely-cover
+                        For any directory with audio media files but no file
+                        "IMAGE_NAME.IMAGE_TYPE", search the directory for
+                        files that are likely album cover images. For example,
+                        given options: --name "cover" --type "jpg", and a
+                        directory of .mp3 files with a file "album.jpg", it is
+                        reasonable to guess "album.jpg" is a an album cover
+                        image file. So copy file "album.jpg" to "cover.jpg" .
+                        This will skip an internet image lookup and download
+                        and could be a more reliable way to retrieve the
+                        correct album cover image.
+
+Search the local directory for an embedded album cover image:
+  -se, --search-embedded
+                        Search audio media files for embedded images. If
+                        found, attempt to extract the embedded image.
+
+Search Musicbrainz NGS webservice:
+  -sm, --search-musicbrainz
+                        Search for album cover images using musicbrainz NGS
+                        webservice. MusicBrainz lookup is the most reliable
+                        search method.
+
+Search Google Custom Search Engine (CSE):
+  -sg, --search-googlecse
+                        Search for album cover images using Google CSE. Using
+                        the Google CSE requires an Engine ID and API Key.
+                        Google CSE reliability entirely depends upon the added
+                        "Sites to search". The end of this help message has
+                        more advice around using Google CSE.
+  -s {small,medium,large}, --gsize {small,medium,large}
+                        Google CSE optional image file size (default: "large")
+  --gid GID             Google CSE ID (URL parameter "cx") typically looks
+                        like "009494817879853929660:efj39xwwkng". REQUIRED to
+                        use Google CSE.
+  --gkey GKEY           Google CSE API Key (URL parameter "key") typically
+                        looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst".
+                        REQUIRED to use Google CSE.
+
+Debugging and Miscellanea:
+  -v, --version         show program's version number and exit
+  -r REFERER, --referer REFERER
+                        Referer url used in HTTP GET requests (default:
+                        "https://github.com/jtmoon79/coverlovin2")
+  -d, --debug           Print debugging messages (default: False)
+  --test-only           Only test, do not write any files (default: False)
+
+This program attempts to create album cover image files for the passed DIRS.  It
+does this several ways, searching for album cover image files already present in
+the directory (-sl).  If not found, it attempts to figure out the Artist and
+Album for that directory then searches online services for an album cover image
+(-sm or -sg).
+
+Directories are searched recursively.  Any directory that contains one or more
+with file name extension .mp3 or .m4a or .mp4 or .flac or .ogg or .wma or .asf
+is presumed to be an album directory.  Given a directory of such files, file
+contents will be read for the Artist name and Album name using embedded audio
+tags (ID3, Windows Media, etc.).  If no embedded media tags are present then a
+reasonable guess will be made about the Artist and Album based on the directory
+name; specifically this will try to match a directory name with a pattern like
+"Artist - Year - Album" or "Artist - Album".
+From there, online search services are used to search for the required album
+cover image. If found, it is written to the album directory to file name
+IMAGE_NAME.IMAGE_TYPE (-n … -i …).
+
+If option --search-googlecse is chosen then you must create your Google Custom
+Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
+takes about 5 minutes.  This is where your own values for --gid and --gkey can
+be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
+under the "Custom Search JSON API" from which you can generate an API Key (URI
+parameter "key"). A key can be generated at
+https://console.developers.google.com/apis/credentials.
+Google CSE settings must have "Image search" as "ON"  and "Search the entire
+web" as "OFF".
+
+PyPi project: https://pypi.org/project/CoverLovin2/
+Source code: https://github.com/jtmoon79/coverlovin2
+
+Inspired by the program coverlovin.
+```
 
 Installation
 ------------
