@@ -638,10 +638,12 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     E_imagepath1 = Path.joinpath(E_testdir1, 'cover.jpg')
     E_testdir2 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia2')
     E_imagepath2 = Path.joinpath(E_testdir2, 'cover.jpg')
-    E_testdir3j = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 JPG')
-    E_imagepath3j = Path.joinpath(E_testdir3j, 'cover.jpg')
-    E_testdir3p = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 PNG')
-    E_imagepath3p = Path.joinpath(E_testdir3p, 'cover.png')
+    E_testdir3jpg = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 JPG')
+    E_imagepath3jpg = Path.joinpath(E_testdir3jpg, 'cover.jpg')
+    E_testdir3png = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 PNG')
+    E_imagepath3png = Path.joinpath(E_testdir3png, 'cover.png')
+    E_testdir3e = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty mp3')
+    E_imagepath3e = Path.joinpath(E_testdir3e, 'cover.png')
     E_testdir4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia4 PNG multiple')
     E_imagepath4 = Path.joinpath(E_testdir4, 'cover.png')
 
@@ -677,13 +679,46 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     @pytest.mark.parametrize(
         'image_path, artist, album, image_type, test_expect',
         (
-            (E_imagepath1, E_Artist, E_Album, jpg, False),
-            (E_imagepath2, E_Artist, E_Album, jpg, False),
-            (E_imagepath3j, E_Artist, E_Album, jpg, True),
-            (E_imagepath3j, E_Artist, E_Album, png, True),
-            (E_imagepath3p, E_Artist, E_Album, png, True),
-            (E_imagepath3p, E_Artist, E_Album, jpg, True),
-            (E_imagepath4, E_Artist, E_Album, jpg, True),
+            pytest.param
+            (
+                E_imagepath1, E_Artist, E_Album, jpg, False,
+                id='empty dir'
+            ),
+            pytest.param
+            (
+                E_imagepath2, E_Artist, E_Album, jpg, False,
+                id='normal path - no embedded image'
+            ),
+            pytest.param
+            (
+                E_imagepath3jpg, E_Artist, E_Album, jpg, True,
+                id='happy path jpg'
+            ),
+            pytest.param
+            (
+                E_imagepath3jpg, E_Artist, E_Album, png, True,
+                id='happy path - embedded image is jpg, image_type is png'
+            ),
+            pytest.param
+            (
+                E_imagepath3png, E_Artist, E_Album, png, True,
+                id='happy path png'
+            ),
+            pytest.param
+            (
+                E_imagepath3png, E_Artist, E_Album, jpg, True,
+                id='happy path - embedded image is png, image_type is jpg'
+            ),
+            pytest.param
+            (
+                E_imagepath3e, E_Artist, E_Album, png, False,
+                id='mp3 file is zero size file'
+            ),
+            pytest.param
+            (
+                E_imagepath4, E_Artist, E_Album, jpg, True,
+                id='mp3 file has multiple images embedded'
+            )
         )
     )
     def test_search_album_image(self, image_path, artist, album, image_type,
@@ -694,8 +729,16 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     @pytest.mark.parametrize(
         'image_path, artist, album, image_type, overwrite, test_expect',
         (
-            (E_imagepath3j, E_Artist, E_Album, jpg, False, False),
-            (E_imagepath3j, E_Artist, E_Album, jpg, True, True),
+            pytest.param
+            (
+                E_imagepath3jpg, E_Artist, E_Album, jpg, False, False,
+                id='image already exists - overwrite False, test returns False'
+            ),
+            pytest.param
+            (
+                E_imagepath3jpg, E_Artist, E_Album, jpg, True, True,
+                id='image already exists - overwrite True, test returns True'
+            )
         )
     )
     def test_write_album_image(self, image_path, artist, album, image_type,
@@ -704,9 +747,8 @@ class Test_ImageSearcher_EmbeddedMedia(object):
         is_ = ImageSearcher_EmbeddedMedia(image_path, '', False)
         assert is_.search_album_image(artist, album, image_type)
         assert test_expect == is_.write_album_image(Path(), overwrite, True)
-    # LAST WORKING HERE: 2019/02/23 - this is decent basic coverage.
-    #                    what else before committing?
 
+    # TODO: what else is missing?
 
 
 class Test_ImageSearcher_GoogleCSE(object):
