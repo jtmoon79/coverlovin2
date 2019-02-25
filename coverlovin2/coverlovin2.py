@@ -723,15 +723,15 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         # choose the most preferred file: select the lowest key value
         if candidates_by_pref:
-            copy_src = candidates_by_pref[
+            cands = candidates_by_pref[
                 sorted(candidates_by_pref.keys())[0]
             ]
             # XXX: mypy says this doesn't make sense
             # XXX: debug self-check
-            if len(copy_src) > 1:
+            if len(cands) > 1:
                 self._log.debug('Note: multiple values in copy_src, choosing'
-                                ' the first from:\n%s', pformat(copy_src))
-            copy_src = copy_src[0]
+                                ' the first from:\n%s', pformat(cands))
+            copy_src = cands[0]
         elif score_candidate:
             copy_src = score_candidate
         else:
@@ -760,7 +760,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         except OSError as ose:
             self._log.exception(ose)
 
-        self.copy_src = self._match_likely_name(image_type, candidates)
+        self.copy_src = self._match_likely_name(image_type, candidates)  # type: ignore
         if not self.copy_src:
             return False
 
@@ -1415,7 +1415,7 @@ def process_dirs(dirs: typing.List[Path], image_name: str,
         log.debug('')
 
     # remove duplicates
-    path_list: Path_List = list(dict.fromkeys(daa_list))
+    path_list: Path_List = list(set(daa for daa in daa_list))
     log.debug('directories to process:\n%s', pformat(path_list))
 
     return path_list
