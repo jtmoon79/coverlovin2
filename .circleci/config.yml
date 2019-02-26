@@ -22,12 +22,14 @@ jobs:
             echo
             ls -la
             echo
-            chmod -vR +x -- tools
+            chmod -vR +x,-w -- ./tools/
             echo
             python -m pip install --user --upgrade pip
             python -m pip install pipenv
+            echo
             pipenv --version
-            mkdir .pipenv
+            echo
+            mkdir -v -- .pipenv
             export PIPENV_CACHE_DIR=.pipenv
             pipenv install --dev
       - save_cache:
