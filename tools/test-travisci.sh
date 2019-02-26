@@ -7,6 +7,7 @@
 
 set -e
 set -u
+set -o pipefail
 set -x
 
 cd "$(dirname -- "${0}")/.."
