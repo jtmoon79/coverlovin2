@@ -7,7 +7,7 @@ CoverLovin2
 [![PyPI version](https://badge.fury.io/py/CoverLovin2.svg)](https://badge.fury.io/py/CoverLovin2)
 [![Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True)](https://pypi.org/pypi/coverlovin2/)
 
-*CoverLovin2* (Cover Loving!), python name *coverlovin2*, is a Python script for
+*CoverLovin2* (Cover Loving, too!), python name *coverlovin2*, is a Python script for
 automating downloading album cover art images.  A common use-case is creating a
 "folder.jpg" file for a collection of ripped Compact Disc albums.
 
@@ -149,8 +149,8 @@ Installation
   
       pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
-*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/)
-and [musicbrainzngs](https://pypi.org/project/musicbrainzngs/).
+*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
+[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), and [Pillow](https://pypi.org/project/Pillow/).
 
 Development
 -----------
@@ -176,9 +176,9 @@ coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
 coverlovin2 could be used as a module.
 
-Sonos will use `folder.jpg` for album cover art (if available).
+Sonos will use file `folder.jpg` for album cover art (if available).
 
-Winamp will use `cover.jpg` for album cover art (if available).
+Winamp will use file `cover.jpg` for album cover art (if available).
 
 coverlovin2 is a practice project for sake of the author learning more about
 recent changes in the Python Universe and the github Universe.

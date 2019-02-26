@@ -18,5 +18,5 @@ mutagen = ">=1.42.0"
 pillow = ">=5.4.1"
 
 [requires]
+# `python_version` does not support version range https://github.com/pypa/pipfile/issues/87
 python_version = "3.7"
-# does not support version range https://github.com/pypa/pipfile/issues/87
