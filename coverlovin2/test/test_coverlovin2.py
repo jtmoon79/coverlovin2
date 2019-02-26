@@ -56,8 +56,8 @@ from ..coverlovin2 import process_dir
 resources = Path.joinpath(Path(__file__).parent, 'test_resources')
 
 
-def exists_or_skip(*args) -> typing.Tuple[Path, None]:
-    """helper for easily skipping a test if path is not available"""
+def exists_or_skip(*args) -> typing.Union[Path, None]:
+    """helper for skipping a test if path is not available"""
     fp = resources.joinpath(*args)
     if not fp.exists():
         pytest.skip('test resource not available "%s"' % fp)
@@ -310,51 +310,31 @@ class Test_ImageSearcher_LikelyCover(object):
         with pytest.raises(ImageSearcher_LikelyCover.WrongUseError):
             is_.write_album_image(Path(''), True, True)
 
-    A_Dir = 'test_ImageSearcher_LikelyCover1'  # actual sub-directory
-    A_Mp3 = 'ID3v1 [Bob Dylan] [Highway 61 Revisited].mp3'  # actual test file
+    A1_Dir = 'test_ImageSearcher_LikelyCover1'  # actual sub-directory
+    A1_Mp3 = 'ID3v1 [Bob Dylan] [Highway 61 Revisited].mp3'  # actual test file
+    A1_fp = resources.joinpath(A1_Dir, A1_Mp3)  # existent file path
 
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_empty_ArtAlb(self):
-        """There should be no image files in the directory."""
-        fp = exists_or_skip(self.A_Dir, self.A_Mp3)
-        is_ = ImageSearcher_LikelyCover(fp, 'my referred', False)
-        for it in ImageType.list():
-            assert not is_.search_album_image(Artist(''), Album(''),
-                                              ImageType(it))
+    @pytest.mark.dependency(name='test_res_A1')
+    def test_A1_resources_exist_and_correct(self):
+        """test resources must exist"""
+        assert self.A1_fp
+        assert self.A1_fp.exists()
+        """there should be no image files in the test resource directory"""
+        # TODO: check this
 
     @pytest.mark.dependency(depends=['init_likelyc'])
     def test_match_likely_name__TypeError(self):
         is_ = ImageSearcher_LikelyCover(Path(), '', False)
         with pytest.raises(TypeError):
-            _ = is_._match_likely_name(jpg, None)
+            _ = is_._match_likely_name(jpg, None)  # type: ignore
 
     @pytest.mark.dependency(depends=['init_likelyc'])
     def test_match_likely_name__AttributeError(self):
         is_ = ImageSearcher_LikelyCover(Path(), '', False)
         with pytest.raises(AttributeError):
-            _ = is_._match_likely_name(None, None)
+            _ = is_._match_likely_name(None, None)  # type: ignore
 
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name_empty__file_list(self):
-        fp = exists_or_skip(self.A_Dir, self.A_Mp3)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        assert not is_._match_likely_name(jpg, [])
-
-    @pytest.fixture(params=[it for it in ImageType], ids=ImageType.list())
-
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    @pytest.mark.parametrize('ti',
-        (pytest.param(it, ids=it.value) for it in ImageType)
-    )
-    def test_match_likely_name__no_match(self, ti):
-        fp = exists_or_skip(self.A_Dir, self.A_Mp3)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        files = (Path.joinpath(resources, 'foo' + ti.suffix),
-                 Path.joinpath(resources, 'bar' + ti.suffix),
-                 )
-        assert not is_._match_likely_name(ti, files)
-
-    # Each following `pytest.fixture` entry within `_LikelyCover_4_entries` is:
+    # pytest.param
     # (
     #   ImageType,
     #   (
@@ -364,10 +344,34 @@ class Test_ImageSearcher_LikelyCover(object):
     #   ),
     #   Path_expected_to_match
     # ),
-    # where `Path_expected_to_match` is a Path to be compared against return
-    # value of `_match_likely_name([Path_to_match1, Path_to_match2, ...])`.
     @pytest.mark.parametrize('ti_it, ti_paths, ti_path_match',
         (
+            pytest.param
+            (
+                jpg,
+                [],
+                None,
+                id='empty List (returns None)'
+            ),
+            pytest.param
+            (
+                jpg,
+                (),
+                None,
+                id='empty Tuple (returns None)'
+            ),
+            *(  # generate a simple test case for all ImageTypes
+                    pytest.param
+                    (
+                        it,
+                        (
+                            Path.joinpath(resources, 'DOES NOT EXIST foo' + it.suffix),
+                            Path.joinpath(resources, 'DOES NOT EXIST bar' + it.suffix),
+                        ),
+                        None,
+                        id='quick test of ImageType ' + it.value + ' (returns None)'
+                    ) for it in ImageType
+            ),
             pytest.param
             (
                 jpg,
@@ -376,7 +380,7 @@ class Test_ImageSearcher_LikelyCover(object):
                     Path('nope' + png.suffix),
                 ),
                 None,
-                id='(no match) nope' + png.suffix
+                id='(no match) nope' + png.suffix + ' (returns None)'
             ),
             pytest.param
             (
@@ -564,67 +568,118 @@ class Test_ImageSearcher_LikelyCover(object):
         m = is_._match_likely_name(ti_it, ti_paths)
         assert m == ti_path_match
 
-    B_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
-    B_Img = 'album.jpg'  # actual test file in that sub-directory
-    B_fp = resources.joinpath(B_Dir, B_Img)  # file path test resource .../album.jpg
+    B_cmp_name = lambda x, y: x.name == y.name
+    B2_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
+    B2_Img = 'album.jpg'  # actual test file in that sub-directory
+    B2_image_path = resources.joinpath(B2_Dir, B2_Img)  # file path test resource .../album.jpg
+    # these files not need to exist
+    B_image_path_ne = Path(r'./THIS FILE DOES NOT EXIST 298389325 (album_cover)' + jpg.suffix)
+    B_image_path_1 = Path(r'./ACDC TNT/ACDC TNT' + png.suffix)
+    B_image_path_2 = Path(r'./Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix)
+    B_image_path_3 = Path(r'./Kraftwerk - Minimum Maximum/Kraftwerk' + jpg.suffix)
+    B_image_path_Xid = 'Do match similar file name to similar parent directory name: '
 
-    @pytest.mark.dependency(name='test_res_B')
-    def test_B_resources(self):
-        assert self.B_fp.exists()
+    @pytest.mark.dependency(name='test_res_B2')
+    def test_B2_resources_exist(self):
+        assert self.B2_image_path.exists()
+        for fp in (self.B_image_path_ne,
+                   self.B_image_path_1,
+                   self.B_image_path_2,
+                   self.B_image_path_3,):
+            assert not fp.exists()
 
-    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B'])
-    def test_match_likely_name__nomatch_same_file_exist(self):
-        """Do not match actual file to itself."""
-        files = (self.B_fp,)
-        is_ = ImageSearcher_LikelyCover(self.B_fp, '', False)
-        m = is_._match_likely_name(jpg, files)
-
-        assert not m
-
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name__same_file_notexist(self):
-        """Do match non-existent same file."""
-        fp = Path(r'C:/THIS FILE DOES NOT EXIST 298389325 (album_cover)' +
-                  jpg.suffix)
-        files = (fp,)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        m = is_._match_likely_name(jpg, files)
-
-        assert m
-        assert m.name == fp.name
-
-    @pytest.mark.parametrize('ti_path',
+    @pytest.mark.parametrize(
+        'image_path, image_type, files, test_expect, special_cmp',
         (
             pytest.param
             (
-                r'C:/ACDC TNT/ACDC TNT' + png.suffix,
-                id='C:/ACDC TNT/ACDC TNT' + png.suffix
+                B2_image_path, jpg, (B2_image_path,), None, None,
+                id='same file exists (Do not match actual file to itself)' + jpg.suffix
             ),
             pytest.param
             (
-                r'C:/Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix,
-                id='C:/Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix
+                B_image_path_ne, jpg, (B_image_path_ne,), B_image_path_ne, B_cmp_name,
+                id='same file not exist (Do match non-existent same file)'
             ),
             pytest.param
             (
-                r'C:/Kraftwerk - Minimum Maximum/Kraftwerk' + png.suffix,
-                id='C:/Kraftwerk - Minimum Maximum/Kraftwerk' + png.suffix
+                B_image_path_1, png, (B_image_path_1,), B_image_path_1, B_cmp_name,
+                id=B_image_path_Xid + str(B_image_path_1)
+            ),
+            pytest.param
+            (
+                B_image_path_2, gif, (B_image_path_2,), B_image_path_2, B_cmp_name,
+                id=B_image_path_Xid + str(B_image_path_2)
+            ),
+            pytest.param
+            (
+                B_image_path_3, jpg, (B_image_path_3,), B_image_path_3, B_cmp_name,
+                id=B_image_path_Xid + str(B_image_path_3)
             ),
         )
     )
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name__similar_dirname_to_filename(self, ti_path):
-        """Do match similar file name to similar parent directory name."""
-        fp = Path(ti_path)
-        files = (fp,)
-        is_ = ImageSearcher_LikelyCover(fp, '', False)
-        m = is_._match_likely_name(png, files)
-        assert m.name == fp.name
+    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B2'])
+    def test__match_likely_name(self, image_path, image_type, files, test_expect, special_cmp):
+        is_ = ImageSearcher_LikelyCover(image_path, '', False)
+        mln = is_._match_likely_name(image_type, files)
+        assert test_expect == mln
+        if special_cmp:
+            assert special_cmp(mln, test_expect)
+
+    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B2'])
+    def test_search_album_image_images(self):
+        is_ = ImageSearcher_LikelyCover(self.A1_fp, 'referrer', False)
+        for it in ImageType.list():
+            assert not is_.search_album_image(Artist(''), Album(''),
+                                              ImageType(it))
 
 
-C_Artist = Artist('Bob Dylan')
-C_Album = Album('Biograph (Disc 1)')
+    B_Artist = Artist('Bob Dylan')
+    B_Album = Album('Biograph (Disc 1)')
+    B3_Dir = 'test_ImageSearcher_LikelyCover3'  # actual sub-directory
+    B3_Img1 = 'album1.jpg'  # actual test file in that sub-directory
+    B3_Img2 = 'album2.jpg'  # actual test file in that sub-directory
+    B3_Img_ne = 'album-not-exists-file.jpg'  # does not exist
+    B3_image_path1 = resources.joinpath(B3_Dir, B3_Img1)
+    B3_image_path2 = resources.joinpath(B3_Dir, B3_Img2)
+    B3_image_path_ne = resources.joinpath(B3_Dir, B3_Img_ne)
 
+    @pytest.mark.dependency(name='test_res_B3')
+    def test_B3_resources_exist(self):
+        assert self.B3_image_path1.exists()
+        assert self.B3_image_path2.exists()
+        assert not self.B3_image_path_ne.exists()
+
+    @pytest.mark.parametrize(
+        'image_path_src, image_path_dst, image_type, overwrite, test_expect',
+        (
+            pytest.param
+            (
+                B3_image_path1, B3_image_path2, jpg, False, False,
+                id='destination image already exists - overwrite False, returns False'
+            ),
+            pytest.param
+            (
+                B3_image_path1, B3_image_path2, jpg, True, True,
+                id='destination image already exists - overwrite True, returns True'
+            ),
+            pytest.param
+            (
+                B3_image_path1, B3_image_path_ne, jpg, False, True,
+                id='happy path - case 1 - overwrite False'
+            ),
+            pytest.param
+            (
+                B3_image_path1, B3_image_path_ne, jpg, True, True,
+                id='happy path - case 2 - overwrite True'
+            )
+        )
+    )
+    @pytest.mark.dependency(name='test_res_B3')
+    def test_write_album_image(self, image_path_src, image_path_dst, image_type, overwrite, test_expect):
+        is_ = ImageSearcher_LikelyCover(image_path_dst, '', False)
+        assert is_.search_album_image(Artist(''), Album(''), image_type)
+        assert test_expect == is_.write_album_image(Path(), overwrite, True)
 
 
 class Test_ImageSearcher_EmbeddedMedia(object):
@@ -644,6 +699,8 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     E_imagepath3png = Path.joinpath(E_testdir3png, 'cover.png')
     E_testdir3e = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty mp3')
     E_imagepath3e = Path.joinpath(E_testdir3e, 'cover.png')
+    E_testdir3bi = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 bad image')
+    E_imagepath3bi = Path.joinpath(E_testdir3bi, 'cover.png')
     E_testdir4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia4 PNG multiple')
     E_imagepath4 = Path.joinpath(E_testdir4, 'cover.png')
 
@@ -716,6 +773,11 @@ class Test_ImageSearcher_EmbeddedMedia(object):
             ),
             pytest.param
             (
+                E_imagepath3bi, E_Artist, E_Album, png, False,
+                id='mp3 file has zero byte image embedded'
+            ),
+            pytest.param
+            (
                 E_imagepath4, E_Artist, E_Album, jpg, True,
                 id='mp3 file has multiple images embedded'
             )
@@ -732,12 +794,12 @@ class Test_ImageSearcher_EmbeddedMedia(object):
             pytest.param
             (
                 E_imagepath3jpg, E_Artist, E_Album, jpg, False, False,
-                id='image already exists - overwrite False, test returns False'
+                id='image already exists - overwrite False, returns False'
             ),
             pytest.param
             (
                 E_imagepath3jpg, E_Artist, E_Album, jpg, True, True,
-                id='image already exists - overwrite True, test returns True'
+                id='image already exists - overwrite True, returns True'
             )
         )
     )

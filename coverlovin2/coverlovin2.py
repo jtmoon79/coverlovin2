@@ -696,6 +696,9 @@ class ImageSearcher_LikelyCover(ImageSearcher):
                             self._log.debug('Matched name "%s" to pattern "%s"',
                                             filep.name, pattern)
                             candidates_by_pref[index].append(filep)
+                            # matched current filep, no need to look for more
+                            # re matches (they are already ordered by priority)
+                            break
                 except Exception as ex:
                     self._log.exception(ex, exc_info=True)
 
@@ -707,33 +710,36 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         # The similar score must be above 0.4 to be considered.
         #
         dirp = self.copy_dst.parent
-        score_max = 0.4
-        score_candidate = None
+        max_score = 0.4
+        candidate_score = None
         for filep in files:
             score = similar(filep.name, dirp.name)
-            if score > score_max:
-                score_max = score
-                score_candidate = filep
+            if score > max_score:
+                max_score = score
+                candidate_score = filep
                 self._log.debug('File "%s" is similar (%f) to directory'
                                 ' name "%s"', filep.name, score, dirp.name)
 
-        if not candidates_by_pref and not score_candidate:
+        if not (candidates_by_pref or candidate_score):
             self._log.debug('No likely pattern matched, similar named file')
             return None
 
-        # choose the most preferred file: select the lowest key value
         if candidates_by_pref:
+            # choose the most preferred file, select the lowest key value
+            # (related to order of matching patterns above)
             cands = candidates_by_pref[
                 sorted(candidates_by_pref.keys())[0]
             ]
-            # XXX: mypy says this doesn't make sense
             # XXX: debug self-check
+            # XXX: mypy says this does not make sense
             if len(cands) > 1:
                 self._log.debug('Note: multiple values in copy_src, choosing'
                                 ' the first from:\n%s', pformat(cands))
             copy_src = cands[0]
-        elif score_candidate:
-            copy_src = score_candidate
+        elif candidate_score:
+            # choose file with the has high similar score of .name to
+            # parentdir.name
+            copy_src = candidate_score
         else:
             self._log.error('Bad if-elif, cannot find a candidate')
             return None
@@ -762,7 +768,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         except OSError as ose:
             self._log.exception(ose)
 
-        self.copy_src = self._match_likely_name(image_type, candidates)  # type: ignore
+        self.copy_src = self._match_likely_name(image_type, candidates)
         if not self.copy_src:
             return False
 
