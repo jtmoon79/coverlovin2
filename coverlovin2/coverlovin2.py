@@ -682,6 +682,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         ]
 
         for filep in files:
+            # XXX: TODO: break this out into a private function? (for more concentrated pytests)
             for index, pattern in enumerate(patterns):
                 try:
                     fm = re.fullmatch(pattern, filep.name, flags=re.IGNORECASE)
@@ -708,11 +709,13 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         # "acdc_tnt.jpg" is likely the album cover file within the album
         # directory "ACDC - TNT".
         # The similar score must be above 0.4 to be considered.
+        # XXX: TODO: break this out into a private function? (for more concentrated pytests)
         #
         dirp = self.copy_dst.parent
         max_score = 0.4
         candidate_score = None
         for filep in files:
+            # XXX: TODO: disclude file suffix for `similar` scoring
             score = similar(filep.name, dirp.name)
             if score > max_score:
                 max_score = score
