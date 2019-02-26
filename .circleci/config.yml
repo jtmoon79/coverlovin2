@@ -21,7 +21,8 @@ jobs:
             ls -la
             echo
             chmod -vR +x -- tools
-            python -m pip install --upgrade pip
+            echo
+            python -m pip install --user --upgrade pip
             python -m pip install pipenv
             pipenv --version
             mkdir .pipenv
@@ -31,6 +32,7 @@ jobs:
           name: cache of checkout, chmod, pipenv installs
           paths:
             - .
+            - ~/.local/
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
   test_python36:
     docker:
