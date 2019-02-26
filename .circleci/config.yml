@@ -12,6 +12,8 @@ jobs:
       - checkout
       - run:
           command: |
+            shopt
+            echo
             env | sort
             echo
             pwd

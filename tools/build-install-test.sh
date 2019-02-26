@@ -31,7 +31,10 @@ ls -l ./dist/
 
 # install the wheel (must be done outside the project directory)
 cd ..
-cv_whl=$(ls -1v ./coverlovin2/dist/CoverLovin2-${version}-*.whl | head -n1)
+cv_whl="./coverlovin2/dist/CoverLovin2-${version}-py3-none-any.whl"
+if ! [ -f "${cv_whl}" ]; then
+    cv_whl="./coverlovin2/dist/CoverLovin2-${version}-py3.7-none-any.whl"
+fi
 python -m pip install "${cv_whl}"
 
 # does it run?
