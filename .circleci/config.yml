@@ -2,24 +2,30 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2
+version: 2.1
 jobs:
-  simple1:
+  prep_cache:
     docker:
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+      # see https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/python:3.7.1
-
-    ### TODO: uncomment
-    #working_directory: ~/repo
-
     steps:
       - checkout
-      - run: echo "A first hello from Circle CI"
-      - run: env | sort
-      - run: pwd
+      - run:
+        command: |
+          env | sort
+          echo
+          pwd
+          echo
+          uname -a
+          echo
+          ls -la
+          chmod -R +x -- coverlovin2/coverlovin2/tools
+          python -m pip install pipenv
+          pipenv --version
+          mkdir .pipenv
+          export PIPENV_CACHE_DIR=.pipenv
+          pipenv install --dev
+
       ### TODO: uncomment
       # Download and cache dependencies
       #- restore_cache:
@@ -35,10 +41,12 @@ jobs:
       #      python3 -m pip install pipenv
       #      pipenv install --dev
 
-      #- save_cache:
-      #    paths:
-      #      - ./venv
-      #    key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - save_cache:
+          name: cache of checkout, chmod, pipenv installs
+          paths:
+            - coverlovin2
+            - .pipenv
+          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
 
       ### TODO: uncomment
       # run tests!
@@ -55,30 +63,34 @@ jobs:
       #- store_artifacts:
       #    path: test-reports
       #    destination: test-reports
-  test36:
+  test_python36:
     docker:
       - image: circleci/python:3.6.1
     steps:
-      - checkout
-      - run: tools/test-python36.sh
-  pytest:
+      - restore_cache:
+          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
+      - run:
+        command: tools/test-python36.sh
+  test_pytest:
     docker:
       - image: circleci/python:3.7.1
     steps:
-      - checkout
+      - restore_cache:
+          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
       - run: python3 -m pytest -v coverlovin2/test
-  compile_pypi:
+  build_pypi:
     docker:
       - image: circleci/python:3.7.1
     steps:
-      - checkout
-      - run: coverlovin2/tools/build-install-test.sh
+      - restore_cache:
+          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
+      - run: coverlovin2/coverlovin2/tools/build-install-test.sh
 workflows:
   version: 2
   workflow1:
     jobs:
-      - simple1
-      - test36
-      - pytest
-      - compile_pypi
+      - prep_cache
+      - test_python36
+      - test_pytest
+      - build_pypi
       
