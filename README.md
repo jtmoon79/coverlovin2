@@ -175,8 +175,9 @@ coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
 coverlovin2 could be used as a module.
 
-Sonos systems will search a connected _Music Library_ directory for a file named
-`folder.jpg`. If found, `folder.jpg` will be used as the album cover art.
+Sonos will use `folder.jpg` for album cover art (if available).
+
+Winamp will use `cover.jpg` for album cover art (if available).
 
 coverlovin2 is a practice project for sake of the author learning more about
 recent changes in the Python Universe and the github Universe.
