@@ -33,24 +33,20 @@ jobs:
           paths:
             - .
             - ~/.local/
-          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
+          key: prep_cache-{{ .Branch }}-{{ .Revision }}
   test_python36:
     docker:
       - image: circleci/python:3.6.1
     steps:
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-      - run:
-          command: |
-            pwd
-            cd project
-            tools/test-python36.sh
+          key: prep_cache-{{ .Branch }}-{{ .Revision }}
+      - run: tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
     steps:
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
+          key: prep_cache-{{ .Branch }}-{{ .Revision }}
       - run:
           command: |
             pwd
@@ -61,11 +57,12 @@ jobs:
       - image: circleci/python:3.7.1
     steps:
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
+          key: prep_cache-{{ .Branch }}-{{ .Revision }}
       - run:
           command: |
             pwd
             export PIPENV_CACHE_DIR=.pipenv
+            pipenv run pip install --upgrade setuptools wheel
             pipenv run bash tools/build-install-test.sh
 workflows:
   version: 2
