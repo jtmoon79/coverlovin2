@@ -28,13 +28,15 @@ version=$(python -B -c 'from coverlovin2 import coverlovin2 as c2;print(c2.__ver
 python setup.py bdist_wheel
 # note the contents of dist
 ls -l ./dist/
+# get the full path to the wheel file
+# (usually, `basename $PWD` is 'coverlovin2' but on circleci it's 'project')
+cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3-none-any.whl")
+if ! [ -f "${cv_whl}" ]; then
+    cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3.7-none-any.whl")
+fi
 
 # install the wheel (must be done outside the project directory)
 cd ..
-cv_whl="./coverlovin2/dist/CoverLovin2-${version}-py3-none-any.whl"
-if ! [ -f "${cv_whl}" ]; then
-    cv_whl="./coverlovin2/dist/CoverLovin2-${version}-py3.7-none-any.whl"
-fi
 python -m pip install "${cv_whl}"
 
 # does it run?
