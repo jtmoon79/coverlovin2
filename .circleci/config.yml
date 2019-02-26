@@ -19,7 +19,8 @@ jobs:
             uname -a
             echo
             ls -la
-            chmod -R +x -- coverlovin2/coverlovin2/tools
+            echo
+            chmod -vR +x -- tools
             python -m pip install pipenv
             pipenv --version
             mkdir .pipenv
@@ -28,8 +29,7 @@ jobs:
       - save_cache:
           name: cache of checkout, chmod, pipenv installs
           paths:
-            - coverlovin2
-            - .pipenv
+            - .
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
   test_python36:
     docker:
@@ -59,7 +59,7 @@ jobs:
           command: |
             export PIPENV_CACHE_DIR=.pipenv
             pipenv shell
-            coverlovin2/coverlovin2/tools/build-install-test.sh
+            tools/build-install-test.sh
 workflows:
   version: 2
   workflow1:
