@@ -4,12 +4,8 @@
 #
 version: 2
 jobs:
-  build:
+  simple1:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.1
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -57,3 +53,30 @@ jobs:
       #- store_artifacts:
       #    path: test-reports
       #    destination: test-reports
+  test36:
+    docker:
+      - image: circleci/python:3.6.1
+    steps:
+      - checkout
+      - run: python3 coverlovin2/coverlovin2.py --help
+  pytest:
+    docker:
+      - image: circleci/python:3.7.1
+    steps:
+      - checkout
+      - run: python3 -m pytest -v coverlovin2/test
+  compile_pypi:
+    docker:
+      - image: circleci/python:3.7.1
+    steps:
+      - checkout
+      - run: coverlovin2/tools/build-install-test.sh
+workflows:
+  version: 2
+  workflow1:
+    jobs:
+      - simple1
+      - test36
+      - pytest
+      - compile_pypi
+      
