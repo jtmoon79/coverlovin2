@@ -25,66 +25,41 @@ jobs:
           mkdir .pipenv
           export PIPENV_CACHE_DIR=.pipenv
           pipenv install --dev
-
-      ### TODO: uncomment
-      # Download and cache dependencies
-      #- restore_cache:
-      #    keys:
-      #      - v1-dependencies-{{ checksum "Pipfile.lock" }}
-      #      # fallback to using the latest cache if no exact match is found
-      #      - v1-dependencies-
-
-      ### TODO: uncomment
-      #- run:
-      #    name: install dependencies
-      #    command: |
-      #      python3 -m pip install pipenv
-      #      pipenv install --dev
-
       - save_cache:
           name: cache of checkout, chmod, pipenv installs
           paths:
             - coverlovin2
             - .pipenv
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-
-      ### TODO: uncomment
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
-      #- run:
-      #    name: run tests
-      #    command: |
-      #      pipenv shell --dev
-      #      python -m pytest ./coverlovin2/test/
-
-      #- store_artifacts:
-      #    path: test-reports
-      #    destination: test-reports
   test_python36:
     docker:
       - image: circleci/python:3.6.1
     steps:
       - restore_cache:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-      - run:
-        command: tools/test-python36.sh
+      - run: tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
     steps:
       - restore_cache:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-      - run: python3 -m pytest -v coverlovin2/test
+      - run:
+          command: |
+            export PIPENV_CACHE_DIR=.pipenv
+            pipenv shell
+            python3 -m pytest -v coverlovin2/test
   build_pypi:
     docker:
       - image: circleci/python:3.7.1
     steps:
       - restore_cache:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-      - run: coverlovin2/coverlovin2/tools/build-install-test.sh
+      - run:
+          command: |
+            export PIPENV_CACHE_DIR=.pipenv
+            pipenv shell
+            coverlovin2/coverlovin2/tools/build-install-test.sh
 workflows:
   version: 2
   workflow1:
