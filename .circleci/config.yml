@@ -40,7 +40,11 @@ jobs:
     steps:
       - restore_cache:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
-      - run: tools/test-python36.sh
+      - run:
+          command: |
+            pwd
+            cd project
+            tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
@@ -49,9 +53,9 @@ jobs:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
       - run:
           command: |
+            pwd
             export PIPENV_CACHE_DIR=.pipenv
-            pipenv shell
-            python3 -m pytest -v coverlovin2/test
+            pipenv run python3 -m pytest -v coverlovin2/test
   build_pypi:
     docker:
       - image: circleci/python:3.7.1
@@ -60,9 +64,9 @@ jobs:
           key: prep_cache-{{ .Branch }}-{{ .BuildNum }}-{{ .Revision }}
       - run:
           command: |
+            pwd
             export PIPENV_CACHE_DIR=.pipenv
-            pipenv shell
-            tools/build-install-test.sh
+            pipenv run bash tools/build-install-test.sh
 workflows:
   version: 2
   workflow_prep_test_build:
@@ -77,4 +81,5 @@ workflows:
       - build_pypi:
           requires:
           - prep_cache
+          - test_python36
           - test_pytest
