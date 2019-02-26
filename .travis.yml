@@ -5,6 +5,8 @@ language: python
 branches:
   only:
   - master
+notifications:
+  email: true
 matrix:
   include:
   - name: "3.7 pytest"
