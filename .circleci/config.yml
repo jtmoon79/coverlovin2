@@ -11,20 +11,20 @@ jobs:
     steps:
       - checkout
       - run:
-        command: |
-          env | sort
-          echo
-          pwd
-          echo
-          uname -a
-          echo
-          ls -la
-          chmod -R +x -- coverlovin2/coverlovin2/tools
-          python -m pip install pipenv
-          pipenv --version
-          mkdir .pipenv
-          export PIPENV_CACHE_DIR=.pipenv
-          pipenv install --dev
+          command: |
+            env | sort
+            echo
+            pwd
+            echo
+            uname -a
+            echo
+            ls -la
+            chmod -R +x -- coverlovin2/coverlovin2/tools
+            python -m pip install pipenv
+            pipenv --version
+            mkdir .pipenv
+            export PIPENV_CACHE_DIR=.pipenv
+            pipenv install --dev
       - save_cache:
           name: cache of checkout, chmod, pipenv installs
           paths:
@@ -68,4 +68,3 @@ workflows:
       - test_python36
       - test_pytest
       - build_pypi
-      
