@@ -28,8 +28,7 @@ setup(
     version=__version__,
     author=__author__,
     url=__url__,
-    description='Find local music albums and automatically download music album'
-                ' cover art.',
+    description='Download music album cover art for a music collection.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     license='Apache License 2.0 (Apache-2.0)',
