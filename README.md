@@ -9,9 +9,11 @@ CoverLovin2
 [![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-*CoverLovin2* (Cover Loving, too!), python name *coverlovin2*, is a Python script for
-automating downloading album cover art images.  A common use-case is creating a
-"folder.jpg" file for a collection of ripped Compact Disc albums.
+*CoverLovin2* (Cover Loving, too!), python name *coverlovin2*, is a Python
+script for downloading album cover art images, either via local searching and
+copying, or via downloading from various online services.
+A common use-case is creating a "`cover.jpg`" file for a large collection of
+ripped Compact Disc albums.
 
 coverlovin2 can only be run by python version 3.7 (or greater).
 
@@ -176,19 +178,36 @@ Other Miscellaneous Notes
 
 coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
-coverlovin2 could be used as a module.
+_Sonos_ systems will use file `folder.jpg` for album cover art (if available).
 
-Sonos will use file `folder.jpg` for album cover art (if available).
+_Winamp_ will use file `cover.jpg` for album cover art (if available).
 
-Winamp will use file `cover.jpg` for album cover art (if available).
+coverlovin2 could be used as a module but was not designed for it.
 
-coverlovin2 is a practice project for sake of the author learning more about
-recent changes in the Python Universe and the github Universe.
-
+coverlovin2 is a practice project for sake of the author catching up to changes
+in the Python Universe and the github Universe.<br/>
+Some things the author explored:
+- project badges (are fun _and useful_)!
+- online services
+  - CI Services
+    - [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
+    - [Circle CI](https://circleci.com/gh/jtmoon79/coverlovin2)
+    - [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
+    - ☹ [Requires.io](https://requires.io/github/jtmoon79/coverlovin2) (stuck at "_Loading Requirements..._")
+    - ☹ landscape.io ([had too many problems](https://github.com/landscapeio/landscape-issues/issues))
+  - package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
+- [pytests](./coverlovin2/test)!
+  - pytest [code coverage](https://pypi.org/project/pytest-cov/)!
+- type-hinting‼<br/>
 coverlovin2 is very type-hinted code and could be even more so. The author
 thinks type-hinting is a good idea but it still needs improvement. In it's
-current form in Python 3.7, it feels clumsy and can be difficult to grok. Also,
-PyCharm and mypy seem to catch different type-hint warnings. 
+current form in Python 3.7, it feels clumsy to write and to grok. Also, PyCharm
+and mypy seem to catch different type-hint warnings.
+  - mypy (and [bugs](https://github.com/python/mypy/issues/6476)? ☹)
+- Python 3.7 classes and programming (like `SimpleQueue` and `namedtuple`)
+  - virtual environment manager `pipenv`.
+- printing odd UTF-8 characters (for example, `\uFF5B`, `｛`) and coercing UTF8
+mode (within a context without UTF8 support; MinGW bash on Windows)
 
 #### run phases
 
