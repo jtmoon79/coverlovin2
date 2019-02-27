@@ -267,29 +267,29 @@ def get_artist_album_mp3(ffp: Path) -> typing.Tuple[Artist, Album]:
     :return: (artist, album)
     """
     from mutagen.easyid3 import EasyID3
-    media = EasyID3(ffp)
+    from mutagen.id3 import ID3NoHeaderError
+    from mutagen.id3 import ID3TagError
+    try:
+        media = EasyID3(ffp)
+    except (ID3NoHeaderError, ID3TagError) as err:
+        log.error(err)
+        return Artist(''), Album('')
 
     artist = ''
     try:
         artist = media['artist'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
     try:
         if not artist:
             artist = media['albumartist'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     album = ''
     try:
         album = media['album'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     return Artist(artist), Album(album)
@@ -306,17 +306,13 @@ def get_artist_album_mp4(ffp: Path) -> typing.Tuple[Artist, Album]:
     artist = ''
     try:
         artist = media['artist'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     album = ''
     try:
         album = media['album'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     return Artist(artist), Album(album)
@@ -327,22 +323,24 @@ def get_artist_album_flac(ffp: Path) -> typing.Tuple[Artist, Album]:
     :return: (artist, album)
     """
     from mutagen.flac import FLAC
-    media = FLAC(ffp)
+    from mutagen.flac import FLACVorbisError
+    from mutagen.flac import FLACNoHeaderError
+    try:
+        media = FLAC(ffp)
+    except (FLACVorbisError, FLACNoHeaderError) as err:
+        log.error(err)
+        return Artist(''), Album('')
 
     artist = ''
     try:
         artist = media['ARTIST'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     album = ''
     try:
         album = media['ALBUM'][0]
-    except KeyError:
-        pass
-    except IndexError:
+    except(KeyError, IndexError):
         pass
 
     return Artist(artist), Album(album)
@@ -353,7 +351,12 @@ def get_artist_album_ogg(ffp: Path) -> typing.Tuple[Artist, Album]:
     :return: (artist, album)
     """
     from mutagen.oggvorbis import OggVorbis
-    media = OggVorbis(ffp)
+    from mutagen.oggvorbis import OggError
+    try:
+        media = OggVorbis(ffp)
+    except OggError as err:
+        log.error(err)
+        return Artist(''), Album('')
 
     artist = ''
     try:
@@ -415,7 +418,12 @@ def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
     :return: (artist, album)
     """
     from mutagen.asf import ASF
-    media = ASF(ffp)
+    from mutagen.asf._util import ASFHeaderError
+    try:
+        media = ASF(ffp)
+    except ASFHeaderError as err:
+        log.error(err)
+        return Artist(''), Album('')
 
     artist = ''
     try:
@@ -473,7 +481,8 @@ def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
 
 
 # associate file extension to retrieval helper functions
-audio_type_get_artist_album = {
+# XXX: why not use `mutagen.File` instead?
+get_artist_album = {
     '.mp3': get_artist_album_mp3,
     '.m4a': get_artist_album_mp4,
     '.mp4': get_artist_album_mp4,
@@ -482,7 +491,7 @@ audio_type_get_artist_album = {
     '.wma': get_artist_album_asf,
     '.asf': get_artist_album_asf
 }
-AUDIO_TYPES = list(audio_type_get_artist_album.keys())
+AUDIO_TYPES = list(get_artist_album.keys())
 
 
 def sanitise(param: str):
@@ -1328,7 +1337,7 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
         artist = Artist('')
         album = Album('')
         try:
-            ar, al = audio_type_get_artist_album[ext](fp)
+            ar, al = get_artist_album[ext](fp)
             # sometimes a long string of spaces is returned
             ar = Artist(ar.strip())
             al = Album(al.strip())
@@ -1340,7 +1349,7 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
             if not album and al and al != Album('Unknown Album'):
                 album = Album(al)
         except Exception as err:
-            log.exception(err)
+            log.error('Exception: (%s) while processing file "%s"' % (err, fp,))
             continue
         # if artist and album found, append to daa_list and return
         if artist and album:
@@ -1464,9 +1473,12 @@ def search_create_image(image_path: Path, artist: Artist, album: Album,
             if search_googlecse else None,
     )
     result = False
-    result_message = 'No suitable image found for %s that could be written to' \
-                     ' "%s"' \
-                     % (str_AA(artist, album), image_path)
+    result_message = 'No suitable image found that could be written to %s' \
+                      % (image_path,)
+    if (artist, album) != (Artist(''), Album('')):
+        result_message = 'No suitable image found for %s that could be' \
+                         ' written to "%s"' \
+                         % (str_AA(artist, album), image_path)
 
     for is_ in searchers:
         try:

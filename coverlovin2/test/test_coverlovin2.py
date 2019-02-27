@@ -43,7 +43,7 @@ from ..coverlovin2 import get_artist_album_mp4
 from ..coverlovin2 import get_artist_album_flac
 from ..coverlovin2 import get_artist_album_ogg
 from ..coverlovin2 import get_artist_album_asf
-from ..coverlovin2 import audio_type_get_artist_album
+from ..coverlovin2 import get_artist_album
 from ..coverlovin2 import ImageSearcher
 from ..coverlovin2 import ImageSearcher_LikelyCover
 from ..coverlovin2 import ImageSearcher_EmbeddedMedia
@@ -54,6 +54,8 @@ from ..coverlovin2 import process_dir
 
 # all committed test resources should be under this directory
 resources = Path.joinpath(Path(__file__).parent, 'test_resources')
+
+empty_ArtAlb = (Artist(''), Album(''))
 
 
 def exists_or_skip(*args) -> typing.Union[Path, None]:
@@ -689,20 +691,17 @@ class Test_ImageSearcher_EmbeddedMedia(object):
 
     E_Artist = Artist('my artist')
     E_Album = Album('my album')
-    E_testdir1 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia1')
-    E_imagepath1 = Path.joinpath(E_testdir1, 'cover.jpg')
-    E_testdir2 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia2')
-    E_imagepath2 = Path.joinpath(E_testdir2, 'cover.jpg')
-    E_testdir3jpg = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 JPG')
-    E_imagepath3jpg = Path.joinpath(E_testdir3jpg, 'cover.jpg')
-    E_testdir3png = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 PNG')
-    E_imagepath3png = Path.joinpath(E_testdir3png, 'cover.png')
-    E_testdir3e = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty mp3')
-    E_imagepath3e = Path.joinpath(E_testdir3e, 'cover.png')
-    E_testdir3bi = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 bad image')
-    E_imagepath3bi = Path.joinpath(E_testdir3bi, 'cover.png')
-    E_testdir4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia4 PNG multiple')
-    E_imagepath4 = Path.joinpath(E_testdir4, 'cover.png')
+    E_imagepath1 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia1', 'cover.jpg')
+    E_imagepath2 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia2', 'cover.jpg')
+    E_imagepath3jpg = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 JPG', 'cover.jpg')
+    E_imagepath3png = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 PNG', 'cover.png')
+    E_imagepath3e_mp3 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty mp3', 'cover.png')
+    E_imagepath3e_mp4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty mp4', 'cover.png')
+    E_imagepath3e_ogg = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty ogg', 'cover.png')
+    E_imagepath3e_flac = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty flac', 'cover.png')
+    E_imagepath3e_wma = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 empty wma', 'cover.png')
+    E_imagepath3bi = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia3 bad image', 'cover.png')
+    E_imagepath4 = Path.joinpath(resources, 'test_ImageSearcher_EmbeddedMedia4 PNG multiple', 'cover.png')
 
     # @pytest.mark.dependency(name='test_res_E')
     # @pytest.mark.parametrize('test_res_path',
@@ -768,8 +767,28 @@ class Test_ImageSearcher_EmbeddedMedia(object):
             ),
             pytest.param
             (
-                E_imagepath3e, E_Artist, E_Album, png, False,
-                id='mp3 file is zero size file'
+                E_imagepath3e_mp3, E_Artist, E_Album, png, False,
+                id='zero size mp3 file'
+            ),
+            pytest.param
+            (
+                E_imagepath3e_mp4, E_Artist, E_Album, png, False,
+                id='zero size mp4'
+            ),
+            pytest.param
+            (
+                E_imagepath3e_flac, E_Artist, E_Album, png, False,
+                id='zero size flac'
+            ),
+            pytest.param
+            (
+                E_imagepath3e_ogg, E_Artist, E_Album, png, False,
+                id='zero size ogg file'
+            ),
+            pytest.param
+            (
+                E_imagepath3e_wma, E_Artist, E_Album, png, False,
+                id='zero size wma'
             ),
             pytest.param
             (
@@ -1083,25 +1102,22 @@ class Test_media(object):
     )
     def test_parse_media_file(self, ti_fname, ti_ar, ti_al):
         fp = exists_or_skip(ti_fname)
-        ar, al = audio_type_get_artist_album[fp.suffix](fp)
+        ar, al = get_artist_album[fp.suffix](fp)
         assert ar == ti_ar
         assert al == ti_al
 
     def test_ogg_as_mp3_fail(self):
         fp = exists_or_skip('_.ogg')
-        with pytest.raises(ID3NoHeaderError):
-            get_artist_album_mp3(fp)
+        assert empty_ArtAlb == get_artist_album_mp3(fp)
 
     def test_ogg_as_wma_fail(self):
         fp = exists_or_skip('_.ogg')
-        with pytest.raises(ASFHeaderError):
-            get_artist_album_asf(fp)
+        assert empty_ArtAlb == get_artist_album_asf(fp)
 
     def test_ogg_as_flac_fail(self):
         fp = exists_or_skip('_.ogg')
-        with pytest.raises(FLACNoHeaderError):
-            get_artist_album_flac(fp)
+        assert empty_ArtAlb == get_artist_album_flac(fp)
 
     def test_bad_file_suffix(self):
         with pytest.raises(KeyError):
-            _ = audio_type_get_artist_album['foo.bad']
+            _ = get_artist_album['foo.bad']
