@@ -34,8 +34,9 @@ import sys
 if sys.version_info < (3, 7):
     raise RuntimeError('This script is meant for python 3.7 or newer. It will'
                        ' fail using this python version %s' % sys.version)
-sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
-sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
+if not 'pytest' in sys.modules:  # workaround for https://github.com/pytest-dev/pytest/issues/4843
+    sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
 import os
 import json
 import re
