@@ -27,12 +27,15 @@ __doc__ = \
 # stdlib imports
 #
 import sys
-# XXX: PEP8 complains about this occurring. But do this check sooner so the
-#      user does not install non-standard libraries (due to import failures)
-#      only to find out they used the wrong version of Python 3.
+# XXX: PEP8 complains about non-import statements before imports are done. But
+#      do this check sooner so the user does not install non-standard libraries
+#      (due to import failures) only to find out they used the wrong version of
+#      Python 3
 if sys.version_info < (3, 7):
-    raise Exception('This script is meant for python 3.7 or newer and will fail'
-                    ' using this python version %s' % sys.version)
+    raise RuntimeError('This script is meant for python 3.7 or newer. It will'
+                       ' fail using this python version %s' % sys.version)
+sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
+sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
 import os
 import json
 import re
