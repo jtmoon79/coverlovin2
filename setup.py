@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'musicbrainzngs >= 0.6',
         'mutagen >= 1.42.0',
+        'Pillow >= 5.4.1',
     ],
     # see https://pypi.org/classifiers/
     classifiers=[
