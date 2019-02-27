@@ -16,7 +16,7 @@ __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2'
 __url_source__ = __url__
 __url_project__ = 'https://pypi.org/project/CoverLovin2/'
-__version__ = '0.5.5'  # canonical version (don't set version anywhere else)
+__version__ = '0.5.6'  # canonical version (don't set version anywhere else)
 __doc__ = \
     """Recursively process passed directories of audio media files, attempting
  to create a missing album image file, either via local searching and
