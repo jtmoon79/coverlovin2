@@ -9,13 +9,13 @@ CoverLovin2
 [![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-*CoverLovin2* (Cover Loving, too!), python name *coverlovin2*, is a Python
+*CoverLovin2* (Cover Loving, too!), Python name *coverlovin2*, is a Python
 script for downloading album cover art images, either via local searching and
 copying, or via downloading from various online services.
 A common use-case is creating a "`cover.jpg`" file for a large collection of
 ripped Compact Disc albums.
 
-coverlovin2 can only be run by python version 3.7 (or greater).
+coverlovin2 can only be run by Python version 3.7 (or greater).
 
 Script Usage
 ------------
@@ -165,7 +165,7 @@ Clone the repository:
 
     git clone git@github.com:jtmoon79/coverlovin2.git
 
-Start the python virtual environment and install the dependencies:
+Start the Python virtual environment and install the dependencies:
 
     cd coverlovin2
     pipenv --python 3.7 shell
@@ -193,7 +193,7 @@ Some things the author explored:
     - [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
     - [Circle CI](https://circleci.com/gh/jtmoon79/coverlovin2)
     - [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
-    - ☹ [Requires.io](https://requires.io/github/jtmoon79/coverlovin2) (stuck at "_Loading Requirements..._")
+    - [Requires.io](https://requires.io/github/jtmoon79/coverlovin2)
     - ☹ landscape.io ([had too many problems](https://github.com/landscapeio/landscape-issues/issues))
   - package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
 - [pytests](./coverlovin2/test)!
@@ -208,6 +208,25 @@ and mypy seem to catch different type-hint warnings.
   - virtual environment manager `pipenv`.
 - printing odd UTF-8 characters (for example, `\uFF5B`, `｛`) and coercing UTF8
 mode (within a context without UTF8 support; MinGW bash on Windows)
+
+#### Issues‼  🐛 🐵
+
+Other projects Bug Issues 🐛 and Feature Issues 🐵 the author created in the
+course of writing this application:
+
+🐵 [pypa/pipenv #3505](https://github.com/pypa/pipenv/issues/3505)
+
+🐛 [pypa/pipenv #3521](https://github.com/pypa/pipenv/issues/3521)
+
+🐛 [pypa/pipenv #3523](https://github.com/pypa/pipenv/issues/3523)
+
+🐛 [pypa/pipenv #3529](https://github.com/pypa/pipenv/issues/3529)
+
+🐛 [python/mypy #6476](https://github.com/python/mypy/issues/6476)
+
+🐛 [python/mypy #6473](https://github.com/python/mypy/issues/6473)
+
+🐛 [ant-druha/PowerShell #16](https://github.com/ant-druha/PowerShell/issues/16)
 
 #### run phases
 
