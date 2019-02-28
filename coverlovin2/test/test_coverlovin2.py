@@ -27,30 +27,35 @@ from mutagen.asf import ASFHeaderError
 from mutagen.flac import FLACNoHeaderError
 
 # custom imports
-from ..coverlovin2 import Artist
-from ..coverlovin2 import Album
-from ..coverlovin2 import GoogleCSE_Opts
-from ..coverlovin2 import ImageSize
-from ..coverlovin2 import ImageType
-from ..coverlovin2 import URL
-from ..coverlovin2 import str_AA
-from ..coverlovin2 import func_name
-from ..coverlovin2 import similar
-from ..coverlovin2 import log_new
-from ..coverlovin2 import LOGFORMAT
-from ..coverlovin2 import get_artist_album_mp3
-from ..coverlovin2 import get_artist_album_mp4
-from ..coverlovin2 import get_artist_album_flac
-from ..coverlovin2 import get_artist_album_ogg
-from ..coverlovin2 import get_artist_album_asf
-from ..coverlovin2 import get_artist_album
-from ..coverlovin2 import ImageSearcher
-from ..coverlovin2 import ImageSearcher_LikelyCover
-from ..coverlovin2 import ImageSearcher_EmbeddedMedia
-from ..coverlovin2 import ImageSearcher_MusicBrainz
-from ..coverlovin2 import ImageSearcher_GoogleCSE
-from ..coverlovin2 import process_dir
-
+from ..coverlovin2 import (
+    Artist,
+    Album,
+    DirArtAlb,
+    DirArtAlb_List,
+    GoogleCSE_Opts,
+    ImageSize,
+    ImageType,
+    URL,
+    str_AA,
+    func_name,
+    similar,
+    log_new,
+    LOGFORMAT,
+    get_artist_album_mp3,
+    get_artist_album_mp4,
+    get_artist_album_flac,
+    get_artist_album_ogg,
+    get_artist_album_asf,
+    get_artist_album,
+    ImageSearcher,
+    ImageSearcher_LikelyCover,
+    ImageSearcher_EmbeddedMedia,
+    ImageSearcher_MusicBrainz,
+    ImageSearcher_GoogleCSE,
+    process_dir,
+    process_dirs,
+    parse_args_opts,
+)
 
 # all committed test resources should be under this directory
 resources = Path.joinpath(Path(__file__).parent, 'test_resources')
@@ -1039,30 +1044,107 @@ class Test_ImageSearcher_MusicBrainz(object):
 
 class Test_complex_funcs(object):
 
-    def test_process_dir_ValueError(self):
-        """image_path is not child of dirp so raise ValueError"""
-        dirp = Path('/')
-        image_path = dirp.joinpath('foo', 'bar')
-        with pytest.raises(ValueError):
-            process_dir(dirp, image_path, False, queue.SimpleQueue(), [])
-
-    @pytest.mark.parametrize('ti_dirp, ti_image_path',
+    @pytest.mark.parametrize('dirp, image_nt',
         (
             pytest.param(resources.joinpath('test_process_dir_1_empty'),
-                         resources.joinpath('test_process_dir_1_empty',
-                                            'not exist.jpg'),
+                         'not exist.jpg',
                          id='test_process_dir_1_empty'),
         )
     )
-    def test_process_dir(self, ti_dirp, ti_image_path):
+    def test_process_dir(self, dirp, image_nt):
         daa_list = []
         sq = queue.SimpleQueue()
-        process_dir(ti_dirp, ti_image_path, False, sq, daa_list)
+        daa_list = process_dir(dirp, image_nt, False, sq, daa_list)
         assert not daa_list
         assert sq.empty()
 
+    res2 = resources.joinpath('test_process_dir_2')
+    res2a1 = res2.joinpath('artist1 - album1')
+    res2a2 = res2.joinpath('artist2 -- album2')
+    res3 = resources.joinpath('test_process_dir_3')
+    res3a1 = res3.joinpath('artist1 - album1')
+    res3a2a = res3.joinpath('artist2', 'album2a')
+    res3a2b = res3.joinpath('artist2', 'album2b')
+    res3a3 = res3.joinpath('artist3 -- 2003 -- album3')
+    res3a4 = res3.joinpath('artist4 ! -- 2004 -- album4 !')
+    res4 = resources.joinpath('test_process_dir_4')
+    res4a1 = res4.joinpath('artist1 - album has cover')  # TODO: run test this resource exists
+    res4a2 = res4.joinpath('artist2 -- 2002 -- album2')
+
+    @pytest.mark.parametrize('dirp, image_nt, qsize, daa_list_expect',
+        (
+            pytest.param
+            (
+                res2, 'cover.jpg', 0, [
+                    (res2a1, Artist('artist1'), Album('album1')),
+                    (res2a2, Artist('artist2'), Album('album2')),
+                ],
+                id=res2.name
+            ),
+            pytest.param
+            (
+                res3, 'cover.jpg', 0, [
+                    (res3a1, Artist('artist1'), Album('album1')),
+                    # unable to parse path structure artist/album/song.mp3 so these Artist Album are empty
+                    (res3a2a, Artist(''), Album('')),
+                    (res3a2b, Artist(''), Album('')),
+                    (res3a3, Artist('artist3'), Album('album3')),
+                    (res3a4, Artist('artist4 !'), Album('album4 !')),
+                ],
+                id=res3.name
+            ),
+            pytest.param
+            (
+                res4, 'cover.jpg', 1, [
+                    # should not include res4a1
+                    (res4a2, Artist('artist2'), Album('album2')),
+                ],
+                id=res4.name
+            ),
+        )
+    )
+    def test_process_dir(self, dirp: Path, image_nt: str, qsize, daa_list_expect):
+        sq = queue.SimpleQueue()
+        assert dirp.is_dir()
+        daa_list = process_dir(dirp, image_nt, False, sq, [])
+        assert daa_list == daa_list_expect
+        assert qsize == sq.qsize()
+
     # TODO: add testing of process_dir that exercises more code
     #       need to add test "album" directories
+    #def test_process_dirs(self):
+    #    return True
+
+    @pytest.mark.parametrize('args',
+        (
+            pytest.param
+            (
+                [], id='(empty)'
+            ),
+            pytest.param
+            (
+                ['--help'], id='--help'
+            ),
+        )
+    )
+    def test_parse_args_raises_SystemExit(self, args):
+        with pytest.raises(SystemExit):
+            parse_args_opts(args=args)
+
+    # These tests do not need to be elaborate. Enough confidence can be had of
+    # the argparse.ArgumentParser setup via code inspection; not worth the time
+    # trade-off. These tests are to increase code coverage score.
+    argtest1 = ['-se', '.']
+    argtest2 = ['-se', '--test-only', '.', '..']
+    @pytest.mark.parametrize('args',
+        (
+            pytest.param(argtest1, id=str(argtest1)),
+            pytest.param(argtest2, id=str(argtest2)),
+        )
+    )
+    def test_parse_args(self, args):
+        assert parse_args_opts(args=args)
+
 
 
 class Test_media(object):

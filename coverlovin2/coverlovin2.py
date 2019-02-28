@@ -1233,7 +1233,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         return True if self._image_bytes else False
 
 
-def process_dir(dirp: Path, image_path: Path, overwrite: bool,
+def process_dir(dirp: Path, image_nt: str, overwrite: bool,
                 result_queue: queue.SimpleQueue, daa_list: DirArtAlb_List)\
         -> DirArtAlb_List:
     """
@@ -1246,16 +1246,20 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
 
     TODO: XXX: this function does too much. work within this function needs to
                be seperated into more discrete tasks starting with:
-               def deteremine_Artist_Album(dirp: Path) -> DirArtAlb
+               `def deteremine_Artist_Album(dirp: Path) -> DirArtAlb`
+
+    TODO: XXX: having this a recursive function just makes it weird. Consider
+               `os.walk` instead
+
+    TODO: XXX: I truly hate this function.
 
     :param dirp: directory path to process
-    :param image_path: path to image file (which may or many not exist)
-                       the parent dir should be dirp
+    :param image_nt: image name and type, e.g. "cover.jpg"
     :param overwrite: --overwrite
     :param daa_list: accumulated directories for later processing
     :return accumulated directories for later processing
     """
-    log.debug('process_dir("%s", "%s", …)', dirp, image_path)
+    log.debug('process_dir("%s", "%s", …)', dirp, image_nt)
 
     dirs = []
     files = []
@@ -1266,10 +1270,6 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
     if not dirp.is_dir():
         log.error('path is not a directory: "%s"', dirp)
         return daa_list
-
-    if not dirp == image_path.parent:
-        raise ValueError('Expected directory and image_path to be related'
-                         ' "%s" ≠ "%s"' % (dirp, image_path))
 
     # read dirp directory contents
     try:
@@ -1290,9 +1290,8 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
     # recurse into subdirs
     dirs.sort()
     for dir_ in dirs:
-        ipath = dir_.joinpath(image_path.name)
         # XXX: should not this append the return of process_dir?
-        daa_list = process_dir(dir_, ipath, overwrite, result_queue,
+        daa_list = process_dir(dir_, image_nt, overwrite, result_queue,
                                daa_list=daa_list)
 
     # if there are no audio media files in this directory (search by suffix,
@@ -1302,18 +1301,20 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
                for suffix in AUDIO_TYPES):
         log.debug('no audio media files within directory "%s"', dirp)
         return daa_list
+    log.debug('found audio media files within directory "%s"', dirp)
 
     # if image file path already exists and not overwrite then return
+    image_path = dirp.joinpath(image_nt)
     if image_path.exists():
         if not overwrite:
             log.debug('cover file "%s" exists and no overwrite,'
-                      ' skip directory "%s"', image_path.name, dirp)
+                      ' skip directory "%s"', image_nt, dirp)
             result_queue.put('cover file "%s" exists and no overwrite,'
-                             ' skip directory "%s"' % (image_path.name, dirp))
+                             ' skip directory "%s"' % (image_nt, dirp))
             return daa_list
         else:
             log.debug('cover file "%s" exists and passed --overwrite',
-                      image_path.name)
+                      image_nt)
 
     # if `dirp` is already within daa_list then no further processing needed
     if dirp in [d_[0] for d_ in daa_list]:
@@ -1372,12 +1373,10 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
     album = Album('')
     bname = dirp.name
     for patt in [# Artist -- Year -- Album
-                 (r'''([\w\W]+)[ ]+\-\-[ ]+([\d]{4})[ ]+\-\-[ ]+([\w\W]+)''',
+                 (r'''([\w\W]+)[ ]+[\-]{1,2}[ ]+([\d]{4})[ ]+[\-]{1,2}[ ]+([\w\W]+)''',
                   0, 2),
                  # Artist -- Album
-                 (r'''([\w\W]+) \-\- ([\w\W]+)''', 0, 1),
-                 # Artist - Album
-                 (r'''([\w\W]+) \- ([\w\W]+)''', 0, 2),
+                 (r'''([\w\W]+) [\-]{1,2} ([\w\W]+)''', 0, 1),
                 ]:
         try:
             fm = re.fullmatch(patt[0], bname)
@@ -1403,8 +1402,8 @@ def process_dir(dirp: Path, image_path: Path, overwrite: bool,
         except:
             pass
 
-    log.debug('no Artist or Album found or no suitable media files within "%s"',
-              dirp)
+    log.debug('no Artist or Album found or derived or no suitable media files'
+              ' within "%s"', dirp)
 
     # XXX: This special case must be handled in implementations of
     #      `search_album_image`. It is used in
@@ -1432,8 +1431,8 @@ def process_dirs(dirs: typing.List[Path], image_name: str,
     daa_list: DirArtAlb_List = []
     for dir_ in dirs:
         d_ = Path(dir_)
-        image_path = d_.joinpath(image_name + os.extsep + image_type.value)
-        daal = process_dir(d_, image_path, overwrite, result_queue, daa_list=[])
+        image_nt = image_name + os.extsep + image_type.value
+        daal = process_dir(d_, image_nt, overwrite, result_queue, daa_list=[])
         if daal:
             daa_list += daal
         log.debug('')
@@ -1561,14 +1560,14 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
         task_queue.task_done()
 
 
-def parse_args_opts():
+def parse_args_opts(args=None):
     """parse command line arguments and options"""
 
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter)
     parser.description = '''\
 This Python-based program is for automating downloading album cover art images.
-A common use-case is creating a "folder.jpg" file for a collection of ripped
+A common use-case is creating a "cover.jpg" file for a collection of ripped
 Compact Disc albums.
 
 Given a list of directories, DIRS, recursively identify "album" directories.
@@ -1721,7 +1720,7 @@ Source code: %s
 
 Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     if args.search_all:
         args.search_likely = True
