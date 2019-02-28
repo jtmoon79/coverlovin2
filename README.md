@@ -151,6 +151,7 @@ Installation
 
 * Using `pip` from source:
   
+      pip install mutagen musicbrainzngs Pillow
       pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
@@ -169,7 +170,7 @@ Start the Python virtual environment and install the dependencies:
 
     cd coverlovin2
     pipenv --python 3.7 shell
-    pipenv --python 3.7 install --dev
+    pipenv install --dev
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
 
