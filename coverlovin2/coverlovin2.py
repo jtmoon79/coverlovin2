@@ -128,8 +128,8 @@ class ImageSize(enum.Enum):
 
 
 # Tying out namedtuple for typing this.
-# XXX: AFAICT, cannot type-hint the attributes within the namedtuple.
-# TODO: use typing.NamedTuple
+# TODO: use typing.NamedTuple?
+# XXX: AFAICT, cannot type-hint the attributes within the collections.namedtuple
 class GoogleCSE_Opts(collections.namedtuple('GoogleCSE_Opts',
                                             'key id image_size')):
 
@@ -481,7 +481,7 @@ def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
 
 
 # associate file extension to retrieval helper functions
-# XXX: why not use `mutagen.File` instead?
+# TODO: XXX: use `mutagen.File` instead, let mutagen figure out the type
 get_artist_album = {
     '.mp3': get_artist_album_mp3,
     '.m4a': get_artist_album_mp4,
@@ -1822,6 +1822,7 @@ def main():
     task_queue.join()
 
     # print results and exit gracefully
+    # TODO: print improve summary table of results (is there a print table python library? gotta be!)
     try:
         while True:
             msg = result_queue.get_nowait()
