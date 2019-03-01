@@ -30,7 +30,9 @@ jobs:
             python -m pip install --user pipenv
             pipenv --version
             export PIPENV_CACHE_DIR=~/.pipenv
-            mkdir -v -- "${PIPENV_CACHE_DIR}"
+            export PIPENV_VIRTUALENV=~/.pipenv-venv
+            mkdir -v -- "${PIPENV_CACHE_DIR}" "${PIPENV_VIRTUALENV}"
+            export WORKON_HOME=${PIPENV_VIRTUALENV}
             pipenv install --dev
             # make really sure setuptools and wheel is the latest
             pipenv run pip install --upgrade setuptools wheel
@@ -38,6 +40,7 @@ jobs:
           name: cache of pipenv installs
           paths:
             - ~/.pipenv
+            - ~/.pipenv-venv
           key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - persist_to_workspace:
           root: ~/
@@ -57,6 +60,8 @@ jobs:
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
+            export PIPENV_VIRTUALENV=~/.pipenv-venv\
+            export WORKON_HOME=${PIPENV_VIRTUALENV}
             python -m pipenv --where
             python -m pipenv --venv
             python -m pipenv --py
@@ -75,6 +80,8 @@ jobs:
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
+            export PIPENV_VIRTUALENV=~/.pipenv-venv
+            export WORKON_HOME=${PIPENV_VIRTUALENV}
             pipenv run python3 -m pytest -v coverlovin2/test
   build_pypi:
     docker:
@@ -90,6 +97,8 @@ jobs:
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
+            export PIPENV_VIRTUALENV=~/.pipenv-venv
+            export WORKON_HOME=${PIPENV_VIRTUALENV}
             pipenv run bash tools/build-install-test.sh
 workflows:
   version: 2
