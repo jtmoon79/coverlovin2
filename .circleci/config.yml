@@ -57,7 +57,10 @@ jobs:
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
-            python -m pipenv run tools/test-python36.sh
+            python -m pipenv --where
+            python -m pipenv --venv
+            python -m pipenv --py
+            python -m pipenv --python $(which python) run tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
