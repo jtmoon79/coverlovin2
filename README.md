@@ -20,6 +20,12 @@ coverlovin2 can only be run by Python version 3.7 (or greater).
 Script Usage
 ------------
 
+To see what it will do without changing any files
+
+    coverlovin2 -s- --test /path/to/music/library
+
+The verbose `--help` message
+
 ```Text
 usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-sl]
                       [-se] [-sm] [-sg] [-s {small,medium,large}] [--gid GID]

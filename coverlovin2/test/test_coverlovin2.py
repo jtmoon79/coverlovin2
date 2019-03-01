@@ -1117,33 +1117,59 @@ class Test_complex_funcs(object):
 
     @pytest.mark.parametrize('args',
         (
-            pytest.param
-            (
-                [], id='(empty)'
-            ),
-            pytest.param
-            (
-                ['--help'], id='--help'
-            ),
+            pytest.param([], id='(empty)'),
+            pytest.param(['--help'], id='--help'),
+            pytest.param(['.'], id='no search methods selected'),
+            pytest.param(['-sg', '.'], id='Google missing gkey gid'),
+            pytest.param(['-sg', '--sgkey', 'foobar', '.'], id='Google missing gid'),
+            pytest.param(['-sg', '--sgid ', 'foobar', '.'], id='Google missing gkey'),
         )
     )
     def test_parse_args_raises_SystemExit(self, args):
         with pytest.raises(SystemExit):
             parse_args_opts(args=args)
 
+
     # These tests do not need to be elaborate. Enough confidence can be had of
     # the argparse.ArgumentParser setup via code inspection; not worth the time
     # trade-off. These tests are to increase code coverage score.
     argtest1 = ['-se', '.']
-    argtest2 = ['-se', '--test-only', '.', '..']
+    argtest2 = ['-se', '--test', '.', '..']
+    argtest3 = ['-sg', '--sgid', 'my id', '--sgkey', 'my key', '.']
+    argtest4 = ['-sg', '--sgid', 'my id', '--sgkey', 'my key', '.', '.']
+    argtest5 = ['.', '-sg', '--sgid', 'my id', '--sgkey', 'my key', '.', '.']
     @pytest.mark.parametrize('args',
         (
             pytest.param(argtest1, id=str(argtest1)),
             pytest.param(argtest2, id=str(argtest2)),
+            pytest.param(argtest3, id=str(argtest3)),
+            pytest.param(argtest4, id=str(argtest4)),
+            pytest.param(argtest5, id=str(argtest5)),
         )
     )
     def test_parse_args(self, args):
         assert parse_args_opts(args=args)
+
+    @pytest.mark.parametrize('args, ret_expect',
+        (
+            pytest.param(['-s-', '.'],
+                         (['.'], None, None, True, True, True, False, None, None, None, None, None),
+                         id='-s- .'),
+            pytest.param(['.', '-se', '.', '..'],
+                         (['.', '.', '..'], None, None, False, True, False, False, None, None, None, None, None),
+                         id='. -se . ..'),
+            pytest.param(['-s*', '.',  '--sgkey', 'my key', '--sgid', 'my id'],
+                         (['.'], None, None, True, True, True, True, None, None, None, None, None),
+                         id='-s* . …'),
+        )
+    )
+    def test_parse_args_more(self, args, ret_expect):
+        """only compare expected return values that are not None"""
+        ret = parse_args_opts(args=args)
+        for i in range(len(ret_expect)):
+            if ret_expect[i] is None:
+                continue
+            assert ret[i] == ret_expect[i]
 
 
 

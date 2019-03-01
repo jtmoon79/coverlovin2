@@ -1609,6 +1609,12 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                       help='Search for album cover images using all methods and'
                            ' services'
                       )
+    argg.add_argument('-s-', '--search-all-no-init', dest='search_all_noinit',
+                      action='store_true', default=False,
+                      help='Search for album cover images using all methods and'
+                           ' services that do not require user initialization'
+                           ' (e.g. no Google CSE).'
+                      )
 
     argg = parser.add_argument_group('Search the local directory for likely'
                                      ' album cover images')
@@ -1654,23 +1660,20 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' The end of this help message has more advice'
                            ' around using Google CSE.'
                       )
-    argg.add_argument('-s', '--gsize', dest='gsize', action='store',
+    argg.add_argument('-sgz', '--sgsize', dest='gsize', action='store',
                       default=gio[len(gio)-1], choices=gio,
                       help='Google CSE optional image file size '
                       '(default: "%(default)s")')
-    argg.add_argument('--gid', dest='gid', action='store',
+    argg.add_argument('--sgid', dest='gid', action='store',
                       help='Google CSE ID (URL parameter "cx")'
                       ' typically looks like'
                       ' "009494817879853929660:efj39xwwkng".  REQUIRED to use'
                       ' Google CSE.')
-    argg.add_argument('--gkey', dest='gkey', action='store',
+    argg.add_argument('--sgkey', dest='gkey', action='store',
                       help='Google CSE API Key (URL parameter "key") typically'
                       ' looks like'
                       ' "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst". REQUIRED to'
                       ' use Google CSE.')
-    #argg.add_argument('-c', '--count', dest='count', action='store',
-    #                  default='8', type=int,
-    #                  help='image lookup count (default: %(default)s)')
 
     argg = parser.add_argument_group('Debugging and Miscellanea')
     argg.add_argument('-v', '--version', action='version', version=__version__)
@@ -1705,8 +1708,8 @@ IMAGE_NAME.IMAGE_TYPE (-n … -i …).
 
 If option --search-googlecse is chosen then you must create your Google Custom
 Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
-takes about 5 minutes.  This is where your own values for --gid and --gkey can
-be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
+takes about 5 minutes.  This is where your own values for --sgid and --sgkey can
+be created. --sgid is "Search engine ID" (URI parameter "cx") and --sgkey is
 under the "Custom Search JSON API" from which you can generate an API Key (URI
 parameter "key"). A key can be generated at
 https://console.developers.google.com/apis/credentials.
@@ -1718,7 +1721,7 @@ Source code: %s
 
 Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
 
-    args = parser.parse_args(args)
+    args = parser.parse_intermixed_args(args)
 
     if args.search_all:
         args.search_likely = True
@@ -1726,20 +1729,28 @@ Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
         args.search_musicbrainz = True
         args.search_googlecse = True
 
+    if args.search_all_noinit:
+        args.search_likely = True
+        args.search_embedded = True
+        args.search_musicbrainz = True
+        if args.search_googlecse:
+            log.warning('--search-googlecse was selected while'
+                        ' --search-all-noinit was also selected')
+
     if not (args.search_likely or args.search_musicbrainz
             or args.search_googlecse or args.search_embedded):
         parser.error('no selected search method. Select a search, e.g. -sl or '
                      '--search-musicbrainz or -s*')
 
     if args.search_googlecse:
-        if not args.gkey:
-            parser.error('passed --search-googlecse (-sg or -s*) so --gid is'
+        if not args.gid:
+            parser.error('passed --search-googlecse (-sg or -s*) so --sgid is'
                          ' also required')
         if not args.gkey:
-            parser.error('passed --search-googlecse (-sg or -s*) so --gkey is'
+            parser.error('passed --search-googlecse (-sg or -s*) so --sgkey is'
                          ' also required')
     elif args.gkey or args.gkey:
-        log.warning('not passed --search-googlecse (-sg) so --gkey and --gid'
+        log.warning('not passed --search-googlecse (-sg) so --sgkey and --sgid'
                     ' are not necessary')
 
     if args.search_musicbrainz:
