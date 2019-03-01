@@ -11,6 +11,8 @@ pytest-cov = "*"
 codecov = "*"
 setuptools = "*"
 wheel = "*"
+yamllint = "*"
+pipenv = "*"
 
 [packages]
 musicbrainzngs = ">=0.6"
