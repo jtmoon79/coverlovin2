@@ -14,17 +14,20 @@ jobs:
       - run:
           command: |
             set -x
-            echo "\n\n### record information about the shell context\n\n"
+            echo -e "\n\n### record information about the shell context\n\n"
             pwd
             shopt
             env | sort
             uname -a
             ls -la
-            echo "\n\n### prepare the jobs workspace\n\n"
+            which python
+            python --version
+            if which pipenv 2>/dev/null; then pipenv --version; fi
+            echo -e "\n\n### prepare the jobs workspace\n\n"
             chmod -vR +x,-w -- ./tools/
-            echo "\n\n### prepare the cache\n\n"
+            echo -e "\n\n### prepare the cache\n\n"
             python -m pip install --user --upgrade pip
-            python -m pip install pipenv
+            python -m pip install --user pipenv
             pipenv --version
             export PIPENV_CACHE_DIR=~/.pipenv
             mkdir -v -- "${PIPENV_CACHE_DIR}"
@@ -51,7 +54,7 @@ jobs:
       - run:
           command: |
             pwd
-            python -m pip install pipenv
+            python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run tools/test-python36.sh
   test_pytest:
@@ -65,7 +68,7 @@ jobs:
       - run:
           command: |
             pwd
-            python -m pip install pipenv
+            python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run python3 -m pytest -v coverlovin2/test
   build_pypi:
@@ -79,7 +82,7 @@ jobs:
       - run:
           command: |
             pwd
-            python -m pip install pipenv
+            python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run bash tools/build-install-test.sh
 workflows:
