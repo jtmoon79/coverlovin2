@@ -6,6 +6,9 @@ Test the coverlovin2 project using pytest.
 
 Technique and recommendations taken from https://docs.pytest.org/en/latest/
 
+Parts of this file follow breaks formatting conventions. Allowed since this is
+test code and since long lines of repetitive test cases deserve exemption.
+
 """
 
 __author__ = 'James Thomas Moon'
@@ -1153,13 +1156,13 @@ class Test_complex_funcs(object):
     @pytest.mark.parametrize('args, ret_expect',
         (
             pytest.param(['-s-', '.'],
-                         (['.'], None, None, True, True, True, False, None, None, None, None, None),
+                         (['.'], None, None, (True, True, True, False), None, None, None, None, None),
                          id='-s- .'),
             pytest.param(['.', '-se', '.', '..'],
-                         (['.', '.', '..'], None, None, False, True, False, False, None, None, None, None, None),
+                         (['.', '.', '..'], None, None, (False, True, False, False), None, None, None, None, None),
                          id='. -se . ..'),
             pytest.param(['-s*', '.',  '--sgkey', 'my key', '--sgid', 'my id'],
-                         (['.'], None, None, True, True, True, True, None, None, None, None, None),
+                         (['.'], None, None, (True, True, True, True), None, None, None, None, None),
                          id='-s* . …'),
         )
     )

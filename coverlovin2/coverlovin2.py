@@ -87,6 +87,9 @@ class URL(str):
     """string type with constraints on values.
     The value must look like an http* URL string.
 
+    NOTE: There are great libraries for safe and flexible URL handling (like
+          purl). But this project is for the sake of learning.
+
     Immutable types are treated differently when inherited:
     https://stackoverflow.com/a/2673863/471376
     """
@@ -1233,8 +1236,11 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         return True if self._image_bytes else False
 
 
-def process_dir(dirp: Path, image_nt: str, overwrite: bool,
-                result_queue: queue.SimpleQueue, daa_list: DirArtAlb_List)\
+def process_dir(dirp: Path,
+                image_nt: str,
+                overwrite: bool,
+                result_queue: queue.SimpleQueue,
+                daa_list: DirArtAlb_List)\
         -> DirArtAlb_List:
     """
     Recursively process sub-directories of given directory,
@@ -1419,9 +1425,12 @@ def process_dir(dirp: Path, image_nt: str, overwrite: bool,
     return daa_list
 
 
-def process_dirs(dirs: typing.List[Path], image_name: str,
-                 image_type: ImageType, overwrite: bool,
-                 result_queue: queue.SimpleQueue)\
+def process_dirs(
+        dirs: typing.List[Path],
+        image_name: str,
+        image_type: ImageType,
+        overwrite: bool,
+        result_queue: queue.SimpleQueue)\
         -> Path_List:
     """
     Gather list of directories where Album • Artist info can be derived.
@@ -1444,11 +1453,18 @@ def process_dirs(dirs: typing.List[Path], image_name: str,
     return path_list
 
 
-def search_create_image(image_path: Path, artist: Artist, album: Album,
-                        image_type: ImageType, image_name: str,
-                        searches,
-                        googlecse_opts: GoogleCSE_Opts,
-                        referer: str, overwrite: bool, debug: bool, test: bool)\
+def search_create_image(
+        image_path: Path,
+        artist: Artist,
+        album: Album,
+        image_type: ImageType,
+        image_name: str,
+        searches,
+        googlecse_opts: GoogleCSE_Opts,
+        referer: str,
+        overwrite: bool,
+        debug: bool,
+        test: bool)\
         -> typing.Tuple[bool, str]:
     """
     Do the download using ImageSearchers given the needed data. Write image
@@ -1459,7 +1475,10 @@ def search_create_image(image_path: Path, artist: Artist, album: Album,
 
     # TODO: Have order of requested searchers matter. Search in order of passed
     #       script options.
-    search_likely, search_embedded, search_musicbrainz, search_googlecse \
+    search_likely, \
+    search_embedded, \
+    search_musicbrainz, \
+    search_googlecse \
         = searches
     searchers = (
         ImageSearcher_LikelyCover(image_path, referer, debug)
@@ -1524,7 +1543,9 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 image_path,
                 image_type,
                 image_name,
-                (search_likely, search_embedded, search_musicbrainz,
+                (search_likely,
+                 search_embedded,
+                 search_musicbrainz,
                  search_googlecse),
                 googlecse_opts,
                 referer,
@@ -1544,7 +1565,9 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 album,
                 image_type,
                 image_name,
-                (search_likely, search_embedded, search_musicbrainz,
+                (search_likely,
+                 search_embedded,
+                 search_musicbrainz,
                  search_googlecse),
                 googlecse_opts,
                 referer,
@@ -1565,7 +1588,7 @@ def parse_args_opts(args=None):
 
     parser = argparse.ArgumentParser(formatter_class=
                                      argparse.RawDescriptionHelpFormatter)
-    parser.description = '''\
+    parser.description = """\
 This Python-based program is for automating downloading album cover art images.
 A common use-case is creating a "cover.jpg" file for a collection of ripped
 Compact Disc albums.
@@ -1577,7 +1600,7 @@ Then find an album cover image file using the requested --search providers.  If
 an album cover image file is found then write it to IMAGE_NAME.IMAGE_TYPE within
 each "album" directory.
 
-Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
+Audio files supported are %s.""" % ', '.join(AUDIO_TYPES)
 
     # TODO: Have order of requested searchers matter. Search in order of passed
     #       script options.
@@ -1687,7 +1710,7 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
     argg.add_argument('--test', dest='test', action='store_true', default=False,
                       help='Only test, do not write any files')
 
-    parser.epilog = '''\
+    parser.epilog = """\
 This program attempts to create album cover image files for the passed DIRS.  It
 does this several ways, searching for album cover image files already present in
 the directory (-sl).  If not found, it attempts to figure out the Artist and
@@ -1695,7 +1718,7 @@ Album for that directory then searches online services for an album cover image
 (-sm or -sg).
 
 Directories are searched recursively.  Any directory that contains one or more
-with file name extension %s''' % ' or '.join(AUDIO_TYPES) + '''
+with file name extension %s""" % ' or '.join(AUDIO_TYPES) + """
 is presumed to be an album directory.  Given a directory of such files, file
 contents will be read for the Artist name and Album name using embedded audio
 tags (ID3, Windows Media, etc.).  If no embedded media tags are present then a
@@ -1719,7 +1742,7 @@ web" as "OFF".
 PyPi project: %s
 Source code: %s
 
-Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
+Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
 
     args = parser.parse_intermixed_args(args)
 
@@ -1761,13 +1784,18 @@ Inspired by the program coverlovin.''' % (__url_project__, __url_source__)
                       '   pip install musicbrainzngs')
             raise err
 
-    return args.dirs[0], ImageType(args.image_type), args.image_name, \
-           args.search_likely, \
-           args.search_embedded, \
-           args.search_musicbrainz, \
-           args.search_googlecse, \
+    return args.dirs[0], \
+           ImageType(args.image_type), \
+           args.image_name, \
+           (args.search_likely,
+            args.search_embedded,
+            args.search_musicbrainz,
+            args.search_googlecse), \
            GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
-           args.overwrite, args.referer, args.debug, args.test
+           args.overwrite, \
+           args.referer, \
+           args.debug, \
+           args.test
 
 
 def main():
@@ -1775,12 +1803,18 @@ def main():
     Recursively download cover images for music files in a
     given directory and its sub-directories
     """
-    dirs, image_type, image_name, \
-    search_likely, \
-    search_embedded, \
-    search_musicbrainz, \
-    search_googlecse, googlecse_opts, \
-    overwrite, referer, debug, test \
+    dirs, \
+    image_type,\
+    image_name, \
+    (search_likely,
+     search_embedded,
+     search_musicbrainz,
+     search_googlecse),\
+    googlecse_opts, \
+    overwrite, \
+    referer, \
+    debug, \
+    test \
         = parse_args_opts()
 
     if debug:
@@ -1791,7 +1825,10 @@ def main():
 
     # gather list of directories where Album • Artist info can be derived.
     # 'daa' is a DirArtAlb tuple
-    daa_list = process_dirs(dirs, image_name, image_type, overwrite,
+    daa_list = process_dirs(dirs,
+                            image_name,
+                            image_type,
+                            overwrite,
                             result_queue)
 
     #
@@ -1810,7 +1847,9 @@ def main():
                 image_path,
                 image_type,
                 image_name,
-                (search_likely, search_embedded, search_musicbrainz,
+                (search_likely,
+                 search_embedded,
+                 search_musicbrainz,
                  search_googlecse),
                 googlecse_opts,
                 referer,
