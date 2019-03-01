@@ -572,7 +572,7 @@ class ImageSearcher(abc.ABC):
             return False
 
         if test:
-            self.result_message = '(--test-only) %s would have wrote %d bytes'\
+            self.result_message = '(--test) %s would have wrote %d bytes'\
                 ' to "%s"' % (self.NAME, len(self._image_bytes), image_path)
             self._log.debug(self.result_message)
             return True
@@ -835,7 +835,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
             return False
 
         if test:
-            self.result_message = '(--test-only) %s would have copied "%s"' \
+            self.result_message = '(--test) %s would have copied "%s"' \
                                   ' to "%s"' % (self.NAME, self.copy_src,
                                                 self.copy_dst)
             self._log.debug(self.result_message)
@@ -945,7 +945,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
             return False
 
         if test:
-            self.result_message = '(--test-only) %s extracted %d pixels from' \
+            self.result_message = '(--test) %s extracted %d pixels from' \
                                   ' "%s", wrote to "%s"' \
                                   % (self.NAME, self._image.size_pixels,
                                      self._image_src, self.copy_dst)
@@ -1680,11 +1680,9 @@ Audio files supported are %s.''' % ', '.join(AUDIO_TYPES)
                            ' (default: "%(default)s")')
     argg.add_argument('-d', '--debug', dest='debug', action='store_true',
                       default=False,
-                      help='Print debugging messages (default: %(default)s)')
-    argg.add_argument('--test-only', dest='test', action='store_true',
-                      default=False,
-                      help='Only test, do not write any files'
-                           ' (default: %(default)s)')
+                      help='Print debugging messages')
+    argg.add_argument('--test', dest='test', action='store_true', default=False,
+                      help='Only test, do not write any files')
 
     parser.epilog = '''\
 This program attempts to create album cover image files for the passed DIRS.  It
