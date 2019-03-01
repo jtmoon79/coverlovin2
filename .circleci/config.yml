@@ -53,6 +53,7 @@ jobs:
           key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
+            set -x
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
@@ -67,6 +68,7 @@ jobs:
           key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
+            set -x
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
@@ -81,6 +83,7 @@ jobs:
           key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
+            set -x
             pwd
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
