@@ -36,13 +36,14 @@ To see what it will do without changing any files
 The verbose `--help` message
 
 ```Text
-usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-sl]
-                      [-se] [-sm] [-sg] [-s {small,medium,large}] [--gid GID]
-                      [--gkey GKEY] [-v] [-r REFERER] [-d] [--test-only]
+usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-s-]
+                      [-sl] [-se] [-sm] [-sg] [-sgz {small,medium,large}]
+                      [--sgid GID] [--sgkey GKEY] [-v] [-r REFERER] [-d]
+                      [--test]
                       DIRS [DIRS ...]
 
 This Python-based program is for automating downloading album cover art images.
-A common use-case is creating a "folder.jpg" file for a collection of ripped
+A common use-case is creating a "cover.jpg" file for a collection of ripped
 Compact Disc albums.
 
 Given a list of directories, DIRS, recursively identify "album" directories.
@@ -74,6 +75,10 @@ Recommended:
 Search all:
   -s*, --search-all     Search for album cover images using all methods and
                         services
+  -s-, --search-all-no-init
+                        Search for album cover images using all methods and
+                        services that do not require user initialization (e.g.
+                        no Google CSE).
 
 Search the local directory for likely album cover images:
   -sl, --search-likely-cover
@@ -106,12 +111,12 @@ Search Google Custom Search Engine (CSE):
                         Google CSE reliability entirely depends upon the added
                         "Sites to search". The end of this help message has
                         more advice around using Google CSE.
-  -s {small,medium,large}, --gsize {small,medium,large}
+  -sgz {small,medium,large}, --sgsize {small,medium,large}
                         Google CSE optional image file size (default: "large")
-  --gid GID             Google CSE ID (URL parameter "cx") typically looks
+  --sgid GID            Google CSE ID (URL parameter "cx") typically looks
                         like "009494817879853929660:efj39xwwkng". REQUIRED to
                         use Google CSE.
-  --gkey GKEY           Google CSE API Key (URL parameter "key") typically
+  --sgkey GKEY          Google CSE API Key (URL parameter "key") typically
                         looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst".
                         REQUIRED to use Google CSE.
 
@@ -120,8 +125,8 @@ Debugging and Miscellanea:
   -r REFERER, --referer REFERER
                         Referer url used in HTTP GET requests (default:
                         "https://github.com/jtmoon79/coverlovin2")
-  -d, --debug           Print debugging messages (default: False)
-  --test-only           Only test, do not write any files (default: False)
+  -d, --debug           Print debugging messages
+  --test                Only test, do not write any files
 
 This program attempts to create album cover image files for the passed DIRS.  It
 does this several ways, searching for album cover image files already present in
@@ -143,8 +148,8 @@ IMAGE_NAME.IMAGE_TYPE (-n … -i …).
 
 If option --search-googlecse is chosen then you must create your Google Custom
 Search Engine (CSE).  This can be setup at https://cse.google.com/cse/all .  It
-takes about 5 minutes.  This is where your own values for --gid and --gkey can
-be created. --gid is "Search engine ID" (URI parameter "cx") and --gkey is
+takes about 5 minutes.  This is where your own values for --sgid and --sgkey can
+be created. --sgid is "Search engine ID" (URI parameter "cx") and --sgkey is
 under the "Custom Search JSON API" from which you can generate an API Key (URI
 parameter "key"). A key can be generated at
 https://console.developers.google.com/apis/credentials.
