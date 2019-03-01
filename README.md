@@ -17,6 +17,15 @@ ripped Compact Disc albums.
 
 coverlovin2 can only be run by Python version 3.7 (or greater).
 
+# Table of Contents
+
+* [Script Usage](#script-usage)
+* [Installation](#installation)
+* [Development](#development)
+* [Other Miscellaneous Notes](#other-miscellaneous-notes)
+        * [Issues‼  🐛 🐵](#issues---)
+        * [run phases](#run-phases)
+
 Script Usage
 ------------
 
