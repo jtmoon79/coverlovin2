@@ -1,6 +1,7 @@
-# Python CircleCI 2.0 configuration file
+# Python CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-python/ for more details
+# environment variable CACHE_VERSION value is set at
+# https://circleci.com/gh/jtmoon79/coverlovin2/edit#env-vars
 #
 ---
 version: 2.1
@@ -38,10 +39,10 @@ jobs:
             pipenv run pip install --upgrade setuptools wheel
       - save_cache:
           name: cache of pipenv installs
+          key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.pipenv
             - ~/.pipenv-venv
-          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - persist_to_workspace:
           root: ~/
           paths:
@@ -53,7 +54,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - restore_cache:
-          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
+          key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             set -x
@@ -73,7 +74,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - restore_cache:
-          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
+          key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             set -x
@@ -90,7 +91,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - restore_cache:
-          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
+          key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             set -x
