@@ -29,6 +29,8 @@ jobs:
             export PIPENV_CACHE_DIR=~/.pipenv
             mkdir -v -- "${PIPENV_CACHE_DIR}"
             pipenv install --dev
+            # make really sure setuptools and wheel is the latest
+            pipenv run pip install --upgrade setuptools wheel
       - save_cache:
           name: cache of pipenv installs
           paths:
@@ -49,6 +51,7 @@ jobs:
       - run:
           command: |
             pwd
+            python -m pip install pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run tools/test-python36.sh
   test_pytest:
@@ -62,6 +65,7 @@ jobs:
       - run:
           command: |
             pwd
+            python -m pip install pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run python3 -m pytest -v coverlovin2/test
   build_pypi:
@@ -75,8 +79,8 @@ jobs:
       - run:
           command: |
             pwd
+            python -m pip install pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
-            pipenv run pip install --upgrade setuptools wheel
             pipenv run bash tools/build-install-test.sh
 workflows:
   version: 2
