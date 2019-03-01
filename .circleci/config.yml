@@ -85,12 +85,12 @@ workflows:
       - prep_workspace_cache
       - test_python36:
           requires:
-            - prep_cache
+            - prep_workspace_cache
       - test_pytest:
           requires:
-            - prep_cache
+            - prep_workspace_cache
       - build_pypi:
           requires:
-            - prep_cache
+            - prep_workspace_cache
             - test_python36
             - test_pytest
