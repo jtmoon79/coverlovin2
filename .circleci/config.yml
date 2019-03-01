@@ -2,9 +2,10 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
+---
 version: 2.1
 jobs:
-  prep_cache:
+  prep_workspace_cache:
     docker:
       # see https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/python:3.7.1
@@ -12,75 +13,84 @@ jobs:
       - checkout
       - run:
           command: |
-            shopt
-            echo
-            env | sort
-            echo
+            set -x
+            echo "\n\n### record information about the shell context\n\n"
             pwd
-            echo
+            shopt
+            env | sort
             uname -a
-            echo
             ls -la
-            echo
+            echo "\n\n### prepare the jobs workspace\n\n"
             chmod -vR +x,-w -- ./tools/
-            echo
+            echo "\n\n### prepare the cache\n\n"
             python -m pip install --user --upgrade pip
             python -m pip install pipenv
-            echo
             pipenv --version
-            echo
-            mkdir -v -- .pipenv
-            export PIPENV_CACHE_DIR=.pipenv
+            export PIPENV_CACHE_DIR=~/.pipenv
+            mkdir -v -- "${PIPENV_CACHE_DIR}"
             pipenv install --dev
       - save_cache:
-          name: cache of checkout, chmod, pipenv installs
+          name: cache of pipenv installs
           paths:
-            - .
-            - ~/.local/
-          key: prep_cache-{{ .Branch }}-{{ .Revision }}
+            - ~/.pipenv
+          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
   test_python36:
     docker:
       - image: circleci/python:3.6.1
     steps:
+      - attach_workspace:
+          at: ~/
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .Revision }}
-      - run: tools/test-python36.sh
+          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            pwd
+            export PIPENV_CACHE_DIR=~/.pipenv
+            pipenv run tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
     steps:
+      - attach_workspace:
+          at: ~/
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .Revision }}
+          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             pwd
-            export PIPENV_CACHE_DIR=.pipenv
+            export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run python3 -m pytest -v coverlovin2/test
   build_pypi:
     docker:
       - image: circleci/python:3.7.1
     steps:
+      - attach_workspace:
+          at: ~/
       - restore_cache:
-          key: prep_cache-{{ .Branch }}-{{ .Revision }}
+          key: cache-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             pwd
-            export PIPENV_CACHE_DIR=.pipenv
+            export PIPENV_CACHE_DIR=~/.pipenv
             pipenv run pip install --upgrade setuptools wheel
             pipenv run bash tools/build-install-test.sh
 workflows:
   version: 2
   workflow_prep_test_build:
     jobs:
-      - prep_cache
+      - prep_workspace_cache
       - test_python36:
           requires:
-          - prep_cache
+            - prep_cache
       - test_pytest:
           requires:
-          - prep_cache
+            - prep_cache
       - build_pypi:
           requires:
-          - prep_cache
-          - test_python36
-          - test_pytest
+            - prep_cache
+            - test_python36
+            - test_pytest
