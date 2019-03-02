@@ -243,6 +243,8 @@ course of writing this application:
 
 🐛 [pypa/pipenv #3529](https://github.com/pypa/pipenv/issues/3529)
 
+🐛 [pypa/pipenv #3573](https://github.com/pypa/pipenv/issues/3573)
+
 🐛 [python/mypy #6476](https://github.com/python/mypy/issues/6476)
 
 🐛 [python/mypy #6473](https://github.com/python/mypy/issues/6473)
