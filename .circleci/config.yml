@@ -34,9 +34,10 @@ jobs:
             export PIPENV_VIRTUALENV=~/.pipenv-venv
             export WORKON_HOME=~/.pipenv-venv
             mkdir -vp -- "${PIPENV_CACHE_DIR}" "${PIPENV_VIRTUALENV}" "${WORKON_HOME}"
-            echo -e 'export PIPENV_CACHE_DIR=~/.pipenv-cache' >> "${BASH_ENV}"
-            echo -e 'export PIPENV_VIRTUALENV=~/.pipenv-venv' >> "${BASH_ENV}"
-            echo -e 'export WORKON_HOME=~/.pipenv-venv' >> "${BASH_ENV}"
+            SHELL_ENV=.shell-env
+            echo -e 'export PIPENV_CACHE_DIR=~/.pipenv-cache' >> "${SHELL_ENV}"
+            echo -e 'export PIPENV_VIRTUALENV=~/.pipenv-venv' >> "${SHELL_ENV}"
+            echo -e 'export WORKON_HOME=~/.pipenv-venv' >> "${SHELL_ENV}"
             pipenv install --dev
             # make really sure setuptools and wheel is the latest
             pipenv run pip install --upgrade setuptools wheel
@@ -62,9 +63,8 @@ jobs:
           command: |
             set -x
             pwd
-            env | sort
-            cat "${BASH_ENV}"
-            . "${BASH_ENV}"
+            SHELL_ENV=.shell-env
+            source "${SHELL_ENV}"
             env | sort
             python -m pip install --user pipenv
             python -m pipenv --where
@@ -83,6 +83,8 @@ jobs:
           command: |
             set -x
             pwd
+            SHELL_ENV=.shell-env
+            source "${SHELL_ENV}"
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             export PIPENV_VIRTUALENV=~/.pipenv-venv
@@ -100,6 +102,8 @@ jobs:
           command: |
             set -x
             pwd
+            SHELL_ENV=.shell-env
+            source "${SHELL_ENV}"
             python -m pip install --user pipenv
             export PIPENV_CACHE_DIR=~/.pipenv
             export PIPENV_VIRTUALENV=~/.pipenv-venv
