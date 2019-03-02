@@ -32,7 +32,7 @@ jobs:
             echo -e "\n\n### prepare the cache\n\n"
             python -m pip install --user --upgrade pip
             # pipenv is not available by default. Some amount of work has to be
-            # done to
+            # done to install it into the Circle CI cache and then re-use it in later jobs
             # 1. install pipenv on the system
             # 2. create pipenv envionment vars including WORKON_HOME=~/.pipenv-venv
             # 3. use pipenv to install pipenv into the pipenv $WORKON_HOME location (also to be cached by Circle CI)
@@ -40,8 +40,9 @@ jobs:
             # 5. save path of pipenv within pipenv virtual environment via shell environment variable $PIPENV
             # 6. save $PIPENV to a file
             # 7. save that file within the workspace
-            # 8. later, source the file within the reloaded workspace
-            # 9. call the pipenv at $PIPENV from the reloaded Circle CI cache
+            # 8. during later jobs,
+            #    a. source the file within the reloaded workspace
+            #    b. call the pipenv at $PIPENV which resides in the reloaded Circle CI cache
             python -m pip install --user pipenv
             pipenv --version
             export PIPENV_CACHE_DIR=~/.pipenv-cache
