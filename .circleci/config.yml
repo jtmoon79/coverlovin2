@@ -33,7 +33,7 @@ jobs:
             export PIPENV_CACHE_DIR=~/.pipenv-cache
             export PIPENV_VIRTUALENV=~/.pipenv-venv
             export WORKON_HOME=~/.pipenv-venv
-            mkdir -v -- "${PIPENV_CACHE_DIR}" "${PIPENV_VIRTUALENV}" "${WORKON_HOME}"
+            mkdir -vp -- "${PIPENV_CACHE_DIR}" "${PIPENV_VIRTUALENV}" "${WORKON_HOME}"
             echo -e 'export PIPENV_CACHE_DIR=~/.pipenv-cache' >> "${BASH_ENV}"
             echo -e 'export PIPENV_VIRTUALENV=~/.pipenv-venv' >> "${BASH_ENV}"
             echo -e 'export WORKON_HOME=~/.pipenv-venv' >> "${BASH_ENV}"
