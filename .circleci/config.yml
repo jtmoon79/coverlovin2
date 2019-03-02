@@ -15,6 +15,7 @@ jobs:
       - run:
           command: |
             set -x
+
             echo -e "\n\n### record information about the shell context\n\n"
             pwd
             shopt
@@ -24,23 +25,36 @@ jobs:
             which python
             python --version
             if which pipenv 2>/dev/null; then pipenv --version; fi
+
             echo -e "\n\n### prepare the jobs workspace\n\n"
             chmod -vR +x,-w -- ./tools/
+
             echo -e "\n\n### prepare the cache\n\n"
             python -m pip install --user --upgrade pip
+            # pipenv is not available by default. Some amount of work has to be
+            # done to
+            # 1. install pipenv once
+            # 2. install pipenv into the cache location
+            # 3. save pipenv path via environment variable $PIPENV within a file
+            # 4. save that file within the workspace
+            # 5. later, source the file within the reloaded workspace
+            # 6. call the pipenv at $PIPENV from the reloaded cache
             python -m pip install --user pipenv
             pipenv --version
+            export PIPENV=$(which pipenv)
             export PIPENV_CACHE_DIR=~/.pipenv-cache
             export PIPENV_VIRTUALENV=~/.pipenv-venv
             export WORKON_HOME=~/.pipenv-venv
             mkdir -vp -- "${PIPENV_CACHE_DIR}" "${PIPENV_VIRTUALENV}" "${WORKON_HOME}"
             SHELL_ENV=.shell-env
-            echo -e 'export PIPENV_CACHE_DIR=~/.pipenv-cache' >> "${SHELL_ENV}"
-            echo -e 'export PIPENV_VIRTUALENV=~/.pipenv-venv' >> "${SHELL_ENV}"
-            echo -e 'export WORKON_HOME=~/.pipenv-venv' >> "${SHELL_ENV}"
-            pipenv install --dev
+            echo -e 'export PIPENV_CACHE_DIR="'"${PIPENV_CACHE_DIR}"'"' >> "${SHELL_ENV}"
+            echo -e 'export PIPENV_VIRTUALENV="'"${PIPENV_VIRTUALENV}"'"' >> "${SHELL_ENV}"
+            echo -e 'export WORKON_HOME="'"${WORKON_HOME}"'"' >> "${SHELL_ENV}"
+            echo -e 'export PIPENV="'"${PIPENV}"'"' >> "${SHELL_ENV}"
+            # install all dependencies
+            "${PIPENV}" install --dev
             # make really sure setuptools and wheel is the latest
-            pipenv run pip install --upgrade setuptools wheel
+            "${PIPENV}" run pip install --upgrade setuptools wheel
       - save_cache:
           name: cache of pipenv installs
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
@@ -62,15 +76,10 @@ jobs:
       - run:
           command: |
             set -x
-            pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            env | sort
-            python -m pip install --user pipenv
-            python -m pipenv --where
-            python -m pipenv --venv
-            python -m pipenv --py
-            python -m pipenv --python $(which python) run tools/test-python36.sh
+            pwd && echo && env|sort
+            "${PIPENV}" run tools/test-python36.sh
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
@@ -82,14 +91,10 @@ jobs:
       - run:
           command: |
             set -x
-            pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            python -m pip install --user pipenv
-            export PIPENV_CACHE_DIR=~/.pipenv
-            export PIPENV_VIRTUALENV=~/.pipenv-venv
-            export WORKON_HOME=${PIPENV_VIRTUALENV}
-            pipenv run python3 -m pytest -v coverlovin2/test
+            pwd
+            "${PIPENV}" run pytest -vv coverlovin2/test
   build_pypi:
     docker:
       - image: circleci/python:3.7.1
@@ -104,11 +109,7 @@ jobs:
             pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            python -m pip install --user pipenv
-            export PIPENV_CACHE_DIR=~/.pipenv
-            export PIPENV_VIRTUALENV=~/.pipenv-venv
-            export WORKON_HOME=${PIPENV_VIRTUALENV}
-            pipenv run bash tools/build-install-test.sh
+            "${PIPENV}" run bash tools/build-install-test.sh
 workflows:
   version: 2
   workflow_prep_test_build:
