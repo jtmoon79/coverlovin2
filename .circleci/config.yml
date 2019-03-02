@@ -33,16 +33,15 @@ jobs:
             python -m pip install --user --upgrade pip
             # pipenv is not available by default. Some amount of work has to be
             # done to
-            # 1.  install pipenv once on the system
-            # 2.  create pipenv envionment vars including WORKON_HOME=~/.pipenv-venv
-            # 3.  use pipenv to install pipenv into the cache location
-            # 4.  update $WORKON_HOME to the pipenv final location (e.g. ~/.pipenv-venv/project-hash)
-            # 5.  save $WORKON_HOME to a file
-            # 6.  save path of pipenv within pipenv virtual environment via shell environment variable $PIPENV
-            # 7.  save $PIPENV to a file
-            # 8.  save that file within the workspace
-            # 9.  later, source the file within the reloaded workspace
-            # 10. call the pipenv at $PIPENV from the reloaded cache
+            # 1. install pipenv on the system
+            # 2. create pipenv envionment vars including WORKON_HOME=~/.pipenv-venv
+            # 3. use pipenv to install pipenv into the pipenv $WORKON_HOME location (also to be cached by Circle CI)
+            # 4. save $WORKON_HOME to a file
+            # 5. save path of pipenv within pipenv virtual environment via shell environment variable $PIPENV
+            # 6. save $PIPENV to a file
+            # 7. save that file within the workspace
+            # 8. later, source the file within the reloaded workspace
+            # 9. call the pipenv at $PIPENV from the reloaded Circle CI cache
             python -m pip install --user pipenv
             pipenv --version
             export PIPENV_CACHE_DIR=~/.pipenv-cache
@@ -52,15 +51,13 @@ jobs:
             SHELL_ENV=.shell-env
             echo -e 'export PIPENV_CACHE_DIR="'"${PIPENV_CACHE_DIR}"'"' >> "${SHELL_ENV}"
             echo -e 'export PIPENV_VIRTUALENV="'"${PIPENV_VIRTUALENV}"'"' >> "${SHELL_ENV}"
+            echo -e 'export WORKON_HOME="'"${WORKON_HOME}"'"' >> "${SHELL_ENV}"
             # install all dependencies (which should include pipenv)
             pipenv install --dev
             # upgrade pipenv to latest within the virtualenv
             pipenv run pip install --upgrade pipenv
             export PIPENV=$(pipenv run which pipenv)
             echo -e 'export PIPENV="'"${PIPENV}"'"' >> "${SHELL_ENV}"
-            # update saved $WORKON_HOME with the path that pipenv decided to install to
-            PIPENV_INSTALL=$(readlink -f -- "$(ls -1 -- "${WORKON_HOME}" | head -n1)")
-            echo -e 'export WORKON_HOME="'"${PIPENV_INSTALL}"'"' >> "${SHELL_ENV}"
             # make really sure setuptools and wheel is the latest
             pipenv run pip install --upgrade setuptools wheel
             # log contents of shell environment file
