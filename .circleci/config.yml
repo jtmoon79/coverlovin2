@@ -51,12 +51,12 @@ jobs:
             echo -e 'export WORKON_HOME="'"${WORKON_HOME}"'"' >> "${SHELL_ENV}"
             # install all dependencies (which should include pipenv)
             pipenv install --dev
-            # upgrade pipenv to latest
-            pip install --upgrade pipenv
-            export PIPENV=$(which pipenv)
+            # upgrade pipenv to latest within the virtualenv
+            pipenv run pip install --upgrade pipenv
+            export PIPENV=$(pipenv run which pipenv)
             echo -e 'export PIPENV="'"${PIPENV}"'"' >> "${SHELL_ENV}"
             # make really sure setuptools and wheel is the latest
-            "${PIPENV}" run pip install --upgrade setuptools wheel
+            pipenv run pip install --upgrade setuptools wheel
             # double check before exiting
             cat -- "${SHELL_ENV}"
       - save_cache:
