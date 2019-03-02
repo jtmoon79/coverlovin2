@@ -58,7 +58,9 @@ jobs:
             pipenv run pip install --upgrade pipenv
             export PIPENV=$(pipenv run which pipenv)
             echo -e 'export PIPENV="'"${PIPENV}"'"' >> "${SHELL_ENV}"
-            echo -e 'export WORKON_HOME="'"$(dirname -- "${PIPENV}")"'"' >> "${SHELL_ENV}"
+            # update saved $WORKON_HOME with the path that pipenv decided to install to
+            PIPENV_INSTALL=$(readlink -f -- "$(ls -1 -- "${WORKON_HOME}" | head -n1)")
+            echo -e 'export WORKON_HOME="'"${PIPENV_INSTALL}"'"' >> "${SHELL_ENV}"
             # make really sure setuptools and wheel is the latest
             pipenv run pip install --upgrade setuptools wheel
             # log contents of shell environment file
