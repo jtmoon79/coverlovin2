@@ -41,7 +41,6 @@ jobs:
             # 6. call the pipenv at $PIPENV from the reloaded cache
             python -m pip install --user pipenv
             pipenv --version
-            export PIPENV=$(which pipenv)
             export PIPENV_CACHE_DIR=~/.pipenv-cache
             export PIPENV_VIRTUALENV=~/.pipenv-venv
             export WORKON_HOME=~/.pipenv-venv
@@ -50,11 +49,16 @@ jobs:
             echo -e 'export PIPENV_CACHE_DIR="'"${PIPENV_CACHE_DIR}"'"' >> "${SHELL_ENV}"
             echo -e 'export PIPENV_VIRTUALENV="'"${PIPENV_VIRTUALENV}"'"' >> "${SHELL_ENV}"
             echo -e 'export WORKON_HOME="'"${WORKON_HOME}"'"' >> "${SHELL_ENV}"
+            # install all dependencies (which should include pipenv)
+            pipenv install --dev
+            # upgrade pipenv to latest
+            pip install --upgrade pipenv
+            export PIPENV=$(which pipenv)
             echo -e 'export PIPENV="'"${PIPENV}"'"' >> "${SHELL_ENV}"
-            # install all dependencies
-            "${PIPENV}" install --dev
             # make really sure setuptools and wheel is the latest
             "${PIPENV}" run pip install --upgrade setuptools wheel
+            # double check before exiting
+            cat -- "${SHELL_ENV}"
       - save_cache:
           name: cache of pipenv installs
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
