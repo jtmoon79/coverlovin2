@@ -63,6 +63,9 @@ jobs:
             set -x
             pwd
             env | sort
+            cat "${BASH_ENV}"
+            . "${BASH_ENV}"
+            env | sort
             python -m pip install --user pipenv
             python -m pipenv --where
             python -m pipenv --venv
