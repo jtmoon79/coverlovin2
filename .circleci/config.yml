@@ -82,11 +82,21 @@ jobs:
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
+            set -e
+            set -u
+            set -o pipefail
             set -x
-            SHELL_ENV=.shell-env
-            source "${SHELL_ENV}"
-            pwd && echo && env|sort
-            "${PIPENV}" run tools/test-python36.sh
+            if ! python --version | grep -qFe ' 3.6'; then
+                echo 'ERROR: wrong python version' "$(python --version)" >&2
+                exit 1
+            fi
+            [ -f coverlovin2/coverlovin2.py ]
+            # this should fail to run
+            if ! python coverlovin2/coverlovin2.py --version &>/dev/null; then
+              exit 0
+            fi
+            echo 'ERROR: python version' "$(python --version)" 'should not have run successfully' >&2
+            exit 1
   test_pytest:
     docker:
       - image: circleci/python:3.7.1
