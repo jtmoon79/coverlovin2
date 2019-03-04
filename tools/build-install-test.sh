@@ -40,5 +40,24 @@ fi
 cd ..
 python -m pip install "${cv_whl}"
 
+# make sure to attempt uninstall if asked
+uninstall=false
+if [ "${1+x}" == '--uninstall' ]; then
+    uninstall=true
+fi
+function on_exit(){
+    if ${uninstall}; then
+        python -m pip uninstall "coverlovin2"
+    fi
+}
+trap on_exit EXIT
+
 # does it run?
 coverlovin2 --version
+
+if ${uninstall}; then
+    # and test uninstall if asked
+    python -m pip uninstall "coverlovin2"
+    # if script got here then no need to run uninstall on EXIT
+    uninstall=false
+fi

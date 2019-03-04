@@ -131,7 +131,7 @@ jobs:
             pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            "${PIPENV}" run bash tools/build-install-test.sh
+            "${PIPENV}" run bash -- tools/build-install-test.sh --uninstall
 workflows:
   version: 2
   workflow_prep_test_build:

@@ -91,4 +91,4 @@ set -x
 #
 # upgrade installer libraries first
 python -m pip install --upgrade setuptools wheel
-./tools/build-install-test.sh
+./tools/build-install-test.sh --uninstall
