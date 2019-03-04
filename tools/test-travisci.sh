@@ -48,8 +48,6 @@ echo
 readonly COVERAGE_XML='coverage.xml'
 readonly COVERAGE_RC='./.coveragerc'
 export COVERAGE_PROCESS_START=$(readlink -f -- "${COVERAGE_RC}")
-coverage --version  # record version
-coverage erase
 
 # XXX: several methods of invoking codecov, the uncommented method is the only
 #      one that works
@@ -63,9 +61,18 @@ coverage erase
 #
 # method 3:
 # call codecov at the end, see https://github.com/codecov/example-python#overview
-coverage run "--rcfile=${COVERAGE_RC}" -m pytest -v ./coverlovin2/test/
-coverage xml "--rcfile=${COVERAGE_RC}" -o "${COVERAGE_XML}"
-coverage report
+#coverage run "--rcfile=${COVERAGE_RC}" -m pytest -v ./coverlovin2/test/
+#
+# method 4:
+# call pytest with more *cov* parameters
+pytest --cov=./coverlovin2/ --cov-config="${COVERAGE_RC}" --cov-report=xml
+
+# codecov will return code 0 if it fails so make really sure the XML file exists
+# see https://github.com/codecov/codecov-python/issues/191
+if ! [ -f "${COVERAGE_XML}" ]; then
+    echo "ERROR: coverage file does not exist '${COVERAGE_XML}'"
+    exit 1
+fi
 
 # upload coverage report to codecov.io
 codecov --file "${COVERAGE_XML}"
