@@ -87,7 +87,7 @@ fi
 set -x
 
 #
-# create and install distributable with pip, test it can print --help
+# create and install distributable with pip
 #
 # upgrade installer libraries first
 python -m pip install --upgrade setuptools wheel
