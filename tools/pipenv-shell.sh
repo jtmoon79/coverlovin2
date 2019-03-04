@@ -6,7 +6,7 @@ set -e
 set -u
 set -o pipefail
 
-cd "$(dirname -- "${0}")"
+cd "$(dirname -- "${0}")/.."
 
 # get path to pipenv installed with local python 3.7 installation
 ver='3.7'
@@ -16,10 +16,11 @@ venv=$("${pipenv}" --venv)
 pyver=$(python --version)
 
 # update the prompt with information about the virtual environment
-# XXX: no access to PS1 from here, secondly the exported `PS1` is not used by
-#      the new instance of `pipenv shell` run below 
 export PS1="pipenv: ${venv} (${pyver})
 ${PS1+x}"
+eval "$(pipenv --completion)"
 
 # run `pipenv shell` command
-"${pipenv}" shell
+# BUG: the exported `PS1` is not used by the shell spawned by `pipenv shell`
+#bash --rcfile <(cat ~/.bashrc; echo 'export PS1="${PS1} foo\n"'; "${pipenv}" shell)
+"${pipenv}" shell --fancy
