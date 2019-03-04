@@ -7,9 +7,11 @@ Recursively process subdirectories looking for audio media files. Download
 
 The author wanted to learn more about the unexpected and welcome addition of
 type-hinting in Python. Code in this file uses several methods of type-hinting.
-Some readers might think it's overzealous. Others might welcome it.
+Some readers might think it's overzealous, others will welcome it.
 
 This also makes use of inheritance decorators @overrides and @abstractmethod.
+
+And other little Python 3.x novelties!
 """
 
 __author__ = 'James Thomas Moon'
