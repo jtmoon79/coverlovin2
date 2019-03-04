@@ -72,13 +72,26 @@ import typing  # Union, NewType, Tuple, List
 import enum  # Enum
 import collections  # namedtuple
 
+
 #
 # Using a few different methods for typing things.
 #
 Artist = typing.NewType('Artist', str)
 Album = typing.NewType('Album', str)
+ArtAlb = typing.NewType('ArtAlb', typing.Tuple[Artist, Album])
+
+# add this method to act as __bool__
+# TODO: try inheriting typing.Tuple and override __bool__
+def ArtAlb_is(artalb: ArtAlb) -> bool:
+    return bool(artalb[0]) or bool(artalb[1])
+
+def ArtAlb_new(artist: typing.Union[str, Artist],
+               album: typing.Union[str, Album]) -> ArtAlb:
+    return ArtAlb((Artist(artist), Album(album),))
+
+ArtAlb_empty = ArtAlb_new('', '')
 # ('Dir'ectory, 'Art'ist, 'Alb'um)
-DirArtAlb = typing.NewType('DirArtAlb', typing.Tuple[Path, Artist, Album])
+DirArtAlb = typing.NewType('DirArtAlb', typing.Tuple[Path, ArtAlb])
 DirArtAlb_List = typing.List[DirArtAlb]
 Path_List = typing.List[Path]
 
@@ -110,13 +123,6 @@ class URL(str):
 # Google CSE Options
 #
 
-# (API Key, CX ID, Image Size)
-#GoogleCSE_Key = typing.NewType('GoogleCSE_Key', str)
-#GoogleCSE_ID = collections.namedtuple('GoogleCSE_ID', str)
-#GoogleCSE_Opts = typing.NewType('GoogleCSE_Opts', typing.Tuple[GoogleCSE_Key,
-#                                GoogleCSE_ID,
-#                                str])):
-
 
 class ImageSize(enum.Enum):
     """must match https://developers.google.com/custom-search/v1/cse/list"""
@@ -130,8 +136,14 @@ class ImageSize(enum.Enum):
         return [is_.value for is_ in ImageSize]
 
 
-# Tying out namedtuple for typing this.
-# TODO: use typing.NamedTuple?
+# (API Key, CX ID, Image Size)
+#GoogleCSE_Key = typing.NewType('GoogleCSE_Key', str)
+#GoogleCSE_ID = collections.namedtuple('GoogleCSE_ID', str)
+#GoogleCSE_Opts = typing.NewType('GoogleCSE_Opts', typing.Tuple[GoogleCSE_Key,
+#                                GoogleCSE_ID,
+#                                str])):
+
+# Trying out namedtuple for typing this.
 # XXX: AFAICT, cannot type-hint the attributes within the collections.namedtuple
 class GoogleCSE_Opts(collections.namedtuple('GoogleCSE_Opts',
                                             'key id image_size')):
@@ -145,7 +157,6 @@ class GoogleCSE_Opts(collections.namedtuple('GoogleCSE_Opts',
 
 
 class ImageType(enum.Enum):
-    """Improve these from just a `str` to a highly typed object."""
 
     JPG = 'jpg'
     PNG = 'png'
@@ -178,6 +189,127 @@ class ImageType(enum.Enum):
         except ValueError:
             return None
         return ImageType(fmt)
+
+
+class Result(typing.NamedTuple):
+    artalb: ArtAlb
+    imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
+    image_path: Path
+    image_type: typing.Union[ImageType, None]
+    result_written: bool  # bytes that comprise an image were written to `image_path`
+    overwrite: bool  # was --overwrite enabled?
+    test: bool  # was --test enabled?
+    result_nosuitable: bool  # nothing was found, no suitable image was found, nothing was written
+    message: str  # tell the user about what happened
+    error: bool  # was there an error?
+    error_mesg: str  # if error: the error message the user should see
+
+    def __bool__(self):
+        if self.error or self.result_nosuitable:
+            return False
+        if self.image_path == Path():  # this instance was not initialized
+            return False
+        return True
+
+    @classmethod
+    def NoSuitableImageFound(cls, artalb: ArtAlb, image_path: Path, overwrite: bool, test: bool):
+        message = 'No suitable image found that could be written to "%s"' % image_path
+        if artalb != (Artist(''), Album('')):
+            message = 'No suitable image found for %s that could be written to "%s"' % (
+            str_ArtAlb(artalb), image_path)
+        return Result(artalb, None, image_path, None, False, overwrite, test, True, message, False, '')
+
+    @classmethod
+    def SkipDueToNoOverwrite(cls,
+                             artalb: ArtAlb,
+                             imagesearcher: typing.Any,
+                             image_path: Path,
+                             overwrite: bool,
+                             test: bool):
+        if overwrite:
+            raise RuntimeError('overwrite must be false for this Result')
+        if not image_path.exists():
+            raise RuntimeError('expected a file that exists, does not "%s"',
+                               image_path)
+        mesg_test = ''
+        if test:
+            mesg_test = '(--test) '
+        message = '%sfile already exists and --overwrite not enabled; skipping'\
+                  ' "%s"' % (mesg_test, image_path)
+        return Result(artalb, imagesearcher, image_path, None, False, overwrite, test, False, message, False, '')
+
+    @classmethod
+    def strt(cls, test: bool) -> str:
+        return '(--test) ' if test else ''
+
+    @classmethod
+    def Downloaded(cls,
+                artalb: ArtAlb,
+                imagesearcher: typing.Any,
+                size: int,
+                image_path: Path,
+                overwrite: bool,
+                test: bool):
+        message = '%s%s found %s and downloaded %d bytes to "%s"' % \
+                  (cls.strt(test), imagesearcher.NAME, str_ArtAlb(artalb),
+                   size, image_path)
+        return Result(artalb,
+                      imagesearcher,
+                      image_path,
+                      None,
+                      True,
+                      overwrite,
+                      test,
+                      False,
+                      message,
+                      False,
+                      '')
+
+    @classmethod
+    def Copied(cls,
+               artalb: ArtAlb,
+               imagesearcher: typing.Any,
+               size: int,
+               copy_src: Path,
+               copy_dst: Path,
+               overwrite: bool,
+               test: bool):
+        message = '%s%s copied %d bytes from "%s" to "%s"' % \
+                  (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+        return Result(artalb,
+                      imagesearcher,
+                      copy_dst,
+                      None,
+                      True,
+                      overwrite,
+                      test,
+                      False,
+                      message,
+                      False,
+                      '')
+
+    @classmethod
+    def Extracted(cls,
+                  artalb: ArtAlb,
+                  imagesearcher: typing.Any,
+                  size: int,
+                  copy_src: Path,
+                  copy_dst: Path,
+                  overwrite: bool,
+                  test: bool):
+        message = '%s%s extracted %d pixels embedded in "%s", wrote to "%s"' % \
+                  (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+        return Result(artalb,
+                      imagesearcher,
+                      copy_dst,
+                      None,
+                      True,
+                      overwrite,
+                      test,
+                      False,
+                      message,
+                      False,
+                      '')
 
 
 def overrides(interface_class):
@@ -216,6 +348,9 @@ def overrides(interface_class):
 
 def str_AA(artist: Artist, album: Album) -> str:
     return '｛ "%s" • "%s" ｝' % (artist, album)
+
+def str_ArtAlb(artalb: ArtAlb) -> str:
+    return str_AA(artalb[0], artalb[1])
 
 
 def log_new(logformat: str, level: int, logname: str = None) \
@@ -258,13 +393,17 @@ TASK_THREAD_COUNT = 8
 #
 # helper functions
 #
+
+
 func_name = lambda n=0: sys._getframe(n + 1).f_code.co_name
+
 
 #
 # audio file types (i.e. file name extensions)
 #
 
-def get_artist_album_mp3(ffp: Path) -> typing.Tuple[Artist, Album]:
+
+def get_artist_album_mp3(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of .mp3 file
     :return: (artist, album)
@@ -276,7 +415,7 @@ def get_artist_album_mp3(ffp: Path) -> typing.Tuple[Artist, Album]:
         media = EasyID3(ffp)
     except (ID3NoHeaderError, ID3TagError) as err:
         log.error(err)
-        return Artist(''), Album('')
+        return ArtAlb_empty
 
     artist = ''
     try:
@@ -295,10 +434,10 @@ def get_artist_album_mp3(ffp: Path) -> typing.Tuple[Artist, Album]:
     except(KeyError, IndexError):
         pass
 
-    return Artist(artist), Album(album)
+    return ArtAlb((Artist(artist), Album(album)))
 
 
-def get_artist_album_mp4(ffp: Path) -> typing.Tuple[Artist, Album]:
+def get_artist_album_mp4(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of media file
     :return: (artist, album)
@@ -318,9 +457,9 @@ def get_artist_album_mp4(ffp: Path) -> typing.Tuple[Artist, Album]:
     except(KeyError, IndexError):
         pass
 
-    return Artist(artist), Album(album)
+    return ArtAlb((Artist(artist), Album(album)))
 
-def get_artist_album_flac(ffp: Path) -> typing.Tuple[Artist, Album]:
+def get_artist_album_flac(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of media file
     :return: (artist, album)
@@ -332,7 +471,7 @@ def get_artist_album_flac(ffp: Path) -> typing.Tuple[Artist, Album]:
         media = FLAC(ffp)
     except (FLACVorbisError, FLACNoHeaderError) as err:
         log.error(err)
-        return Artist(''), Album('')
+        return ArtAlb_empty
 
     artist = ''
     try:
@@ -346,9 +485,9 @@ def get_artist_album_flac(ffp: Path) -> typing.Tuple[Artist, Album]:
     except(KeyError, IndexError):
         pass
 
-    return Artist(artist), Album(album)
+    return ArtAlb((Artist(artist), Album(album)))
 
-def get_artist_album_ogg(ffp: Path) -> typing.Tuple[Artist, Album]:
+def get_artist_album_ogg(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of media file
     :return: (artist, album)
@@ -359,7 +498,7 @@ def get_artist_album_ogg(ffp: Path) -> typing.Tuple[Artist, Album]:
         media = OggVorbis(ffp)
     except OggError as err:
         log.error(err)
-        return Artist(''), Album('')
+        return ArtAlb_empty
 
     artist = ''
     try:
@@ -413,9 +552,9 @@ def get_artist_album_ogg(ffp: Path) -> typing.Tuple[Artist, Album]:
     except:
         pass
 
-    return Artist(artist), Album(album)
+    return ArtAlb((Artist(artist), Album(album)))
 
-def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
+def get_artist_album_asf(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of media file
     :return: (artist, album)
@@ -426,7 +565,7 @@ def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
         media = ASF(ffp)
     except ASFHeaderError as err:
         log.error(err)
-        return Artist(''), Album('')
+        return ArtAlb_empty
 
     artist = ''
     try:
@@ -480,7 +619,7 @@ def get_artist_album_asf(ffp: Path) -> typing.Tuple[Artist, Album]:
     except:
         pass
 
-    return Artist(artist), Album(album)
+    return ArtAlb((Artist(artist), Album(album)))
 
 
 # associate file extension to retrieval helper functions
@@ -515,7 +654,8 @@ def similar(title1: str, title2: str) -> float:
 class ImageSearcher(abc.ABC):
     NAME = __qualname__
 
-    def __init__(self, referer: str, debug: bool):
+    def __init__(self, artalb: ArtAlb, referer: str, debug: bool):
+        self.artalb = artalb
         self.referer = referer
         self._image_bytes = bytes()
         self.result_message = ''
@@ -528,18 +668,18 @@ class ImageSearcher(abc.ABC):
 
 
     @abc.abstractmethod
-    def search_album_image(self, artist: Artist, album: Album,
-                        image_type: ImageType) -> bytes:
+    def search_album_image(self, image_type: ImageType) -> bytes:
         pass
 
     @staticmethod
     def download_url(url: URL, log_: logging.Logger) -> bytes:
         """
-        Download the data from the url, return it as bytes. Return None upon
-        failure.
+        Download the data from the url, return it as bytes. Return empty bytes
+        if failure.
         """
 
-        assert URL(url), 'empty URL'
+        if not url:
+            raise ValueError('bad URL "%s"', url)
 
         try:
             log_.debug('image download urllib.request.urlopen("%s")', url)
@@ -548,17 +688,10 @@ class ImageSearcher(abc.ABC):
             log_.exception(err, exc_info=True)
             return bytes()
 
-        image_bytes = response.read()
-
-        # XXX: development self-check
-        assert type(image_bytes) is bytes, \
-            'expected response data type %s, got %s' % \
-            (type(bytes), type(image_bytes))
-
-        return image_bytes
+        return response.read()
 
     def write_album_image(self, image_path: Path, overwrite: bool, test: bool)\
-            -> bool:
+            -> Result:
         """Write `self.image_bytes` to Path `image_path`
 
         :param image_path: full file path to image file
@@ -570,24 +703,19 @@ class ImageSearcher(abc.ABC):
                                   '%s.search_album_image called?' % self.NAME
 
         if image_path.exists() and not overwrite:
-            self._log.debug('file already exists and --overwrite not enabled;'
-                           ' skipping "%s"', image_path)
-            return False
+            result = Result.SkipDueToNoOverwrite(
+                self.artalb, self.__class__, image_path, overwrite, test
+            )
+            self._log.debug(result.message)
+            return result
 
-        if test:
-            self.result_message = '(--test) %s would have wrote %d bytes'\
-                ' to "%s"' % (self.NAME, len(self._image_bytes), image_path)
-            self._log.debug(self.result_message)
-            return True
+        if not test:
+            with open(str(image_path), 'wb+') as fh:
+                fh.write(self._image_bytes)
 
-        with open(image_path, 'wb+') as fh:
-            fh.write(self._image_bytes)
-
-        self.result_message = '%s wrote %d bytes to "%s"' % \
-                              (self.NAME, len(self._image_bytes), image_path)
-        self._log.debug(self.result_message)
-
-        return True
+        result = Result.Downloaded(self.artalb, self.__class__, len(self._image_bytes), image_path, overwrite, test)
+        self._log.debug(result.message)
+        return result
 
 
 class ImageSearcher_LikelyCover(ImageSearcher):
@@ -600,10 +728,10 @@ class ImageSearcher_LikelyCover(ImageSearcher):
     """
     NAME = __qualname__
 
-    def __init__(self, image_path: Path, referer: str, debug: bool):
+    def __init__(self, artalb, image_path: Path, referer: str, debug: bool):
         self.copy_src = None
         self.copy_dst = image_path
-        super().__init__(referer, debug)
+        super().__init__(artalb, referer, debug)
 
     def _match_likely_name(self, image_type: ImageType,
                            files: typing.Sequence[Path])\
@@ -766,8 +894,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         return copy_src
 
     @overrides(ImageSearcher)
-    def search_album_image(self, _1: Artist, _2: Album, image_type: ImageType)\
-            -> bool:
+    def search_album_image(self, image_type: ImageType) -> bool:
         """
         Search `self.copy_dst.parent` for a file that is very likely an album
         cover image.
@@ -797,8 +924,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         pass
 
     @overrides(ImageSearcher)
-    def write_album_image(self, _: Path, overwrite: bool, test: bool)\
-            -> bool:
+    def write_album_image(self, _: Path, overwrite: bool, test: bool) -> Result:
         """
         Copy `self._image_bytes` file from `copy_src` to `copy_dst`
 
@@ -822,8 +948,8 @@ class ImageSearcher_LikelyCover(ImageSearcher):
             self.copy_src
 
         if self.copy_src == self.copy_dst:
-            self.warning('copying the same file to itself⁈ "%s"',
-                         self.copy_src)
+            self._log.warning('copying the same file to itself⁈ "%s"',
+                               self.copy_src)
         # it's somewhat pointless to pass image_path since copy_dst should be
         # the same, but image_path is passed only for sake of consistency with
         # sibling classes. So may as well do this sanity check. Then forget
@@ -833,24 +959,21 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         #    'be the same\n"%s" ≠ "%s"' % (self.copy_dst, image_path)
 
         if self.copy_dst.exists() and not overwrite:
-            self._log.info('file already exists and --overwrite not enabled;'
-                           ' skipping "%s"', self.copy_dst)
-            return False
+            result = Result.SkipDueToNoOverwrite(
+                self.artalb, self.__class__, self.copy_dst,
+                overwrite, test)
+            self._log.debug(result.message)
+            return result
 
-        if test:
-            self.result_message = '(--test) %s would have copied "%s"' \
-                                  ' to "%s"' % (self.NAME, self.copy_src,
-                                                self.copy_dst)
-            self._log.debug(self.result_message)
-            return True
+        size = self.copy_src.stat().st_size
+        if not test:
+            shutil.copy2(str(self.copy_src), str(self.copy_dst))
 
-        shutil.copy2(self.copy_src, self.copy_dst)
-
-        self.result_message = '%s copied "%s" to "%s"' % \
-                               (self.NAME, self.copy_src, self.copy_dst)
-        self._log.debug(self.result_message)
-
-        return True
+        result = Result.Copied(
+            self.artalb, self.__class__, size,
+            self.copy_src, self.copy_dst, overwrite, test)
+        self._log.debug(result.message)
+        return result
 
 
 class ImageSearcher_EmbeddedMedia(ImageSearcher):
@@ -859,16 +982,15 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
     """
     NAME = __qualname__
 
-    def __init__(self, image_path: Path, referer: str, debug: bool):
+    def __init__(self, artalb: ArtAlb, image_path: Path, referer: str, debug: bool):
         self.copy_dst = image_path
         self._image = None
         self._image_src = None
         self._image_type = None
-        super().__init__(referer, debug)
+        super().__init__(artalb, referer, debug)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, _1: Artist, _2: Album, image_type: ImageType) \
-            -> bool:
+    def search_album_image(self, image_type: ImageType) -> bool:
         """
         Search `self.copy_dst.parent` for an audio media file that contains
         an embedded album cover image
@@ -924,7 +1046,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
 
     @overrides(ImageSearcher)
     def write_album_image(self, _: Path, overwrite: bool, test: bool) \
-            -> bool:
+            -> Result:
         """
         extract embedded image from `self._image`.
 
@@ -943,26 +1065,16 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
             raise ValueError('self._image_type not set, something is wrong')
 
         if self.copy_dst.exists() and not overwrite:
-            self._log.info('file already exists and --overwrite not enabled;'
-                           ' skipping "%s"', self.copy_dst)
-            return False
+            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, overwrite, test)
+            self._log.debug(result.message)
+            return result
 
-        if test:
-            self.result_message = '(--test) %s extracted %d pixels from' \
-                                  ' "%s", wrote to "%s"' \
-                                  % (self.NAME, self._image.size_pixels,
-                                     self._image_src, self.copy_dst)
-            self._log.debug(self.result_message)
-            return True
+        if not test:
+            self._image.save(self.copy_dst, self._image_type.value.upper())
 
-        self._image.save(self.copy_dst, self._image_type.value.upper())
-
-        self.result_message = '%s extracted %d pixels from "%s", wrote to "%s"'\
-                              % (self.NAME, self._image.size_pixels,
-                                 self._image_src, self.copy_dst)
-        self._log.debug(self.result_message)
-
-        return True
+        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, overwrite, test)
+        self._log.debug(result.message)
+        return result
 
 
 class ImageSearcher_GoogleCSE(ImageSearcher):
@@ -971,12 +1083,12 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
     # google_search_api = 'https://cse.google.com/cse'
     google_search_api = 'https://www.googleapis.com/customsearch/v1'
 
-    def __init__(self, google_opts: GoogleCSE_Opts, referer: str, debug: bool):
+    def __init__(self, artalb: ArtAlb, google_opts: GoogleCSE_Opts, referer: str, debug: bool):
         self.__google_opts = google_opts
         self.key = google_opts.key
         self.cxid = google_opts.id
         self.image_size = google_opts.image_size
-        super().__init__(referer, debug)
+        super().__init__(artalb, referer, debug)
 
     def __bool__(self):
         return bool(self.__google_opts)
@@ -986,11 +1098,11 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
         return urllib.request.urlopen(request, *args, **kwargs)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, artist: Artist, album: Album,
-                           image_type: ImageType) -> bool:
-        self._log.debug('search_album_image("%s", "%s", …)', artist, album)
+    def search_album_image(self, image_type: ImageType) -> bool:
+        self._log.debug('search_album_image("%s", …) %s',
+                        image_type.value, str_ArtAlb(self.artalb))
 
-        if not artist and not album:
+        if not self.artalb[0] and not self.artalb[1]:
             return False
 
         # construct url, parameters documented at
@@ -1001,7 +1113,7 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
                 + 'key=' + self.key
                 + '&cx=' + self.cxid
                 + '&prettyPrint=true'
-                + '&q=' + sanitise(artist) + '+' + sanitise(album)
+                + '&q=' + sanitise(self.artalb[0]) + '+' + sanitise(self.artalb[1])
                 + '&fileType=' + image_type.value
                 + '&imgSize=' + self.image_size.value
                 + '&imgColorType=color'
@@ -1081,8 +1193,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         return mb.browse_releases(artist=artist_id, limit=500)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, artist: Artist, album: Album,
-                        _: ImageType) -> bool:
+    def search_album_image(self, _: ImageType) -> bool:
         """There are a number of ways to use the musicbrainz searching and
         browse API functions.
         The particular order of operations here appears
@@ -1091,13 +1202,21 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         Trying to search with just one API call using with Album+Artist string
         yielded too many ambiguous results.
 
-        :param artist: Artist name
-        :param album: Album name
         :return: image data as bytes
         """
-        #self._log.debug('search_album_image("%s", "%s", …)', artist, album)
+        #self._log.debug('search_album_image(%s, …)', str_ArtAlb(self.artalb))
 
-        if not artist and not album:
+        artist = self.artalb[0]
+        album = self.artalb[1]
+
+        # XXX: these next two checks are an easy way out of making a complicated search
+        #      for these special cases
+
+        # if Artist is unknown, the artist search will raise
+        if not artist:
+            return False
+        # if Album is unknown, the image selection will be too broad to be useful
+        if not album:
             return False
 
         import musicbrainzngs
@@ -1210,8 +1329,8 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
             pass
 
         # do this once
-        dmsg = 'for %s MusicBrainz album  ID "%s"' % (str_AA(artist, album),
-                                                      album_id)
+        dmsg = 'for %s MusicBrainz album  ID "%s"' % \
+               (str_AA(artist, album), album_id)
         # assume the first url available is the best
         if not image_list:
             self._log.debug('unable to find an image URL ' + dmsg)
@@ -1250,14 +1369,25 @@ def process_dir(dirp: Path,
     gradually populated by recursive calls. Provide coverFiles
     list to ignore directories where cover files already exist.
 
-    TODO: XXX: this function does too much. work within this function needs to
-               be seperated into more discrete tasks starting with:
-               `def deteremine_Artist_Album(dirp: Path) -> DirArtAlb`
+    TODO: XXX: This function does too much!
+               This function should just return a list of directories that are
+               deemed to be Album directories.
+               Put that check into helper function
+                  e.g.
+                  `is_album_dir(dirp: Path) -> bool`
+               Let something outside of this attempt to determine
+               1. if the directory should be written to (check if image exists
+                  and overwrite)
+                  e.g.
+                  `dir_requires_cover(dirp: Path) -> bool`
+               2. deteremine the Artist and Album of that directory.
+                  e.g.
+                  `def deteremine_ArtAlb(dirp: Path) -> ArtAlb`
 
-    TODO: XXX: having this a recursive function just makes it weird. Consider
-               `os.walk` instead
+    TODO: XXX: Implementing this recursively just makes this function weird.
+               Consider `os.walk` instead.
 
-    TODO: XXX: I truly hate this function.
+    TODO: XXX: I really hate this function.
 
     :param dirp: directory path to process
     :param image_nt: image name and type, e.g. "cover.jpg"
@@ -1289,9 +1419,6 @@ def process_dir(dirp: Path,
     except OSError as err:
         log.exception(err)
         return daa_list
-
-    #log.debug('%s: found dirs\n%s', func_name(), pformat(dirs))
-    #log.debug('%s: found files\n%s', func_name(), pformat(files))
 
     # recurse into subdirs
     dirs.sort()
@@ -1332,6 +1459,7 @@ def process_dir(dirp: Path,
     #       probably common that audio media files vary in their correctness,
     #       e.g. some mp3 files may not have ID3 set, and some mp3 have the
     #       wrong ID3 'album' value.
+
     # TODO: related to prior, Various Artists albums will have inconsistent
     #       Artist tag but consistent Album tag.
 
@@ -1362,7 +1490,7 @@ def process_dir(dirp: Path,
         if artist and album:
             log.info('Album details found: %s within file "%s"',
                      str_AA(artist, album), fp)
-            daa = DirArtAlb((dirp, artist, album))
+            daa = DirArtAlb((dirp, ArtAlb_new(artist, album)))
 
             # XXX: development self-check
             if daa in daa_list:
@@ -1396,7 +1524,7 @@ def process_dir(dirp: Path,
             if artist and album:
                 log.info('Album details found: %s derived from '
                          'directory name "%s"', str_AA(artist, album), bname)
-                daa = DirArtAlb((dirp, artist, album))
+                daa = DirArtAlb((dirp, ArtAlb_new(artist, album)))
 
                 # XXX: development self-check
                 if daa in daa_list:
@@ -1415,7 +1543,7 @@ def process_dir(dirp: Path,
     #      `search_album_image`. It is used in
     #      `ImageSearcher_LikelyCover.search_album_image`.
     #      Not ideal.
-    daa = DirArtAlb((dirp, Artist(''), Album('')))
+    daa = DirArtAlb((dirp, ArtAlb_empty))
 
     # XXX: development self-check
     if daa in daa_list:
@@ -1455,8 +1583,7 @@ def process_dirs(
 
 def search_create_image(
         image_path: Path,
-        artist: Artist,
-        album: Album,
+        artalb: ArtAlb,
         image_type: ImageType,
         image_name: str,
         searches,
@@ -1465,13 +1592,13 @@ def search_create_image(
         overwrite: bool,
         debug: bool,
         test: bool)\
-        -> typing.Tuple[bool, str]:
+        -> Result:
     """
     Do the download using ImageSearchers given the needed data. Write image
     file data to `image_path`.
     Return count of bytes of image data written to file.
     """
-    log.debug('  search_create_image("%s", "%s", …)', artist, album)
+    log.debug('  search_create_image(%s, …)', str_ArtAlb(artalb))
 
     # TODO: Have order of requested searchers matter. Search in order of passed
     #       script options.
@@ -1481,42 +1608,37 @@ def search_create_image(
     search_googlecse \
         = searches
     searchers = (
-        ImageSearcher_LikelyCover(image_path, referer, debug)
+        ImageSearcher_LikelyCover(artalb, image_path, referer, debug)
             if search_likely else None,
-        ImageSearcher_EmbeddedMedia(image_path, referer, debug)
+        ImageSearcher_EmbeddedMedia(artalb, image_path, referer, debug)
         if search_embedded else None,
-        ImageSearcher_MusicBrainz(referer, debug)
+        ImageSearcher_MusicBrainz(artalb, referer, debug)
             if search_musicbrainz else None,
-        ImageSearcher_GoogleCSE(googlecse_opts, referer, debug)
+        ImageSearcher_GoogleCSE(artalb, googlecse_opts, referer, debug)
             if search_googlecse else None,
     )
-    result = False
-    result_message = 'No suitable image found that could be written to %s' \
-                      % (image_path,)
-    if (artist, album) != (Artist(''), Album('')):
-        result_message = 'No suitable image found for %s that could be' \
-                         ' written to "%s"' \
-                         % (str_AA(artist, album), image_path)
+    result = Result.NoSuitableImageFound(artalb, image_path, overwrite, test)
+    stra = str_ArtAlb(artalb)
 
     for is_ in searchers:
         try:
             if not is_:
                 continue
-            if not is_.search_album_image(artist, album, image_type):
+            if not is_.search_album_image(image_type):
                 log.debug('  no album image found from image searcher %s for'
-                          ' %s', is_.NAME, str_AA(artist, album))
+                          ' %s', is_.NAME, stra)
                 continue
-            if not is_.write_album_image(image_path, overwrite, test):
+            res = is_.write_album_image(image_path, overwrite, test)
+            if not res:
                 log.debug('  write_album_image failed for image searcher %s for'
-                          ' %s', is_.NAME, str_AA(artist, album))
+                          ' %s', is_.NAME, stra)
                 continue
-            result = True
-            result_message = is_.result_message
+            result = res
             break
         except Exception as ex:
             log.exception(ex)
 
-    return result, result_message
+    return result
 
 
 def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
@@ -1556,13 +1678,12 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
         except queue.Empty:  # catch Empty and return gracefully
             log.debug('←')
             return
-        _, artist, album = daa
-        log.debug('☐ task: %s', str_AA(artist, album))
+        _, artalb = daa
+        log.debug('☐ task: %s', str_ArtAlb(artalb))
         try:
-            result, result_mesg = search_create_image(
+            result = search_create_image(
                 image_path,
-                artist,
-                album,
+                artalb,
                 image_type,
                 image_name,
                 (search_likely,
@@ -1575,11 +1696,11 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 debug,
                 test
             )
-            result_queue.put(result_mesg)
+            result_queue.put(result)
         except Exception as ex:
             log.exception(ex)
 
-        log.debug('☑ task_done %s', str_AA(artist, album))
+        log.debug('☑ task_done %s', str_ArtAlb(artalb))
         task_queue.task_done()
 
 
@@ -1821,6 +1942,7 @@ def main():
         log.setLevel(logging.DEBUG)
 
     # results of attempting to update directories
+    # (SimpleQueue is an unbounded queue, new in Python 3.7!)
     result_queue = queue.SimpleQueue()
 
     # gather list of directories where Album • Artist info can be derived.
@@ -1840,7 +1962,7 @@ def main():
 
     image_nt = image_name + image_type.suffix
     for daa in daa_list:
-        image_path = Path(daa[0], image_nt)
+        image_path = Path(daa[0], image_nt)  # TODO: redundant, get rid of image_path and it's path though this function and everywhere else it's really dumbly redundant
         task_queue.put(
             (
                 daa,
@@ -1873,8 +1995,8 @@ def main():
     # TODO: print improve summary table of results (is there a print table python library? gotta be!)
     try:
         while True:
-            msg = result_queue.get_nowait()
-            print(msg)
+            result = result_queue.get_nowait()
+            print(result.message)
     except queue.Empty:
         pass
 
