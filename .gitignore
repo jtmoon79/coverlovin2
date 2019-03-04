@@ -5,6 +5,8 @@
 # various python tool caches
 .mypy_cache/
 .pytest_cache/
+__pycache__/
+coverlovin2/__pycache__/
 
 # sdist build artifacts
 build/
