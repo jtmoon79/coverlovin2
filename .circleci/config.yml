@@ -13,6 +13,7 @@ jobs:
     steps:
       - checkout
       - run:
+          name: prepare a Circle CI workspace, prepare a Circle CI cache, save environment variables for pipenv in the workspace
           command: |
             set -x
 
@@ -82,6 +83,7 @@ jobs:
       - restore_cache:
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
+          name: test coverlovin2 refuses to run under python 3.6
           command: |
             set -e
             set -u
@@ -107,6 +109,7 @@ jobs:
       - restore_cache:
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
+          name: test coverlovin2 pytests
           command: |
             set -x
             SHELL_ENV=.shell-env
@@ -122,6 +125,7 @@ jobs:
       - restore_cache:
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
       - run:
+          name: create a wheels build that is suitable for pypi, test it can install and run
           command: |
             set -x
             pwd
