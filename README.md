@@ -4,6 +4,7 @@ CoverLovin2
 [![Build Status](https://travis-ci.com/jtmoon79/coverlovin2.svg?branch=master)](https://travis-ci.com/jtmoon79/coverlovin2)
 [![CircleCI](https://circleci.com/gh/jtmoon79/coverlovin2.svg?style=svg)](https://circleci.com/gh/jtmoon79/coverlovin2)
 [![codecov](https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graph/badge.svg)](https://codecov.io/gh/jtmoon79/coverlovin2)
+[![Coveralls Coverage Status](https://coveralls.io/repos/github/jtmoon79/coverlovin2/badge.svg?branch=master)](https://coveralls.io/github/jtmoon79/coverlovin2?branch=master)
 [![PyPI version](https://badge.fury.io/py/CoverLovin2.svg)](https://badge.fury.io/py/CoverLovin2)
 [![Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True)](https://pypi.org/pypi/coverlovin2/)
 [![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)

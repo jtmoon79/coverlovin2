@@ -66,9 +66,18 @@ coverage erase
 coverage run "--rcfile=${COVERAGE_RC}" -m pytest -v ./coverlovin2/test/
 coverage xml "--rcfile=${COVERAGE_RC}" -o "${COVERAGE_XML}"
 coverage report
-# upload to codecov.io
-codecov --file "${COVERAGE_XML}" 
 
+# upload coverage report to codecov.io
+codecov --file "${COVERAGE_XML}"
+
+# upload coverage report to coveralls.io
+set +x  # do not echo private enviroment variable
+if [ "${COVERALLS_REPO_TOKEN+x}" ]; then
+    COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} coveralls "--rcfile=${COVERAGE_RC}"
+else
+    echo "COVERALLS_REPO_TOKEN not set; skip use of coveralls.io" >&2
+fi
+set -x
 
 #
 # create and install distributable with pip, test it can print --help
