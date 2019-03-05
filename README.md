@@ -24,8 +24,8 @@ coverlovin2 can only be run by Python version 3.7 (or greater).
 * [Installation](#installation)
 * [Development](#development)
 * [Other Miscellaneous Notes](#other-miscellaneous-notes)
-        * [Issues‼  🐛 🐵](#issues---)
-        * [run phases](#run-phases)
+  * [Issues‼  🐛 🐵](#issues---)
+  * [run phases](#run-phases)
 
 Script Usage
 ------------
