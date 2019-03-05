@@ -715,18 +715,18 @@ class Test_ImageSearcher_LikelyCover(object):
             pytest.param
             (
                 B3_image_path1, B3_image_path_ne, jpg, False,
-                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, 0, B3_image_path1, B3_image_path_ne, False, True),
+                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, False, True),
                 id='happy path - case 1 - overwrite False'
             ),
             pytest.param
             (
                 B3_image_path1, B3_image_path_ne, jpg, True,
-                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, 0, B3_image_path1, B3_image_path_ne, True, True),
+                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, True, True),
                 id='happy path - case 2 - overwrite True'
             )
         )
     )
-    @pytest.mark.dependency(name='test_res_B3')
+    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B3'])
     def test_write_album_image(self, image_path_src, image_path_dst, image_type, overwrite, result):
         is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_path_dst, '', False)
         assert is_.search_album_image(image_type)

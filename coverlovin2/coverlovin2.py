@@ -915,6 +915,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
                     candidates.append(fp)
         except OSError as ose:
             self._log.exception(ose)
+        candidates = sorted(candidates)
 
         self.copy_src = self._match_likely_name(image_type, candidates)
         if not self.copy_src:
