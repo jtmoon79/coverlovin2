@@ -43,6 +43,7 @@ from ..coverlovin2 import (
     ImageSize,
     ImageType,
     Result,
+    WrOpts,
     URL,
     str_AA,
     str_ArtAlb,
@@ -343,7 +344,7 @@ class Test_ImageSearcher_LikelyCover(object):
     def _new_imagesearcher_likelycover(self, image_type: ImageType = jpg) ->\
             ImageSearcher_LikelyCover:
         """return a new bland instance of ImageSearcher_LikelyCover"""
-        return ImageSearcher_LikelyCover(ArtAlb_empty, image_type, Path(''), False, True, False)
+        return ImageSearcher_LikelyCover(ArtAlb_empty, image_type, Path(''), WrOpts(False, False), True)
 
     @pytest.mark.dependency(name='init_likelyc')
     def test_init(self):
@@ -653,7 +654,7 @@ class Test_ImageSearcher_LikelyCover(object):
     )
     @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B2'])
     def test__match_likely_name(self, image_type, image_path, files, test_expect, special_cmp):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path, False, True, False)
+        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path, WrOpts(False, False), True)
         mln = is_._match_likely_name(files)
         assert test_expect == mln
         if special_cmp:
@@ -662,6 +663,7 @@ class Test_ImageSearcher_LikelyCover(object):
 
     B_Artist = Artist('Bob Dylan')
     B_Album = Album('Biograph (Disc 1)')
+    B_ArtAlb = ArtAlb_new(B_Artist, B_Album)
     B3_Dir = 'test_ImageSearcher_LikelyCover3'  # actual sub-directory
     B3_Img1 = 'album1.jpg'  # actual test file in that sub-directory
     B3_Img2 = 'album2.jpg'  # actual test file in that sub-directory
@@ -709,9 +711,16 @@ class Test_ImageSearcher_LikelyCover(object):
     )
     @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B3'])
     def test_write_album_image(self, image_type, image_path_src, image_path_dst, overwrite, result):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path_dst, overwrite, True, True)
+        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path_dst, WrOpts(overwrite, True), True)
         assert is_.search_album_image()
         assert result == is_.write_album_image()
+
+    @pytest.mark.dependency(depends=['init_likelyc'])
+    def test_go(self):
+        """basic test of .go()"""
+        # TODO: cover all code-branches
+        is_ = ImageSearcher_LikelyCover(self.B_ArtAlb, jpg, self.B3_image_path1, WrOpts(False, True), True)
+        assert is_.go()
 
 
 class Test_ImageSearcher_EmbeddedMedia(object):
@@ -752,7 +761,7 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     def _new_imagesearch_embeddedmedia(self, artalb: ArtAlb = ArtAlb_empty) ->\
             ImageSearcher_EmbeddedMedia:
         """create a simple instance"""
-        return ImageSearcher_EmbeddedMedia(artalb, jpg, Path(), False, True, True)
+        return ImageSearcher_EmbeddedMedia(artalb, jpg, Path(), WrOpts(False, True), True)
 
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
@@ -834,7 +843,7 @@ class Test_ImageSearcher_EmbeddedMedia(object):
         )
     )
     def test_search_album_image(self, image_type, image_path, artalb, test_expect):
-        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, False, True, True)
+        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, WrOpts(False, True), True)
         assert test_expect == is_.search_album_image()
 
     @pytest.mark.parametrize(
@@ -860,9 +869,15 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     def test_write_album_image(self, image_type, image_path, artalb,
                                overwrite, result):
         assert image_path.exists()
-        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, True, True, True)
+        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, WrOpts(overwrite, True), True)
         assert is_.search_album_image()
         assert is_.write_album_image()
+
+    def test_go(self):
+        """basic test of .go()"""
+        # TODO: cover all code-branches
+        is_ = ImageSearcher_EmbeddedMedia(ArtAlb_empty, jpg, self.E_imagepath1, WrOpts(False, True), True)
+        assert None is is_.go()
 
 
 class Test_ImageSearcher_GoogleCSE(object):
@@ -891,11 +906,11 @@ class Test_ImageSearcher_GoogleCSE(object):
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
         gco = GoogleCSE_Opts('fake+key', 'fake+ID', self.C_sz)
-        ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', False, debug, True)
+        ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', WrOpts(False, True), debug)
 
     def test_GoogleCSE_Opts_False(self):
         gco = GoogleCSE_Opts('', '', self.C_sz)
-        assert not ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', False, True, True)
+        assert not ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', WrOpts(False, True), True)
 
     def _stub_response1(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE._search_response_json`"""
@@ -916,7 +931,7 @@ class Test_ImageSearcher_GoogleCSE(object):
     )
     def test_search_album_image(self, artalb, image_type, result):
         # create ImageSearcher_GoogleCSE with stubbed methods
-        C_isg = ImageSearcher_GoogleCSE(artalb, image_type, Path(), self.C_gopt, 'referrer!', False, True, True)
+        C_isg = ImageSearcher_GoogleCSE(artalb, image_type, Path(), self.C_gopt, 'referrer!', WrOpts(False, True), True)
         C_isg._search_response_json = Test_ImageSearcher_GoogleCSE._stub_response1
         C_isg.download_url = Test_ImageSearcher_GoogleCSE._stub_download_url
         assert C_isg.search_album_image() == result
@@ -953,7 +968,7 @@ class Test_ImageSearcher_GoogleCSE(object):
         write an actual file (test=False)
         """
 
-        is_ = ImageSearcher_GoogleCSE(ArtAlb_new('my artist', 'my album'), jpg, self._6_testfile, self.C_gopt, 'referrer!', False, True, False)
+        is_ = ImageSearcher_GoogleCSE(ArtAlb_new('my artist', 'my album'), jpg, self._6_testfile, self.C_gopt, 'referrer!', WrOpts(False, False), True)
         is_._search_response_json = self._stub_response2
         # XXX: hopefully the image URL within the test file remains valid!
         assert is_.search_album_image()
@@ -964,6 +979,15 @@ class Test_ImageSearcher_GoogleCSE(object):
     # TODO: XXX: need tests for other ImageSearcher_likely functions:
     #            write_album_image
     # TODO: XXX: need tests for other ImageSearcher classes
+
+    def test_go(self):
+        """basic test of .go()"""
+        # TODO: cover all code-branches
+        # create ImageSearcher_GoogleCSE with stubbed methods
+        C_isg = ImageSearcher_GoogleCSE(self.C_ArtAlb, jpg, self.C_fp, self.C_gopt, 'referrer!', WrOpts(False, True), True)
+        C_isg._search_response_json = Test_ImageSearcher_GoogleCSE._stub_response1
+        C_isg.download_url = Test_ImageSearcher_GoogleCSE._stub_download_url
+        assert C_isg.go()
 
 
 class Test_ImageSearcher_MusicBrainz(object):
@@ -995,10 +1019,10 @@ class Test_ImageSearcher_MusicBrainz(object):
 
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
-        ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), False, debug, True)
+        ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), WrOpts(False, True), debug)
 
     def test_search_album_image_ArtAlb_empty(self):
-        ismb = ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), False, True, True)
+        ismb = ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), WrOpts(False, True), True)
         assert not ismb.search_album_image()
 
     @pytest.mark.parametrize('search_artists, browse_releases',
@@ -1050,11 +1074,11 @@ class Test_ImageSearcher_MusicBrainz(object):
                 id='artist-list: "a:A" "b:B" with "id"'
             ),
             # TODO: add more test cases that exercise more of the function
-            #       at this point, add values for br_ret
+            #       at this point, add values for browse_releases
         )
     )
     def test_search_album_image(self, search_artists, browse_releases):
-        ismb = ImageSearcher_MusicBrainz(self.D_ArtAlb, jpg, Path(), False, True, True)
+        ismb = ImageSearcher_MusicBrainz(self.D_ArtAlb, jpg, Path(), WrOpts(False, True), True)
         def _stub_search_artists(*args, **kwargs):
             return search_artists
         def _stub_browse_releases(*args, **kwargs):
@@ -1062,6 +1086,18 @@ class Test_ImageSearcher_MusicBrainz(object):
         ismb._search_artists = _stub_search_artists
         ismb._browse_releases = _stub_browse_releases
         assert not ismb.search_album_image()
+
+    def test_go(self):
+        """basic test of .go()"""
+        # TODO: cover all code-branches
+        ismb = ImageSearcher_MusicBrainz(self.D_ArtAlb, jpg, Path(), WrOpts(False, True), True)
+        def _stub_search_artists(*args, **kwargs):
+            return {}
+        def _stub_browse_releases(*args, **kwargs):
+            return {}
+        ismb._search_artists = _stub_search_artists
+        ismb._browse_releases = _stub_browse_releases
+        assert None is ismb.go()
 
     # TODO: test ImageSearcher_MusicBrainz.search_album_image without a stub
     #       somehow just check it returns some value and does not raise,

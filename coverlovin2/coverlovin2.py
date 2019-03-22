@@ -103,6 +103,13 @@ DirArtAlb_List = typing.List[DirArtAlb]
 Path_List = typing.List[Path]
 
 
+@attr.s
+class WrOpts:
+    """Write Options - these should always travel together"""
+    overwrite: bool = attr.ib()
+    test: bool = attr.ib()
+
+
 class URL(str):
     """string type with constraints on values.
     The value must look like an http* URL string.
@@ -204,8 +211,7 @@ class Result(typing.NamedTuple):
     image_type: typing.Union[ImageType, None]
     image_path: Path
     result_written: bool  # bytes that comprise an image were written to `image_path`
-    overwrite: bool  # was --overwrite enabled?
-    test: bool  # was --test enabled?
+    wropts: WrOpts  # was --overwrite or --test enabled?
     result_nosuitable: bool  # nothing was found, no suitable image was found, nothing was written
     message: str  # tell the user about what happened
     error: bool  # was there an error?
@@ -219,12 +225,12 @@ class Result(typing.NamedTuple):
         return True
 
     @classmethod
-    def NoSuitableImageFound(cls, artalb: ArtAlb, image_path: Path, overwrite: bool, test: bool):
+    def NoSuitableImageFound(cls, artalb: ArtAlb, image_path: Path, wropts: WrOpts):
         message = 'No suitable image found that could be written to "%s"' % image_path
         if artalb != (Artist(''), Album('')):
             message = 'No suitable image found for %s that could be written to "%s"' % (
             str_ArtAlb(artalb), image_path)
-        return Result(artalb, None, None, image_path, False, overwrite, test, True, message, False, '')
+        return Result(artalb, None, None, image_path, False, wropts, True, message, False, '')
 
     @classmethod
     def SkipDueToNoOverwrite(cls,
@@ -240,7 +246,7 @@ class Result(typing.NamedTuple):
             mesg_test = '(--test) '
         message = '%sfile already exists and --overwrite not enabled; skipping'\
                   ' "%s"' % (mesg_test, image_path)
-        return Result(artalb, imagesearcher, None, image_path, False, False, test, False, message, False, '')
+        return Result(artalb, imagesearcher, None, image_path, False, WrOpts(False, test), False, message, False, '')
 
     @classmethod
     def strt(cls, test: bool) -> str:
@@ -262,8 +268,7 @@ class Result(typing.NamedTuple):
                       None,
                       image_path,
                       True,
-                      overwrite,
-                      test,
+                      WrOpts(overwrite, test),
                       False,
                       message,
                       False,
@@ -285,8 +290,7 @@ class Result(typing.NamedTuple):
                       None,
                       copy_dst,
                       True,
-                      overwrite,
-                      test,
+                      WrOpts(overwrite, test),
                       False,
                       message,
                       False,
@@ -308,8 +312,7 @@ class Result(typing.NamedTuple):
                       None,
                       copy_dst,
                       True,
-                      overwrite,
-                      test,
+                      WrOpts(overwrite, test),
                       False,
                       message,
                       False,
@@ -664,23 +667,21 @@ class ImageSearcher(abc.ABC):
     def __init__(self,
                  artalb: ArtAlb,
                  image_type: ImageType,
-                 overwrite: bool,
-                 debug: bool,
-                 test: bool):
+                 wropts: WrOpts,
+                 debug: bool):
         """
         :param artalb: artist and album presumed. may be an "empty"
                        Artist and Album
         :param image_type: jpg, png, ...
-        :param debug: logging  debug verbosity?
-        :param overwrite: if (overwrite and file exists) then write new file
+        :param opts.overwrite: if (overwrite and file exists) then write new file
                           else return
-        :param test: if test do not actually write anything
+        :param opts.debug: logging  debug verbosity?
+        :param opts.test: if test do not actually write anything
         """
         self.artalb = artalb
         self.image_type = image_type
-        self.overwrite = overwrite
+        self.wropts = wropts
         self.debug = debug
-        self.test = test
         #
         self._image_bytes = bytes()
         # setup new logger for this class instance
@@ -725,20 +726,20 @@ class ImageSearcher(abc.ABC):
         assert self._image_bytes, 'Error: self._image_bytes not set. Was ' \
                                   '%s.search_album_image called?' % self.NAME
 
-        if image_path.exists() and not self.overwrite:
+        if image_path.exists() and not self.wropts.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, image_path, self.test
+                self.artalb, self.__class__, image_path, self.wropts.test
             )
             self._log.debug(result.message)
             return result
 
-        if not self.test:
+        if not self.wropts.test:
             with open(str(image_path), 'wb+') as fh:
                 fh.write(self._image_bytes)
 
         result = Result.Downloaded(
             self.artalb, self.__class__, len(self._image_bytes),
-            image_path, self.overwrite, self.test)
+            image_path, self.wropts.overwrite, self.wropts.test)
         self._log.debug(result.message)
         return result
 
@@ -757,12 +758,11 @@ class ImageSearcher_LikelyCover(ImageSearcher):
                  artalb: ArtAlb,
                  image_type: ImageType,
                  image_path: Path,
-                 overwrite: bool,
-                 debug: bool,
-                 test: bool):
+                 wropts: WrOpts,
+                 debug: bool):
         self.copy_src = None
         self.copy_dst = image_path
-        super().__init__(artalb, image_type, overwrite, debug, test)
+        super().__init__(artalb, image_type, wropts, debug)
 
     def _match_likely_name(self, files: typing.Sequence[Path])\
             -> typing.Union[None, Path]:
@@ -991,19 +991,19 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         #    'Something is wrong, expected copy_dst and passed image_path to ' \
         #    'be the same\n"%s" ≠ "%s"' % (self.copy_dst, image_path)
 
-        if self.copy_dst.exists() and not self.overwrite:
+        if self.copy_dst.exists() and not self.wropts.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, self.copy_dst, self.test)
+                self.artalb, self.__class__, self.copy_dst, self.wropts.test)
             self._log.debug(result.message)
             return result
 
         size = self.copy_src.stat().st_size
-        if not self.test:
+        if not self.wropts.test:
             shutil.copy2(str(self.copy_src), str(self.copy_dst))
 
         result = Result.Copied(
             self.artalb, self.__class__, size,
-            self.copy_src, self.copy_dst, self.overwrite, self.test)
+            self.copy_src, self.copy_dst, self.wropts.overwrite, self.wropts.test)
         self._log.debug(result.message)
         return result
 
@@ -1018,14 +1018,13 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
                  artalb: ArtAlb,
                  image_type: ImageType,
                  image_path: Path,
-                 overwrite: bool,
-                 debug: bool,
-                 test: bool):
+                 wropts: WrOpts,
+                 debug: bool):
         self.copy_dst = image_path
         self.image_type_PIL = None
         self._image = None
         self._image_src = None
-        super().__init__(artalb, image_type, overwrite, debug, test)
+        super().__init__(artalb, image_type, wropts, debug)
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1103,15 +1102,15 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
                                      ' search_album_image before calling'
                                      ' write_album_image')
 
-        if self.copy_dst.exists() and not self.overwrite:
-            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, self.test)
+        if self.copy_dst.exists() and not self.wropts.overwrite:
+            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, self.wropts.test)
             self._log.debug(result.message)
             return result
 
-        if not self.test:
+        if not self.wropts.test:
             self._image.save(self.copy_dst, self.image_type.value.upper())
 
-        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, self.overwrite, self.test)
+        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, self.wropts.overwrite, self.wropts.test)
         self._log.debug(result.message)
         return result
 
@@ -1128,16 +1127,15 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
                  image_path: Path,
                  google_opts: GoogleCSE_Opts,
                  referer: str,
-                 overwrite: bool,
-                 debug: bool,
-                 test: bool):
+                 wropts: WrOpts,
+                 debug: bool):
         self.__google_opts = google_opts  # in case these are needed later
         self.referer = referer
         self.key = google_opts.key
         self.cxid = google_opts.id
         self.image_size = google_opts.image_size
         self.image_path = image_path
-        super().__init__(artalb, image_type, overwrite, debug, test)
+        super().__init__(artalb, image_type, wropts, debug)
 
     def __bool__(self) -> bool:
         return bool(self.__google_opts)
@@ -1240,11 +1238,10 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
                  artalb: ArtAlb,
                  image_type: ImageType,
                  image_path: Path,
-                 overwrite: bool,
-                 debug: bool,
-                 test: bool):
+                 wropts: WrOpts,
+                 debug: bool):
         self.image_path = image_path
-        super().__init__(artalb, image_type, overwrite, debug, test)
+        super().__init__(artalb, image_type, wropts, debug)
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1661,9 +1658,8 @@ def search_create_image(
         searches,
         googlecse_opts: GoogleCSE_Opts,
         referer: str,
-        overwrite: bool,
-        debug: bool,
-        test: bool)\
+        wropts: WrOpts,
+        debug: bool)\
         -> Result:
     """
     Do the download using ImageSearchers given the needed data. Write image
@@ -1689,9 +1685,8 @@ def search_create_image(
                 artalb,
                 image_type,
                 image_path,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             )
         )
     if search_embedded:
@@ -1700,9 +1695,8 @@ def search_create_image(
                 artalb,
                 image_type,
                 image_path,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             )
         )
     if search_musicbrainz:
@@ -1711,9 +1705,8 @@ def search_create_image(
                 artalb,
                 image_type,
                 image_path,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             )
         )
     if search_googlecse:
@@ -1724,13 +1717,12 @@ def search_create_image(
                 image_path,
                 googlecse_opts,
                 referer,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             )
         )
 
-    result = Result.NoSuitableImageFound(artalb, image_path, overwrite, test)
+    result = Result.NoSuitableImageFound(artalb, image_path, wropts)
     log.debug('  searching for %s', str_ArtAlb(artalb))
     for is_ in searchers:
         try:
@@ -1780,9 +1772,8 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                  search_googlecse),
                 googlecse_opts,
                 referer,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             ) = task_queue.get_nowait()
         except queue.Empty:  # catch Empty and return gracefully
             log.debug('←')
@@ -1802,9 +1793,8 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                  search_googlecse),
                 googlecse_opts,
                 referer,
-                overwrite,
-                debug,
-                test
+                wropts,
+                debug
             )
             result_queue.put(result)
         except Exception as ex:
@@ -2023,10 +2013,9 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
          args.search_musicbrainz,
          args.search_googlecse), \
         GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
-        args.overwrite, \
         args.referer, \
-        args.debug, \
-        args.test
+        WrOpts(args.overwrite, args.test), \
+        args.debug
 
 
 def main():
@@ -2042,10 +2031,9 @@ def main():
          search_musicbrainz,
          search_googlecse),\
         googlecse_opts, \
-        overwrite, \
         referer, \
-        debug, \
-        test \
+        wropts, \
+        debug \
         = parse_args_opts()
 
     if debug:
@@ -2060,7 +2048,7 @@ def main():
     daa_list = process_dirs(dirs,
                             image_name,
                             image_type,
-                            overwrite,
+                            wropts.overwrite,
                             result_queue)
 
     #
@@ -2081,9 +2069,8 @@ def main():
                  search_googlecse),
                 googlecse_opts,
                 referer,
-                overwrite,
-                debug,
-                test,
+                wropts,
+                debug
             )
         )
 
