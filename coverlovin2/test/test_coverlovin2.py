@@ -340,15 +340,20 @@ class Test_ImageSearcher(object):
 
 class Test_ImageSearcher_LikelyCover(object):
 
+    def _new_imagesearcher_likelycover(self, image_type: ImageType = jpg) ->\
+            ImageSearcher_LikelyCover:
+        """return a new bland instance of ImageSearcher_LikelyCover"""
+        return ImageSearcher_LikelyCover(ArtAlb_empty, image_type, Path(''), False, True, False)
+
     @pytest.mark.dependency(name='init_likelyc')
     def test_init(self):
-        ImageSearcher_LikelyCover(ArtAlb_empty, Path(''), '', False)
+        self._new_imagesearcher_likelycover()
 
     @pytest.mark.dependency(depends=['init_likelyc'])
     def test_WrongUseError(self):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, Path(''), '', False)
+        is_ = self._new_imagesearcher_likelycover()
         with pytest.raises(ImageSearcher_LikelyCover.WrongUseError):
-            is_.write_album_image(Path(''), True, True)
+            is_.write_album_image()
 
     A1_Dir = 'test_ImageSearcher_LikelyCover1'  # actual sub-directory
     A1_Mp3 = 'ID3v1 [Bob Dylan] [Highway 61 Revisited].mp3'  # actual test file
@@ -362,18 +367,6 @@ class Test_ImageSearcher_LikelyCover(object):
         """there should be no image files in the test resource directory"""
         # TODO: check this
 
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name__TypeError(self):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, Path(), '', False)
-        with pytest.raises(TypeError):
-            _ = is_._match_likely_name(jpg, None)  # type: ignore
-
-    @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name__AttributeError(self):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, Path(), '', False)
-        with pytest.raises(AttributeError):
-            _ = is_._match_likely_name(None, None)  # type: ignore
-
     # pytest.param
     # (
     #   ImageType,
@@ -384,7 +377,7 @@ class Test_ImageSearcher_LikelyCover(object):
     #   ),
     #   Path_expected_to_match
     # ),
-    @pytest.mark.parametrize('ti_it, ti_paths, ti_path_match',
+    @pytest.mark.parametrize('image_type, paths, image_path',
         (
             pytest.param
             (
@@ -603,10 +596,10 @@ class Test_ImageSearcher_LikelyCover(object):
         )
     )
     @pytest.mark.dependency(depends=['init_likelyc'])
-    def test_match_likely_name__match(self, ti_it, ti_paths, ti_path_match):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, Path(), '', False)
-        m = is_._match_likely_name(ti_it, ti_paths)
-        assert m == ti_path_match
+    def test_match_likely_name__match(self, image_type, paths, image_path):
+        is_ = self._new_imagesearcher_likelycover(image_type)
+        m = is_._match_likely_name(paths)
+        assert m == image_path
 
     B_cmp_name = lambda x, y: x.name == y.name
     B2_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
@@ -629,48 +622,42 @@ class Test_ImageSearcher_LikelyCover(object):
             assert not fp.exists()
 
     @pytest.mark.parametrize(
-        'image_path, image_type, files, test_expect, special_cmp',
+        'image_type, image_path, files, test_expect, special_cmp',
         (
             pytest.param
             (
-                B2_image_path, jpg, (B2_image_path,), None, None,
+                jpg, B2_image_path, (B2_image_path,), None, None,
                 id='same file exists (Do not match actual file to itself)' + jpg.suffix
             ),
             pytest.param
             (
-                B_image_path_ne, jpg, (B_image_path_ne,), B_image_path_ne, B_cmp_name,
+                jpg, B_image_path_ne, (B_image_path_ne,), B_image_path_ne, B_cmp_name,
                 id='same file not exist (Do match non-existent same file)'
             ),
             pytest.param
             (
-                B_image_path_1, png, (B_image_path_1,), B_image_path_1, B_cmp_name,
+                png, B_image_path_1, (B_image_path_1,), B_image_path_1, B_cmp_name,
                 id=B_image_path_Xid + str(B_image_path_1)
             ),
             pytest.param
             (
-                B_image_path_2, gif, (B_image_path_2,), B_image_path_2, B_cmp_name,
+                gif, B_image_path_2, (B_image_path_2,), B_image_path_2, B_cmp_name,
                 id=B_image_path_Xid + str(B_image_path_2)
             ),
             pytest.param
             (
-                B_image_path_3, jpg, (B_image_path_3,), B_image_path_3, B_cmp_name,
+                jpg, B_image_path_3, (B_image_path_3,), B_image_path_3, B_cmp_name,
                 id=B_image_path_Xid + str(B_image_path_3)
             ),
         )
     )
     @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B2'])
-    def test__match_likely_name(self, image_path, image_type, files, test_expect, special_cmp):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_path, '', False)
-        mln = is_._match_likely_name(image_type, files)
+    def test__match_likely_name(self, image_type, image_path, files, test_expect, special_cmp):
+        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path, False, True, False)
+        mln = is_._match_likely_name(files)
         assert test_expect == mln
         if special_cmp:
             assert special_cmp(mln, test_expect)
-
-    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B2'])
-    def test_search_album_image_images(self):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, self.A1_fp, 'referrer', False)
-        for it in ImageType.list():
-            assert not is_.search_album_image(ImageType(it))
 
 
     B_Artist = Artist('Bob Dylan')
@@ -697,40 +684,34 @@ class Test_ImageSearcher_LikelyCover(object):
         #assert self.__class__.B3_image_path2_sz  # might be zero
 
     @pytest.mark.parametrize(
-        'image_path_src, image_path_dst, image_type, overwrite, ' +
+        'image_type, image_path_src, image_path_dst, overwrite, ' +
         'result',
         (
             pytest.param
             (
-                B3_image_path1, B3_image_path2, jpg, False,
-                Result.SkipDueToNoOverwrite(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path2, False, True),
+                jpg, B3_image_path1, B3_image_path2, False,
+                Result.SkipDueToNoOverwrite(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path2, True),
                 id='destination image already exists - overwrite False, returns False'
             ),
             pytest.param
             (
-                B3_image_path1, B3_image_path2, jpg, True,
+                jpg, B3_image_path1, B3_image_path2, True,
                 Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path2, True, True),
                 id='destination image already exists - overwrite True, returns True'
             ),
             pytest.param
             (
-                B3_image_path1, B3_image_path_ne, jpg, False,
+                jpg, B3_image_path1, B3_image_path_ne, False,
                 Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, False, True),
-                id='happy path - case 1 - overwrite False'
-            ),
-            pytest.param
-            (
-                B3_image_path1, B3_image_path_ne, jpg, True,
-                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, True, True),
-                id='happy path - case 2 - overwrite True'
+                id='happy path - copied'
             )
         )
     )
     @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B3'])
-    def test_write_album_image(self, image_path_src, image_path_dst, image_type, overwrite, result):
-        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_path_dst, '', False)
-        assert is_.search_album_image(image_type)
-        assert result == is_.write_album_image(Path(), overwrite, True)
+    def test_write_album_image(self, image_type, image_path_src, image_path_dst, overwrite, result):
+        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path_dst, overwrite, True, True)
+        assert is_.search_album_image()
+        assert result == is_.write_album_image()
 
 
 class Test_ImageSearcher_EmbeddedMedia(object):
@@ -768,122 +749,120 @@ class Test_ImageSearcher_EmbeddedMedia(object):
     # def test_resources_exist(self, test_res_path):
     #     assert test_res_path.exists()
 
+    def _new_imagesearch_embeddedmedia(self, artalb: ArtAlb = ArtAlb_empty) ->\
+            ImageSearcher_EmbeddedMedia:
+        """create a simple instance"""
+        return ImageSearcher_EmbeddedMedia(artalb, jpg, Path(), False, True, True)
+
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
-        ImageSearcher_EmbeddedMedia(self.E_ArtAlb, Path(), 'hello', debug)
+        self._new_imagesearch_embeddedmedia(self.E_ArtAlb)
 
     def test_WrongUseError(self):
-        is_ = ImageSearcher_EmbeddedMedia(ArtAlb_empty, Path(), '', False)
+        is_ = self._new_imagesearch_embeddedmedia()
         with pytest.raises(ImageSearcher_EmbeddedMedia.WrongUseError):
-            is_.write_album_image(Path(), True, True)
-
-    def test_ValueError(self):
-        is_ = ImageSearcher_EmbeddedMedia(ArtAlb_empty, Path(), '', False)
-        is_._image = True
-        with pytest.raises(ValueError):
-            is_.write_album_image(Path(), True, True)
+            is_.write_album_image()
 
     @pytest.mark.parametrize(
-        'image_path, artalb, image_type, test_expect',
+        'image_type, image_path, artalb, test_expect',
         (
             pytest.param
             (
-                E_imagepath1, E_ArtAlb, jpg, False,
+                jpg, E_imagepath1, E_ArtAlb, False,
                 id='empty dir'
             ),
             pytest.param
             (
-                E_imagepath2, E_ArtAlb, jpg, False,
+                jpg, E_imagepath2, E_ArtAlb, False,
                 id='normal path - no embedded image'
             ),
             pytest.param
             (
-                E_imagepath3jpg, E_ArtAlb, jpg, True,
+                jpg, E_imagepath3jpg, E_ArtAlb, True,
                 id='happy path jpg'
             ),
             pytest.param
             (
-                E_imagepath3jpg, E_ArtAlb, png, True,
+                png, E_imagepath3jpg, E_ArtAlb, True,
                 id='happy path - embedded image is jpg, image_type is png'
             ),
             pytest.param
             (
-                E_imagepath3png, E_ArtAlb, png, True,
+                png, E_imagepath3png, E_ArtAlb, True,
                 id='happy path png'
             ),
             pytest.param
             (
-                E_imagepath3png, E_ArtAlb, jpg, True,
+                jpg, E_imagepath3png, E_ArtAlb, True,
                 id='happy path - embedded image is png, image_type is jpg'
             ),
             pytest.param
             (
-                E_imagepath3e_mp3, E_ArtAlb, png, False,
+                png, E_imagepath3e_mp3, E_ArtAlb, False,
                 id='zero size mp3 file'
             ),
             pytest.param
             (
-                E_imagepath3e_mp4, E_ArtAlb, png, False,
+                png, E_imagepath3e_mp4, E_ArtAlb, False,
                 id='zero size mp4'
             ),
             pytest.param
             (
-                E_imagepath3e_flac, E_ArtAlb, png, False,
+                png, E_imagepath3e_flac, E_ArtAlb, False,
                 id='zero size flac'
             ),
             pytest.param
             (
-                E_imagepath3e_ogg, E_ArtAlb, png, False,
+                png, E_imagepath3e_ogg, E_ArtAlb, False,
                 id='zero size ogg file'
             ),
             pytest.param
             (
-                E_imagepath3e_wma, E_ArtAlb, png, False,
+                png, E_imagepath3e_wma, E_ArtAlb, False,
                 id='zero size wma'
             ),
             pytest.param
             (
-                E_imagepath3bi, E_ArtAlb, png, False,
+                png, E_imagepath3bi, E_ArtAlb, False,
                 id='mp3 file has zero byte image embedded'
             ),
             pytest.param
             (
-                E_imagepath4, E_ArtAlb, jpg, True,
+                jpg, E_imagepath4, E_ArtAlb, True,
                 id='mp3 file has multiple images embedded'
             )
         )
     )
-    def test_search_album_image(self, image_path, artalb, image_type,
-                                test_expect):
-        is_ = ImageSearcher_EmbeddedMedia(artalb, image_path, '', False)
-        assert test_expect == is_.search_album_image(image_type)
+    def test_search_album_image(self, image_type, image_path, artalb, test_expect):
+        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, False, True, True)
+        assert test_expect == is_.search_album_image()
 
     @pytest.mark.parametrize(
-        'image_path, artalb, image_type, overwrite, ' +
+        'image_type, image_path, artalb, overwrite, ' +
         'result',
         (   # TODO: test against an actual Result class?
             pytest.param
             (
-                E_imagepath3jpg, E_ArtAlb, jpg, False,
+                jpg, E_imagepath3jpg, E_ArtAlb, False,
                 #Result.SkipDueToNoOverwrite(E_ArtAlb, ImageSearcher_EmbeddedMedia, E_imagepath3jpg, False, True),
                 False,
                 id='image already exists - overwrite False, returns False'
             ),
             pytest.param
             (
-                E_imagepath3jpg, E_ArtAlb, jpg, True,
+                jpg, E_imagepath3jpg, E_ArtAlb, True,
                 #Result.Extracted(E_ArtAlb, ImageSearcher_EmbeddedMedia, E_imagepath3mp3_sz, E_imagepath3jpg, E_imagepath3jpg, True, True),
                 True,
                 id='image already exists - overwrite True, returns True'
             )
         )
     )
-    def test_write_album_image(self, image_path, artalb, image_type,
+    def test_write_album_image(self, image_type, image_path, artalb,
                                overwrite, result):
         assert image_path.exists()
-        is_ = ImageSearcher_EmbeddedMedia(artalb, image_path, '', False)
-        assert is_.search_album_image(image_type)
-        assert is_.write_album_image(Path(), overwrite, True)
+        is_ = ImageSearcher_EmbeddedMedia(artalb, image_type, image_path, True, True, True)
+        assert is_.search_album_image()
+        assert is_.write_album_image()
 
 
 class Test_ImageSearcher_GoogleCSE(object):
@@ -912,11 +891,11 @@ class Test_ImageSearcher_GoogleCSE(object):
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
         gco = GoogleCSE_Opts('fake+key', 'fake+ID', self.C_sz)
-        ImageSearcher_GoogleCSE(ArtAlb_empty, gco, 'referrer!', debug)
+        ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', False, debug, True)
 
-    def test_False(self):
+    def test_GoogleCSE_Opts_False(self):
         gco = GoogleCSE_Opts('', '', self.C_sz)
-        assert not ImageSearcher_GoogleCSE(ArtAlb_empty, gco, 'referrer!', False)
+        assert not ImageSearcher_GoogleCSE(ArtAlb_empty, jpg, Path(), gco, 'referrer!', False, True, True)
 
     def _stub_response1(*args, **kwargs):
         """To replace `ImageSearcher_GoogleCSE._search_response_json`"""
@@ -937,10 +916,10 @@ class Test_ImageSearcher_GoogleCSE(object):
     )
     def test_search_album_image(self, artalb, image_type, result):
         # create ImageSearcher_GoogleCSE with stubbed methods
-        C_isg = ImageSearcher_GoogleCSE(artalb, self.C_gopt, 'referrer!', False)
+        C_isg = ImageSearcher_GoogleCSE(artalb, image_type, Path(), self.C_gopt, 'referrer!', False, True, True)
         C_isg._search_response_json = Test_ImageSearcher_GoogleCSE._stub_response1
         C_isg.download_url = Test_ImageSearcher_GoogleCSE._stub_download_url
-        assert C_isg.search_album_image(image_type) == result
+        assert C_isg.search_album_image() == result
 
     def _stub_response2(*args, **kwargs):
         return open(
@@ -954,7 +933,7 @@ class Test_ImageSearcher_GoogleCSE(object):
                        __qualname__)
 
     #
-    # create a finalizer fixture to remove test file after test runs
+    # use a fixture finalizer to remove test file after test runs
     #
 
     def _6_rm_testfile(self):
@@ -970,13 +949,15 @@ class Test_ImageSearcher_GoogleCSE(object):
     @pytest.mark.dependency(depends=['net_access'])
     @pytest.mark.usefixtures("_6_fixture")
     def test_search_album_image__use_altgooglecache(self, _6_fixture):
-        """test download from alternate google image cache location"""
+        """test download from alternate google image cache location
+        write an actual file (test=False)
+        """
 
-        is_ = ImageSearcher_GoogleCSE(ArtAlb_new('my artist', 'my album'), self.C_gopt, 'referrer!', False)
+        is_ = ImageSearcher_GoogleCSE(ArtAlb_new('my artist', 'my album'), jpg, self._6_testfile, self.C_gopt, 'referrer!', False, True, False)
         is_._search_response_json = self._stub_response2
         # XXX: hopefully the image URL within the test file remains valid!
-        assert is_.search_album_image(ImageType.JPG)
-        assert is_.write_album_image(self._6_testfile, False, False)
+        assert is_.search_album_image()
+        assert is_.write_album_image(self._6_testfile)
         # XXX: hopefully the image never changes! (not ideal)
         assert 2000 < os.path.getsize(self._6_testfile) < 2500
 
@@ -1014,13 +995,13 @@ class Test_ImageSearcher_MusicBrainz(object):
 
     @pytest.mark.parametrize('debug', (True, False))
     def test_init(self, debug):
-        ImageSearcher_MusicBrainz(ArtAlb_empty, 'hello', debug)
+        ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), False, debug, True)
 
     def test_search_album_image_ArtAlb_empty(self):
-        ismb = ImageSearcher_MusicBrainz(ArtAlb_empty, 'hello', False)
-        assert not ismb.search_album_image(None)
+        ismb = ImageSearcher_MusicBrainz(ArtAlb_empty, jpg, Path(), False, True, True)
+        assert not ismb.search_album_image()
 
-    @pytest.mark.parametrize('sa_ret, br_ret',
+    @pytest.mark.parametrize('search_artists, browse_releases',
         (
             pytest.param(None, None, id='None'),
             pytest.param([], None, id='[]'),
@@ -1072,18 +1053,18 @@ class Test_ImageSearcher_MusicBrainz(object):
             #       at this point, add values for br_ret
         )
     )
-    def test_search_album_image(self, sa_ret, br_ret):
-        ismb = ImageSearcher_MusicBrainz(self.D_ArtAlb, 'hello', False)
+    def test_search_album_image(self, search_artists, browse_releases):
+        ismb = ImageSearcher_MusicBrainz(self.D_ArtAlb, jpg, Path(), False, True, True)
         def _stub_search_artists(*args, **kwargs):
-            return sa_ret
+            return search_artists
         def _stub_browse_releases(*args, **kwargs):
-            return br_ret
+            return browse_releases
         ismb._search_artists = _stub_search_artists
         ismb._browse_releases = _stub_browse_releases
-        assert not ismb.search_album_image(None)
+        assert not ismb.search_album_image()
 
     # TODO: test ImageSearcher_MusicBrainz.search_album_image without a stub
-    #       somehow just check it returns some value and does not choke
+    #       somehow just check it returns some value and does not raise,
     #       depends on success of test_net_ping, test_net_dns, etc.
     #       (it will likely choke if either artist or album is blank)
 

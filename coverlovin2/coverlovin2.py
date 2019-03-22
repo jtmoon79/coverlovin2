@@ -73,6 +73,7 @@ from pathlib import Path
 import typing  # Union, NewType, Tuple, List
 import enum  # Enum
 import collections  # namedtuple
+import attr
 
 
 #
@@ -82,14 +83,18 @@ Artist = typing.NewType('Artist', str)
 Album = typing.NewType('Album', str)
 ArtAlb = typing.NewType('ArtAlb', typing.Tuple[Artist, Album])
 
+
 # add this method to act as __bool__
-# TODO: try inheriting typing.Tuple and override __bool__
+# TODO: XXX: how to override __bool__ for typing.NewType ? Should that be done?
+#            try inheriting typing.Tuple and override __bool__ ?
 def ArtAlb_is(artalb: ArtAlb) -> bool:
     return bool(artalb[0]) or bool(artalb[1])
+
 
 def ArtAlb_new(artist: typing.Union[str, Artist],
                album: typing.Union[str, Album]) -> ArtAlb:
     return ArtAlb((Artist(artist), Album(album),))
+
 
 ArtAlb_empty = ArtAlb_new('', '')
 # ('Dir'ectory, 'Art'ist, 'Alb'um)
@@ -196,8 +201,8 @@ class ImageType(enum.Enum):
 class Result(typing.NamedTuple):
     artalb: ArtAlb
     imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
-    image_path: Path
     image_type: typing.Union[ImageType, None]
+    image_path: Path
     result_written: bool  # bytes that comprise an image were written to `image_path`
     overwrite: bool  # was --overwrite enabled?
     test: bool  # was --test enabled?
@@ -219,17 +224,14 @@ class Result(typing.NamedTuple):
         if artalb != (Artist(''), Album('')):
             message = 'No suitable image found for %s that could be written to "%s"' % (
             str_ArtAlb(artalb), image_path)
-        return Result(artalb, None, image_path, None, False, overwrite, test, True, message, False, '')
+        return Result(artalb, None, None, image_path, False, overwrite, test, True, message, False, '')
 
     @classmethod
     def SkipDueToNoOverwrite(cls,
                              artalb: ArtAlb,
                              imagesearcher: typing.Any,
                              image_path: Path,
-                             overwrite: bool,
                              test: bool):
-        if overwrite:
-            raise RuntimeError('overwrite must be false for this Result')
         if not image_path.exists():
             raise RuntimeError('expected a file that exists, does not "%s"',
                                image_path)
@@ -238,7 +240,7 @@ class Result(typing.NamedTuple):
             mesg_test = '(--test) '
         message = '%sfile already exists and --overwrite not enabled; skipping'\
                   ' "%s"' % (mesg_test, image_path)
-        return Result(artalb, imagesearcher, image_path, None, False, overwrite, test, False, message, False, '')
+        return Result(artalb, imagesearcher, None, image_path, False, False, test, False, message, False, '')
 
     @classmethod
     def strt(cls, test: bool) -> str:
@@ -257,8 +259,8 @@ class Result(typing.NamedTuple):
                    size, image_path)
         return Result(artalb,
                       imagesearcher,
-                      image_path,
                       None,
+                      image_path,
                       True,
                       overwrite,
                       test,
@@ -280,8 +282,8 @@ class Result(typing.NamedTuple):
                   (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
         return Result(artalb,
                       imagesearcher,
-                      copy_dst,
                       None,
+                      copy_dst,
                       True,
                       overwrite,
                       test,
@@ -303,8 +305,8 @@ class Result(typing.NamedTuple):
                   (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
         return Result(artalb,
                       imagesearcher,
-                      copy_dst,
                       None,
+                      copy_dst,
                       True,
                       overwrite,
                       test,
@@ -461,6 +463,7 @@ def get_artist_album_mp4(ffp: Path) -> ArtAlb:
 
     return ArtAlb((Artist(artist), Album(album)))
 
+
 def get_artist_album_flac(ffp: Path) -> ArtAlb:
     """
     :param ffp: full file path of media file
@@ -488,6 +491,7 @@ def get_artist_album_flac(ffp: Path) -> ArtAlb:
         pass
 
     return ArtAlb((Artist(artist), Album(album)))
+
 
 def get_artist_album_ogg(ffp: Path) -> ArtAlb:
     """
@@ -555,6 +559,7 @@ def get_artist_album_ogg(ffp: Path) -> ArtAlb:
         pass
 
     return ArtAlb((Artist(artist), Album(album)))
+
 
 def get_artist_album_asf(ffp: Path) -> ArtAlb:
     """
@@ -656,11 +661,28 @@ def similar(title1: str, title2: str) -> float:
 class ImageSearcher(abc.ABC):
     NAME = __qualname__
 
-    def __init__(self, artalb: ArtAlb, referer: str, debug: bool):
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 overwrite: bool,
+                 debug: bool,
+                 test: bool):
+        """
+        :param artalb: artist and album presumed. may be an "empty"
+                       Artist and Album
+        :param image_type: jpg, png, ...
+        :param debug: logging  debug verbosity?
+        :param overwrite: if (overwrite and file exists) then write new file
+                          else return
+        :param test: if test do not actually write anything
+        """
         self.artalb = artalb
-        self.referer = referer
+        self.image_type = image_type
+        self.overwrite = overwrite
+        self.debug = debug
+        self.test = test
+        #
         self._image_bytes = bytes()
-        self.result_message = ''
         # setup new logger for this class instance
         self._logname = self.NAME + '(' + str(id(self)) + ')'
         self._log = log_new(LOGFORMAT,
@@ -668,9 +690,12 @@ class ImageSearcher(abc.ABC):
                             self._logname)
         super().__init__()
 
+    @abc.abstractmethod
+    def go(self) -> typing.Union[Result, None]:
+        pass
 
     @abc.abstractmethod
-    def search_album_image(self, image_type: ImageType) -> bytes:
+    def search_album_image(self) -> bytes:
         pass
 
     @staticmethod
@@ -692,30 +717,28 @@ class ImageSearcher(abc.ABC):
 
         return response.read()
 
-    def write_album_image(self, image_path: Path, overwrite: bool, test: bool)\
-            -> Result:
+    def write_album_image(self, image_path: Path) -> Result:
         """Write `self.image_bytes` to Path `image_path`
 
         :param image_path: full file path to image file
-        :param overwrite: if (overwrite and file exists) then write new file
-                          else return
-        :param test: if test do not actually write anything
         """
         assert self._image_bytes, 'Error: self._image_bytes not set. Was ' \
                                   '%s.search_album_image called?' % self.NAME
 
-        if image_path.exists() and not overwrite:
+        if image_path.exists() and not self.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, image_path, overwrite, test
+                self.artalb, self.__class__, image_path, self.test
             )
             self._log.debug(result.message)
             return result
 
-        if not test:
+        if not self.test:
             with open(str(image_path), 'wb+') as fh:
                 fh.write(self._image_bytes)
 
-        result = Result.Downloaded(self.artalb, self.__class__, len(self._image_bytes), image_path, overwrite, test)
+        result = Result.Downloaded(
+            self.artalb, self.__class__, len(self._image_bytes),
+            image_path, self.overwrite, self.test)
         self._log.debug(result.message)
         return result
 
@@ -730,13 +753,18 @@ class ImageSearcher_LikelyCover(ImageSearcher):
     """
     NAME = __qualname__
 
-    def __init__(self, artalb, image_path: Path, referer: str, debug: bool):
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 image_path: Path,
+                 overwrite: bool,
+                 debug: bool,
+                 test: bool):
         self.copy_src = None
         self.copy_dst = image_path
-        super().__init__(artalb, referer, debug)
+        super().__init__(artalb, image_type, overwrite, debug, test)
 
-    def _match_likely_name(self, image_type: ImageType,
-                           files: typing.Sequence[Path])\
+    def _match_likely_name(self, files: typing.Sequence[Path])\
             -> typing.Union[None, Path]:
         """
         Given a sequence of image files (Paths), find the most likely album cover
@@ -744,7 +772,6 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         This function makes no changes to the class instance.
 
-        :param image_type: ImageType to look for
         :param files: sequence of Paths. Each .name is checked against some re
                       patterns to see if it is likely an album cover file name.
                       e.g. 'album cover.jpg' or
@@ -762,6 +789,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         candidates_by_pref: typing.DefaultDict[int, typing.List[Path]] = \
             collections.defaultdict(list)
 
+        image_type = self.image_type
         # These re patterns are ordered by preference.
         # For example, if there are files "AlbumArtSmall.jpg" and
         # "AlbumArtLarge.jpg" then this ordering will prefer "AlbumArtLarge.jpg"
@@ -896,28 +924,35 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         return copy_src
 
     @overrides(ImageSearcher)
-    def search_album_image(self, image_type: ImageType) -> bool:
-        """
-        Search `self.copy_dst.parent` for a file that is very likely an album
-        cover image.
+    def go(self) -> typing.Union[Result, None]:
+        if not self.search_album_image():
+            return None
+        return self.write_album_image()
 
-        TODO: also check sub-directory .mediaartlocal for an image file
+    @overrides(ImageSearcher)
+    def search_album_image(self) -> bool:
+        """
+        Search `self.copy_dst.parent` directory for a file that is very likely
+        an album cover image.
+
+        TODO: also search sub-directories `.mediaartlocal`, `scans`, `Artwork`
+              for a matching image file
         """
         self._log.debug('search_album_image(…) self.copy_dst="%s"',
                         self.copy_dst)
 
         candidates = []  # files that are of the same media image type
         try:
-            re_suffix_exact = '^' + image_type.re_suffix + '$'
+            re_suffix_exact = '^' + self.image_type.re_suffix + '$'
             for fp in self.copy_dst.parent.iterdir():  # 'fp' means file path
                 if fp.is_file() and re.match(re_suffix_exact, fp.suffix,
                                              flags=re.IGNORECASE):
                     candidates.append(fp)
         except OSError as ose:
             self._log.exception(ose)
-        candidates = sorted(candidates)
+        candidates = sorted(candidates)  # iterdir does not guarantee order which may fail pytests
 
-        self.copy_src = self._match_likely_name(image_type, candidates)
+        self.copy_src = self._match_likely_name(candidates)
         if not self.copy_src:
             return False
 
@@ -927,16 +962,11 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         pass
 
     @overrides(ImageSearcher)
-    def write_album_image(self, _: Path, overwrite: bool, test: bool) -> Result:
+    def write_album_image(self) -> Result:
         """
-        Copy `self._image_bytes` file from `copy_src` to `copy_dst`
-
-        :param _: image_path but is not used by this function override
-        :param overwrite: if (overwrite and file exists) then write new file
-                          else return
-        :param test: if test do not actually write anything
+        Copy `self.copy_src` to `self.copy_dst`
         """
-        self._log.debug('write_album_image(…)')
+        self._log.debug('write_album_image()')
 
         if not self.copy_src:
             raise self.WrongUseError('self.copy_src is not set, must call'
@@ -952,7 +982,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         if self.copy_src == self.copy_dst:
             self._log.warning('copying the same file to itself⁈ "%s"',
-                               self.copy_src)
+                              self.copy_src)
         # it's somewhat pointless to pass image_path since copy_dst should be
         # the same, but image_path is passed only for sake of consistency with
         # sibling classes. So may as well do this sanity check. Then forget
@@ -961,20 +991,19 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         #    'Something is wrong, expected copy_dst and passed image_path to ' \
         #    'be the same\n"%s" ≠ "%s"' % (self.copy_dst, image_path)
 
-        if self.copy_dst.exists() and not overwrite:
+        if self.copy_dst.exists() and not self.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, self.copy_dst,
-                overwrite, test)
+                self.artalb, self.__class__, self.copy_dst, self.test)
             self._log.debug(result.message)
             return result
 
         size = self.copy_src.stat().st_size
-        if not test:
+        if not self.test:
             shutil.copy2(str(self.copy_src), str(self.copy_dst))
 
         result = Result.Copied(
             self.artalb, self.__class__, size,
-            self.copy_src, self.copy_dst, overwrite, test)
+            self.copy_src, self.copy_dst, self.overwrite, self.test)
         self._log.debug(result.message)
         return result
 
@@ -985,20 +1014,33 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
     """
     NAME = __qualname__
 
-    def __init__(self, artalb: ArtAlb, image_path: Path, referer: str, debug: bool):
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 image_path: Path,
+                 overwrite: bool,
+                 debug: bool,
+                 test: bool):
         self.copy_dst = image_path
+        self.image_type_PIL = None
         self._image = None
         self._image_src = None
-        self._image_type = None
-        super().__init__(artalb, referer, debug)
+        super().__init__(artalb, image_type, overwrite, debug, test)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, image_type: ImageType) -> bool:
+    def go(self) -> typing.Union[Result, None]:
+        if not self.search_album_image():
+            return None
+        return self.write_album_image()
+
+
+    @overrides(ImageSearcher)
+    def search_album_image(self) -> bool:
         """
         Search `self.copy_dst.parent` for an audio media file that contains
         an embedded album cover image
         """
-        self._log.debug('search_album_image(…) self.copy_dst="%s"',
+        self._log.debug('search_album_image() self.copy_dst="%s"',
                         self.copy_dst)
 
         media_files = []
@@ -1034,8 +1076,8 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
             # the PIL.Image will later be PIL.Image.save to the
             # self._image_type type (i.e. it will be format converted by the PIL
             # module)
-            self._image_type = ImageType.ImageFromFormat(image.format)
-            if not self._image_type:
+            self.image_type_PIL = ImageType.ImageFromFormat(image.format)
+            if not self.image_type_PIL:
                 continue
             self._image = image
             self._image.size_pixels = image.height * image.width
@@ -1048,34 +1090,28 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
         pass
 
     @overrides(ImageSearcher)
-    def write_album_image(self, _: Path, overwrite: bool, test: bool) \
+    def write_album_image(self) \
             -> Result:
         """
         extract embedded image from `self._image`.
-
-        :param _: image_path but is not used by this function override
-        :param overwrite: if (overwrite and file exists) then write new file
-                          else return
-        :param test: if test do not actually write anything
         """
         self._log.debug('write_album_image(…)')
 
+        assert self.image_type, 'self.image_type not set, something is wrong'
         if not self._image:
             raise self.WrongUseError('self._image is not set, must call'
                                      ' search_album_image before calling'
                                      ' write_album_image')
-        if not self._image_type:
-            raise ValueError('self._image_type not set, something is wrong')
 
-        if self.copy_dst.exists() and not overwrite:
-            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, overwrite, test)
+        if self.copy_dst.exists() and not self.overwrite:
+            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, self.test)
             self._log.debug(result.message)
             return result
 
-        if not test:
-            self._image.save(self.copy_dst, self._image_type.value.upper())
+        if not self.test:
+            self._image.save(self.copy_dst, self.image_type.value.upper())
 
-        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, overwrite, test)
+        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, self.overwrite, self.test)
         self._log.debug(result.message)
         return result
 
@@ -1086,26 +1122,41 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
     # google_search_api = 'https://cse.google.com/cse'
     google_search_api = 'https://www.googleapis.com/customsearch/v1'
 
-    def __init__(self, artalb: ArtAlb, google_opts: GoogleCSE_Opts, referer: str, debug: bool):
-        self.__google_opts = google_opts
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 image_path: Path,
+                 google_opts: GoogleCSE_Opts,
+                 referer: str,
+                 overwrite: bool,
+                 debug: bool,
+                 test: bool):
+        self.__google_opts = google_opts  # in case these are needed later
+        self.referer = referer
         self.key = google_opts.key
         self.cxid = google_opts.id
         self.image_size = google_opts.image_size
-        super().__init__(artalb, referer, debug)
+        self.image_path = image_path
+        super().__init__(artalb, image_type, overwrite, debug, test)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.__google_opts)
+
+    @overrides(ImageSearcher)
+    def go(self) -> typing.Union[Result, None]:
+        if not self.search_album_image():
+            return None
+        return self.write_album_image(self.image_path)
 
     def _search_response_json(self, request, *args, **kwargs):
         """Add wrapper so it may be overridden by a testing harness (pytest)"""
         return urllib.request.urlopen(request, *args, **kwargs)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, image_type: ImageType) -> bool:
-        self._log.debug('search_album_image("%s", …) %s',
-                        image_type.value, str_ArtAlb(self.artalb))
+    def search_album_image(self) -> bool:
+        self._log.debug('search_album_image() %s', str_ArtAlb(self.artalb))
 
-        if not self.artalb[0] and not self.artalb[1]:
+        if self.artalb == ArtAlb_empty:
             return False
 
         # construct url, parameters documented at
@@ -1116,8 +1167,9 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
                 + 'key=' + self.key
                 + '&cx=' + self.cxid
                 + '&prettyPrint=true'
-                + '&q=' + sanitise(self.artalb[0]) + '+' + sanitise(self.artalb[1])
-                + '&fileType=' + image_type.value
+                + '&q=' + sanitise(self.artalb[0]) + '+' +
+                          sanitise(self.artalb[1])
+                + '&fileType=' + str(self.image_type.value)
                 + '&imgSize=' + self.image_size.value
                 + '&imgColorType=color'
                 + '&searchType=image'
@@ -1184,6 +1236,22 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
 class ImageSearcher_MusicBrainz(ImageSearcher):
     NAME = __qualname__
 
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 image_path: Path,
+                 overwrite: bool,
+                 debug: bool,
+                 test: bool):
+        self.image_path = image_path
+        super().__init__(artalb, image_type, overwrite, debug, test)
+
+    @overrides(ImageSearcher)
+    def go(self) -> typing.Union[Result, None]:
+        if not self.search_album_image():
+            return None
+        return self.write_album_image(self.image_path)
+
     def _search_artists(self, mb, artist: Artist) -> dict:
         """extract this function call to allow for pytest stubbing"""
         self._log.debug('· mb.search_artists(query="%s", limit=1)', artist)
@@ -1196,7 +1264,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         return mb.browse_releases(artist=artist_id, limit=500)
 
     @overrides(ImageSearcher)
-    def search_album_image(self, _: ImageType) -> bool:
+    def search_album_image(self) -> bool:
         """There are a number of ways to use the musicbrainz searching and
         browse API functions.
         The particular order of operations here appears
@@ -1205,9 +1273,11 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         Trying to search with just one API call using with Album+Artist string
         yielded too many ambiguous results.
 
-        :return: image data as bytes
+        TODO: XXX: this does not account for different image types!
+                   only returns .jpg
+
+        :return: found image or not?
         """
-        #self._log.debug('search_album_image(%s, …)', str_ArtAlb(self.artalb))
 
         artist = self.artalb[0]
         album = self.artalb[1]
@@ -1585,10 +1655,9 @@ def process_dirs(
 
 
 def search_create_image(
-        image_path: Path,
         artalb: ArtAlb,
         image_type: ImageType,
-        image_name: str,
+        image_path: Path,
         searches,
         googlecse_opts: GoogleCSE_Opts,
         referer: str,
@@ -1603,38 +1672,71 @@ def search_create_image(
     """
     log.debug('  search_create_image(%s, …)', str_ArtAlb(artalb))
 
-    # TODO: Have order of requested searchers matter. Search in order of passed
-    #       script options.
-    search_likely, \
-    search_embedded, \
-    search_musicbrainz, \
-    search_googlecse \
-        = searches
-    searchers = (
-        ImageSearcher_LikelyCover(artalb, image_path, referer, debug)
-            if search_likely else None,
-        ImageSearcher_EmbeddedMedia(artalb, image_path, referer, debug)
-        if search_embedded else None,
-        ImageSearcher_MusicBrainz(artalb, referer, debug)
-            if search_musicbrainz else None,
-        ImageSearcher_GoogleCSE(artalb, googlecse_opts, referer, debug)
-            if search_googlecse else None,
-    )
-    result = Result.NoSuitableImageFound(artalb, image_path, overwrite, test)
-    stra = str_ArtAlb(artalb)
+    # TODO: Have order of user requested searchers matter (i.e. note order of
+    #       command-line arguments passed). Search in order of passed script
+    #       options.
 
+    search_likely, \
+        search_embedded, \
+        search_musicbrainz, \
+        search_googlecse \
+        = searches
+
+    searchers = []
+    if search_likely:
+        searchers.append(
+            ImageSearcher_LikelyCover(
+                artalb,
+                image_type,
+                image_path,
+                overwrite,
+                debug,
+                test
+            )
+        )
+    if search_embedded:
+        searchers.append(
+            ImageSearcher_EmbeddedMedia(
+                artalb,
+                image_type,
+                image_path,
+                overwrite,
+                debug,
+                test
+            )
+        )
+    if search_musicbrainz:
+        searchers.append(
+            ImageSearcher_MusicBrainz(
+                artalb,
+                image_type,
+                image_path,
+                overwrite,
+                debug,
+                test
+            )
+        )
+    if search_googlecse:
+        searchers.append(
+            ImageSearcher_GoogleCSE(
+                artalb,
+                image_type,
+                image_path,
+                googlecse_opts,
+                referer,
+                overwrite,
+                debug,
+                test
+            )
+        )
+
+    result = Result.NoSuitableImageFound(artalb, image_path, overwrite, test)
+    log.debug('  searching for %s', str_ArtAlb(artalb))
     for is_ in searchers:
         try:
-            if not is_:
-                continue
-            if not is_.search_album_image(image_type):
-                log.debug('  no album image found from image searcher %s for'
-                          ' %s', is_.NAME, stra)
-                continue
-            res = is_.write_album_image(image_path, overwrite, test)
+            res = is_.go()
             if not res:
-                log.debug('  write_album_image failed for image searcher %s for'
-                          ' %s', is_.NAME, stra)
+                log.debug('  %s did not find an album cover image', is_.NAME)
                 continue
             result = res
             break
@@ -1665,7 +1767,6 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
             # consumed at this point in the program.
             (
                 daa,
-                image_path,
                 image_type,
                 image_name,
                 (search_likely,
@@ -1681,14 +1782,15 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
         except queue.Empty:  # catch Empty and return gracefully
             log.debug('←')
             return
-        _, artalb = daa
+        pathd, artalb = daa
+        image_nt = image_name + image_type.suffix
+        image_path = Path(pathd, image_nt)
         log.debug('☐ task: %s', str_ArtAlb(artalb))
         try:
             result = search_create_image(
-                image_path,
                 artalb,
                 image_type,
-                image_name,
+                image_path,
                 (search_likely,
                  search_embedded,
                  search_musicbrainz,
@@ -1909,17 +2011,17 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
             raise err
 
     return args.dirs[0], \
-           ImageType(args.image_type), \
-           args.image_name, \
-           (args.search_likely,
-            args.search_embedded,
-            args.search_musicbrainz,
-            args.search_googlecse), \
-           GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
-           args.overwrite, \
-           args.referer, \
-           args.debug, \
-           args.test
+        ImageType(args.image_type), \
+        args.image_name, \
+        (args.search_likely,
+         args.search_embedded,
+         args.search_musicbrainz,
+         args.search_googlecse), \
+        GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
+        args.overwrite, \
+        args.referer, \
+        args.debug, \
+        args.test
 
 
 def main():
@@ -1928,17 +2030,17 @@ def main():
     given directory and its sub-directories
     """
     dirs, \
-    image_type,\
-    image_name, \
-    (search_likely,
-     search_embedded,
-     search_musicbrainz,
-     search_googlecse),\
-    googlecse_opts, \
-    overwrite, \
-    referer, \
-    debug, \
-    test \
+        image_type,\
+        image_name, \
+        (search_likely,
+         search_embedded,
+         search_musicbrainz,
+         search_googlecse),\
+        googlecse_opts, \
+        overwrite, \
+        referer, \
+        debug, \
+        test \
         = parse_args_opts()
 
     if debug:
@@ -1962,14 +2064,10 @@ def main():
     #
 
     task_queue = queue.Queue()
-
-    image_nt = image_name + image_type.suffix
     for daa in daa_list:
-        image_path = Path(daa[0], image_nt)  # TODO: redundant, get rid of image_path and it's path though this function and everywhere else it's really dumbly redundant
         task_queue.put(
             (
                 daa,
-                image_path,
                 image_type,
                 image_name,
                 (search_likely,
