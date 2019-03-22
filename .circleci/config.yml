@@ -112,9 +112,9 @@ jobs:
           name: test coverlovin2 pytests
           command: |
             set -x
+            pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            pwd
             "${PIPENV}" run pytest -vv coverlovin2/test
   build_pypi:
     docker:
