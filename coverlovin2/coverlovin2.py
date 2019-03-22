@@ -114,7 +114,7 @@ class URL(str):
     """string type with constraints on values.
     The value must look like an http* URL string.
 
-    NOTE: There are great libraries for safe and flexible URL handling (like
+    NOTE: There are great libraries for safe and flexible URL handling (e.g.
           purl). But this project is for the sake of learning.
 
     Immutable types are treated differently when inherited:
@@ -206,6 +206,8 @@ class ImageType(enum.Enum):
 
 
 class Result(typing.NamedTuple):
+    """TODO: this class is awful. no need to save all this data. just
+             create a message at time of instantiation and move on."""
     artalb: ArtAlb
     imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
     image_type: typing.Union[ImageType, None]
