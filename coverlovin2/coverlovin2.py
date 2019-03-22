@@ -103,7 +103,7 @@ DirArtAlb_List = typing.List[DirArtAlb]
 Path_List = typing.List[Path]
 
 
-@attr.s
+@attr.s(slots=True)
 class WrOpts:
     """Write Options - these should always travel together"""
     overwrite: bool = attr.ib()
