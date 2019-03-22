@@ -13,7 +13,7 @@ CoverLovin2
 *CoverLovin2* (Cover Loving, too!), Python name *coverlovin2*, is a Python
 script for downloading album cover art images, either via local searching and
 copying, or via downloading from various online services.
-A common use-case is creating a "`cover.jpg`" file for a large collection of
+A common use-case is creating "`cover.jpg`" files for a large collection of
 ripped Compact Disc albums.
 
 coverlovin2 can only be run by Python version 3.7 (or greater).
@@ -203,8 +203,6 @@ coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 _Sonos_ systems will use file `folder.jpg` for album cover art (if available).
 
 _Winamp_ will use file `cover.jpg` for album cover art (if available).
-
-coverlovin2 could be used as a module but was not designed for it.
 
 coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
