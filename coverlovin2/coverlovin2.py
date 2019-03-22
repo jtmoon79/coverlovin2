@@ -1753,6 +1753,11 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
     While things to process in task_queue then do so. This function will
     exit when task_queue.get raises Empty.
 
+    TODO: it should be a speed improvement to differentiate between tasks that
+          are more suited for parallel work (e.g. network requests) and those
+          suited for sequential work (e.g. local disk reads). Currently, the
+          task divvying does not distinguish.
+
     :param task_queue: queue of tasks (images to search for)
     :param result_queue: queue of attempts at downloads/copies, used for later
                         printing of program results
