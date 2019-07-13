@@ -103,7 +103,7 @@ DirArtAlb_List = typing.List[DirArtAlb]
 Path_List = typing.List[Path]
 
 
-@attr.s(slots=True)
+@attr.s(slots=True, frozen=True)
 class WrOpts:
     """Write Options - these should always travel together"""
     overwrite: bool = attr.ib()
@@ -357,6 +357,7 @@ def overrides(interface_class):
 
 def str_AA(artist: Artist, album: Album) -> str:
     return '｛ "%s" • "%s" ｝' % (artist, album)
+
 
 def str_ArtAlb(artalb: ArtAlb) -> str:
     return str_AA(artalb[0], artalb[1])
@@ -1091,8 +1092,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
         pass
 
     @overrides(ImageSearcher)
-    def write_album_image(self) \
-            -> Result:
+    def write_album_image(self) -> Result:
         """
         extract embedded image from `self._image`.
         """
