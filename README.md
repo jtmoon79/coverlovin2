@@ -269,4 +269,4 @@ user-passed options for the `IMAGE_NAME` and `IMAGE_TYPE`.
 
 ----
 
-<img src="https://stackexchange.com/users/flair/216253.png" width="208" height="58" alt="profile for Kai Hendry on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for James Thomas Moon on Stack Exchange, a network of free, community-driven Q&amp;A sites">
+<a href="https://stackexchange.com/users/216253/jamesthomasmoon1979"><img src="https://stackexchange.com/users/flair/216253.png" width="208" height="58" alt="profile for JamesThomasMoon1979 on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for JamesThomasMoon1979 on Stack Exchange, a network of free, community-driven Q&amp;A sites" /></a>
