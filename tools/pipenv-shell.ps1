@@ -1,4 +1,4 @@
-# start pipenv shell with decorated window title
+# start this project's pipenv shell with decorated window title
 
 $ErrorActionPreference = "Stop"
 #Set-PSDebug -Trace 2
