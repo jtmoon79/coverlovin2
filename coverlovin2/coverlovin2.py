@@ -66,6 +66,7 @@ from pprint import pprint as pp  # for help live-debugging
 # XXX: PEP8 complaint that this is not used.  But try this import before going
 #      too far.
 import mutagen  # see README.md for installation help
+from tabulate import tabulate
 
 #
 # type hints and type precision
@@ -2129,15 +2130,35 @@ def main():
 
     # `.join` returns when task_queue is empty of tasks (task_done)
     task_queue.join()
+    # done with all the hard work
 
-    # print results and exit gracefully
-    # TODO: print improve summary table of results (is there a print table python library? gotta be!)
+    # pop all result from the queue into a list
+    results = []
     try:
         while True:
             result = result_queue.get_nowait()
-            print(result.message)
+            results.append(result)
     except queue.Empty:
         pass
+
+    # print results and exit gracefully
+    if not results:
+        print("No album cover images could be found.")
+        return 0
+
+    results_table = []
+    for r_ in results:
+        if not r_:
+            results_table.append(
+                ('✗', str_ArtAlb(r_.artalb), r_.message, r_.image_path.parent)
+            )
+        else:
+            results_table.append(
+                ('✓', str_ArtAlb(r_.artalb), r_.message, r_.image_path)
+            )
+    print(
+        tabulate(results_table, ('', 'Artist & Album', 'Result', 'Path'))
+    )
 
     return 0
 
