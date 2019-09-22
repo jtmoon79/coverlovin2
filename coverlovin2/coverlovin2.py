@@ -846,6 +846,12 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     It searches for matching image types (using file extension), e.g. image_path
     with file name extension '.png' only searches for other '.png' files.
     If a suitable file is found then copy that file to `image_path`.
+
+    For example, given image_path
+         /home/user/music/ACDC - Back In Black/cover.jpg
+    if ImageSearcher_LikelyCover instance finds a file
+         /home/user/music/ACDC - Back In Black/Album Front.jpg
+    then it will copy "Album Front.jpg" to "cover.jpg".
     """
     NAME = __qualname__
 
