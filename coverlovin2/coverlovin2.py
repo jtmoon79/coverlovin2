@@ -261,27 +261,47 @@ class Result(typing.NamedTuple):
 
     @classmethod
     def NoSuitableImageFound(cls, artalb: ArtAlb, image_path: Path, wropts: WrOpts):
-        message = 'No suitable image found that could be written to "%s"' % image_path
-        if artalb != (Artist(''), Album('')):
-            message = 'No suitable image found for %s that could be written to "%s"' % (
-            str_ArtAlb(artalb), image_path)
-        return Result(artalb, None, None, image_path, False, wropts, True, message, False, '')
+        #message = 'No suitable image found that could be written to "%s"' % image_path
+        #if artalb != (Artist(''), Album('')):
+            #message = 'No suitable image found for %s that could be written to "%s"' % (
+            #str_ArtAlb(artalb), image_path)
+        message = '%sNo suitable image found' % cls.strt(wropts.test)
+        return Result(artalb,
+                      None,
+                      None,
+                      image_path,
+                      False,
+                      wropts,
+                      True,
+                      message,
+                      False,
+                      '')
 
     @classmethod
     def SkipDueToNoOverwrite(cls,
                              artalb: ArtAlb,
                              imagesearcher: typing.Any,
                              image_path: Path,
-                             test: bool):
+                             wropts: WrOpts):
         if not image_path.exists():
             raise RuntimeError('expected a file that exists, does not "%s"',
                                image_path)
-        mesg_test = ''
-        if test:
-            mesg_test = '(--test) '
-        message = '%sfile already exists and --overwrite not enabled; skipping'\
-                  ' "%s"' % (mesg_test, image_path)
-        return Result(artalb, imagesearcher, None, image_path, False, WrOpts(False, test), False, message, False, '')
+        if wropts.overwrite:
+            raise ValueError('WriteOptions.overwrite must be False')
+        #message = '%sfile already exists and --overwrite not enabled; skipping'\
+        #          ' "%s"' % (cls.strt(test), image_path)
+        message = '%sfile already exists and --overwrite not enabled' % \
+                  cls.strt(wropts.test)
+        return Result(artalb,
+                      imagesearcher,
+                      None,
+                      image_path,
+                      False,
+                      wropts,
+                      False,
+                      message,
+                      False,
+                      '')
 
     @classmethod
     def strt(cls, test: bool) -> str:
@@ -293,17 +313,19 @@ class Result(typing.NamedTuple):
                 imagesearcher: typing.Any,
                 size: int,
                 image_path: Path,
-                overwrite: bool,
-                test: bool):
-        message = '%s%s found %s and downloaded %d bytes to "%s"' % \
-                  (cls.strt(test), imagesearcher.NAME, str_ArtAlb(artalb),
-                   size, image_path)
+                wropts: WrOpts):
+        #message = '%s%s found %s and downloaded %d bytes to "%s"' % \
+        #          (cls.strt(test), imagesearcher.NAME, str_ArtAlb(artalb),
+        #           size, image_path)
+        message = '%sFound %s and downloaded %d bytes from %s' % \
+                  (cls.strt(wropts.test), str_ArtAlb(artalb),
+                   size, imagesearcher.provider())
         return Result(artalb,
                       imagesearcher,
                       None,
                       image_path,
                       True,
-                      WrOpts(overwrite, test),
+                      wropts,
                       False,
                       message,
                       False,
@@ -316,16 +338,22 @@ class Result(typing.NamedTuple):
                size: int,
                copy_src: Path,
                copy_dst: Path,
-               overwrite: bool,
-               test: bool):
-        message = '%s%s copied %d bytes from "%s" to "%s"' % \
-                  (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+               wropts: WrOpts):
+        #message = '%s%s copied %d bytes from "%s" to "%s"' % \
+        #          (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+        source = '?'
+        if imagesearcher is ImageSearcher_EmbeddedMedia:
+            source = 'embedded image in "%s"' % copy_src.name
+        elif imagesearcher is ImageSearcher_LikelyCover:
+            source = 'likely cover "%s"' % copy_src.name
+        message = '%sCopied %d bytes from %s' % \
+                  (cls.strt(wropts.test), size, source)
         return Result(artalb,
                       imagesearcher,
                       None,
                       copy_dst,
                       True,
-                      WrOpts(overwrite, test),
+                      wropts,
                       False,
                       message,
                       False,
@@ -338,16 +366,17 @@ class Result(typing.NamedTuple):
                   size: int,
                   copy_src: Path,
                   copy_dst: Path,
-                  overwrite: bool,
-                  test: bool):
-        message = '%s%s extracted %d pixels embedded in "%s", wrote to "%s"' % \
-                  (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+                  wropts: WrOpts):
+        #message = '%s%s extracted %d pixels embedded in "%s", wrote to "%s"' % \
+        #          (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
+        message = '%sExtracted %d pixels from embedded media "%s"' % \
+                  (cls.strt(wropts.test), size, copy_src.name)
         return Result(artalb,
                       imagesearcher,
                       None,
                       copy_dst,
                       True,
-                      WrOpts(overwrite, test),
+                      wropts,
                       False,
                       message,
                       False,
@@ -430,7 +459,7 @@ def log_new(logformat: str, level: int, logname: str = None) \
 # recomended format
 LOGFORMAT = '%(levelname)s: [%(threadName)s %(name)s]: %(message)s'
 # the file-wide logger instance
-log = log_new(LOGFORMAT, logging.INFO)
+log = log_new(LOGFORMAT, logging.WARNING)
 
 REFERER_DEFAULT = __url__
 # task_queue has this many threads consuming tasks
@@ -710,27 +739,25 @@ class ImageSearcher(abc.ABC):
                  artalb: ArtAlb,
                  image_type: ImageType,
                  wropts: WrOpts,
-                 debug: bool):
+                 loglevel: int):
         """
         :param artalb: artist and album presumed. may be an "empty"
                        Artist and Album
         :param image_type: jpg, png, ...
         :param opts.overwrite: if (overwrite and file exists) then write new file
                           else return
-        :param opts.debug: logging  debug verbosity?
+        :param opts.loglevel: logging level
         :param opts.test: if test do not actually write anything
         """
         self.artalb = artalb
         self.image_type = image_type
         self.wropts = wropts
-        self.debug = debug
+        self.loglevel = loglevel
         #
         self._image_bytes = bytes()
         # setup new logger for this class instance
-        self._logname = self.NAME + '(' + str(id(self)) + ')'
-        self._log = log_new(LOGFORMAT,
-                            logging.DEBUG if debug else logging.INFO,
-                            self._logname)
+        self._logname = self.NAME + '(0x%08x)' % id(self)
+        self._log = log_new(LOGFORMAT, loglevel, self._logname)
         super().__init__()
 
     @abc.abstractmethod
@@ -770,7 +797,7 @@ class ImageSearcher(abc.ABC):
 
         if image_path.exists() and not self.wropts.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, image_path, self.wropts.test
+                self.artalb, self.__class__, image_path, self.wropts
             )
             self._log.debug(result.message)
             return result
@@ -781,7 +808,7 @@ class ImageSearcher(abc.ABC):
 
         result = Result.Downloaded(
             self.artalb, self.__class__, len(self._image_bytes),
-            image_path, self.wropts.overwrite, self.wropts.test)
+            image_path, self.wropts)
         self._log.debug(result.message)
         return result
 
@@ -801,10 +828,10 @@ class ImageSearcher_LikelyCover(ImageSearcher):
                  image_type: ImageType,
                  image_path: Path,
                  wropts: WrOpts,
-                 debug: bool):
+                 loglevel: int):
         self.copy_src = None
         self.copy_dst = image_path
-        super().__init__(artalb, image_type, wropts, debug)
+        super().__init__(artalb, image_type, wropts, loglevel)
 
     def _match_likely_name(self, files: typing.Sequence[Path])\
             -> typing.Union[None, Path]:
@@ -1035,7 +1062,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         if self.copy_dst.exists() and not self.wropts.overwrite:
             result = Result.SkipDueToNoOverwrite(
-                self.artalb, self.__class__, self.copy_dst, self.wropts.test)
+                self.artalb, self.__class__, self.copy_dst, self.wropts)
             self._log.debug(result.message)
             return result
 
@@ -1045,7 +1072,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
 
         result = Result.Copied(
             self.artalb, self.__class__, size,
-            self.copy_src, self.copy_dst, self.wropts.overwrite, self.wropts.test)
+            self.copy_src, self.copy_dst, self.wropts)
         self._log.debug(result.message)
         return result
 
@@ -1061,12 +1088,12 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
                  image_type: ImageType,
                  image_path: Path,
                  wropts: WrOpts,
-                 debug: bool):
+                 loglevel: int):
         self.copy_dst = image_path
         self.image_type_PIL = None
         self._image = None
         self._image_src = None
-        super().__init__(artalb, image_type, wropts, debug)
+        super().__init__(artalb, image_type, wropts, loglevel)
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1144,14 +1171,17 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
                                      ' write_album_image')
 
         if self.copy_dst.exists() and not self.wropts.overwrite:
-            result = Result.SkipDueToNoOverwrite(self.artalb, self.__class__, self.copy_dst, self.wropts.test)
+            result = Result.SkipDueToNoOverwrite(
+                self.artalb, self.__class__, self.copy_dst, self.wropts)
             self._log.debug(result.message)
             return result
 
         if not self.wropts.test:
             self._image.save(self.copy_dst, self.image_type.value.upper())
 
-        result = Result.Extracted(self.artalb, self.__class__, self._image.size_pixels, self._image_src, self.copy_dst, self.wropts.overwrite, self.wropts.test)
+        result = Result.Extracted(
+            self.artalb, self.__class__, self._image.size_pixels,
+            self._image_src, self.copy_dst, self.wropts)
         self._log.debug(result.message)
         return result
 
@@ -1169,14 +1199,14 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
                  google_opts: GoogleCSE_Opts,
                  referer: str,
                  wropts: WrOpts,
-                 debug: bool):
+                 loglevel: int):
         self.__google_opts = google_opts  # in case these are needed later
         self.referer = referer
         self.key = google_opts.key
         self.cxid = google_opts.id
         self.image_size = google_opts.image_size
         self.image_path = image_path
-        super().__init__(artalb, image_type, wropts, debug)
+        super().__init__(artalb, image_type, wropts, loglevel)
 
     def __bool__(self) -> bool:
         return bool(self.__google_opts)
@@ -1285,9 +1315,9 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
                  image_type: ImageType,
                  image_path: Path,
                  wropts: WrOpts,
-                 debug: bool):
+                 loglevel: int):
         self.image_path = image_path
-        super().__init__(artalb, image_type, wropts, debug)
+        super().__init__(artalb, image_type, wropts, loglevel)
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1706,7 +1736,7 @@ def search_create_image(
         googlecse_opts: GoogleCSE_Opts,
         referer: str,
         wropts: WrOpts,
-        debug: bool)\
+        loglevel: int)\
         -> Result:
     """
     Do the download using ImageSearchers given the needed data. Write image
@@ -1733,7 +1763,7 @@ def search_create_image(
                 image_type,
                 image_path,
                 wropts,
-                debug
+                loglevel
             )
         )
     if search_embedded:
@@ -1743,7 +1773,7 @@ def search_create_image(
                 image_type,
                 image_path,
                 wropts,
-                debug
+                loglevel
             )
         )
     if search_musicbrainz:
@@ -1753,7 +1783,7 @@ def search_create_image(
                 image_type,
                 image_path,
                 wropts,
-                debug
+                loglevel
             )
         )
     if search_googlecse:
@@ -1765,7 +1795,7 @@ def search_create_image(
                 googlecse_opts,
                 referer,
                 wropts,
-                debug
+                loglevel
             )
         )
 
@@ -1820,7 +1850,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 googlecse_opts,
                 referer,
                 wropts,
-                debug
+                loglevel
             ) = task_queue.get_nowait()
         except queue.Empty:  # catch Empty and return gracefully
             log.debug('←')
@@ -1841,7 +1871,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 googlecse_opts,
                 referer,
                 wropts,
-                debug
+                loglevel
             )
             result_queue.put(result)
         except Exception as ex:
@@ -1972,9 +2002,9 @@ Audio files supported are %s.""" % ', '.join(AUDIO_TYPES)
                       default=REFERER_DEFAULT,
                       help='Referer url used in HTTP GET requests'
                            ' (default: "%(default)s")')
-    argg.add_argument('-d', '--debug', dest='debug', action='store_true',
-                      default=False,
-                      help='Print debugging messages')
+    argg.add_argument('-d', '--debug', dest='debug', action='count',
+                      default=0,
+                      help='Print debugging messages. May be passed twice.')
     argg.add_argument('--test', dest='test', action='store_true', default=False,
                       help='Only test, do not write any files')
 
@@ -2052,6 +2082,12 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
                       '   pip install musicbrainzngs')
             raise err
 
+    loglevel = logging.WARNING
+    if args.debug == 1:
+        loglevel = logging.INFO
+    elif args.debug >= 2:
+        loglevel = logging.DEBUG
+
     return args.dirs[0], \
         ImageType(args.image_type), \
         args.image_name, \
@@ -2062,7 +2098,7 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
         GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
         args.referer, \
         WrOpts(args.overwrite, args.test), \
-        args.debug
+        loglevel
 
 
 def main():
@@ -2080,11 +2116,10 @@ def main():
         googlecse_opts, \
         referer, \
         wropts, \
-        debug \
+        loglevel \
         = parse_args_opts()
 
-    if debug:
-        log.setLevel(logging.DEBUG)
+    log.setLevel(loglevel)
 
     # results of attempting to update directories
     # (SimpleQueue is an unbounded queue, new in Python 3.7!)
@@ -2117,7 +2152,7 @@ def main():
                 googlecse_opts,
                 referer,
                 wropts,
-                debug
+                loglevel
             )
         )
 
