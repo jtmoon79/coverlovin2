@@ -14,14 +14,15 @@ This also makes use of inheritance decorators @overrides and @abstractmethod.
 And other little Python 3.x novelties!
 """
 
+# DRY canonical informations
 __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2'
 __url_source__ = __url__
 __url_project__ = 'https://pypi.org/project/CoverLovin2/'
 __version__ = '0.5.7'  # canonical version (don't set version anywhere else)
 __doc__ = \
-    """Recursively process passed directories of audio media files, attempting
- to create a missing album image file, either via local searching and
+    """Recursively process passed directories of audio media files, attempting\
+ to create a missing album image file, either via local searching and\
  copying, or via downloading from various online services."""
 
 
@@ -111,7 +112,8 @@ class WrOpts:
 
 
 class URL(str):
-    """string type with constraints on values.
+    """
+    string type with constraints on values.
     The value must look like an http* URL string.
 
     NOTE: There are great libraries for safe and flexible URL handling (e.g.
@@ -133,13 +135,34 @@ class URL(str):
         return str.__new__(cls, *value)
 
 
+class SearcherMedium(enum.Enum):
+    """
+    Distinguish the medium the ImageSearcher class uses.
+
+    XXX: someday, somehow this would assist in queuing ImageSearcher work
+         by medium. Work via NETWORK would allow many simultaneous ImageSearcher
+         instances, and work via DISK would allow fewer.
+         For now, this information is a NOOP (though a fun little exercise in
+         class organization).
+    """
+    DISK = 'disk'
+    NETWORK = 'network'
+
+    @classmethod
+    def list(cls) -> typing.List[str]:
+        return [sm_.value for sm_ in SearcherMedium]
+
+
 #
 # Google CSE Options
 #
 
 
 class ImageSize(enum.Enum):
-    """must match https://developers.google.com/custom-search/v1/cse/list"""
+    """
+    must match https://developers.google.com/custom-search/v1/cse/list
+    (http://archive.fo/Oi3mv)
+    """
 
     SML = 'small'
     MED = 'medium'
@@ -193,8 +216,10 @@ class ImageType(enum.Enum):
 
     @staticmethod
     def ImageFromFormat(fmt: str):
-        """from PIL.Image.format string to corresponding ImageType instance
-        return None if none found"""
+        """
+        from PIL.Image.format string to corresponding ImageType instance
+        return None if none found
+        """
         fmt = fmt.lower()
         if fmt == 'jpeg':  # this darn special case!
             return ImageType.JPG
@@ -206,8 +231,15 @@ class ImageType(enum.Enum):
 
 
 class Result(typing.NamedTuple):
-    """TODO: this class is awful. no need to save all this data. just
-             create a message at time of instantiation and move on."""
+    """
+    Save the results of ImageSearcher work in a formalized manner. Intended for
+    later printing in a meaningful way.
+
+    XXX: This class is clunky and overwrought.
+         No need to save all this data, just create a message at time of
+         instantiation and move on.
+    """
+
     artalb: ArtAlb
     imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
     image_type: typing.Union[ImageType, None]
@@ -389,6 +421,10 @@ def log_new(logformat: str, level: int, logname: str = None) \
     log.addHandler(loghandler)
     return log
 
+
+#
+# global instances
+#
 
 # recomended format
 LOGFORMAT = '%(levelname)s: [%(threadName)s %(name)s]: %(message)s'
@@ -636,7 +672,9 @@ def get_artist_album_asf(ffp: Path) -> ArtAlb:
 
 
 # associate file extension to retrieval helper functions
-# TODO: XXX: use `mutagen.File` instead, let mutagen figure out the type
+# TODO: XXX: after adding all the prior get_artist_album_XXX methods, I noticed
+#            the `mutagen.File` does this for the user. So let mutagen.File
+#            figure out the type and remove get_artist_album_XXX methods. RTFM!
 get_artist_album = {
     '.mp3': get_artist_album_mp3,
     '.m4a': get_artist_album_mp4,
@@ -1149,7 +1187,10 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
         return self.write_album_image(self.image_path)
 
     def _search_response_json(self, request, *args, **kwargs):
-        """Add wrapper so it may be overridden by a testing harness (pytest)"""
+        """
+        Wrapper function so network request may be overridden by a testing
+        harness (pytest)
+        """
         return urllib.request.urlopen(request, *args, **kwargs)
 
     @overrides(ImageSearcher)
@@ -1159,8 +1200,10 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
         if self.artalb == ArtAlb_empty:
             return False
 
-        # construct url, parameters documented at
+        # construct the URL
+        # URI parameters documented at
         # https://developers.google.com/custom-search/v1/using_rest
+        # (http://archive.fo/Ljx73)
         url = URL(
             ImageSearcher_GoogleCSE.google_search_api
                 + '?'
@@ -1270,7 +1313,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         seemed to be reasonably accurate. First, search on Artist string for an
         Artist ID then search on Album string confined to that Artist ID.
         Trying to search with just one API call using with Album+Artist string
-        yielded too many ambiguous results.
+        yields too many ambiguous results.
 
         TODO: XXX: this does not account for different image types!
                    only returns .jpg
@@ -1295,6 +1338,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
         mb = musicbrainzngs  # helper alias
         ua_app = mb.__package__
         ua_ver = mb.musicbrainz._version
+        self._log.debug('· import %s version %s', ua_app, ua_ver)
         self._log.debug('· mb.set_useragent("%s", %s)', ua_app, ua_ver)
         mb.set_useragent(ua_app, ua_ver)
         self._log.debug('· mb.set_format(fmt="json")')
@@ -1532,7 +1576,7 @@ def process_dir(dirp: Path,
     #       e.g. some mp3 files may not have ID3 set, and some mp3 have the
     #       wrong ID3 'album' value.
 
-    # TODO: related to prior, Various Artists albums will have inconsistent
+    # TODO: related to prior TODO, Various Artists albums will have inconsistent
     #       Artist tag but consistent Album tag.
 
     files.sort()
