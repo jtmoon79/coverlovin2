@@ -17,6 +17,7 @@ from setuptools import find_packages
 from coverlovin2.coverlovin2 import __version__
 from coverlovin2.coverlovin2 import __author__
 from coverlovin2.coverlovin2 import __url__
+from coverlovin2.coverlovin2 import __app_name__
 
 # Get the long description from the README.md file
 __here = os.path.abspath(os.path.dirname(__file__))
@@ -24,7 +25,7 @@ with open(os.path.join(__here, 'README.md'), encoding='utf-8') as f_:
     long_description = f_.read()
 
 setup(
-    name='CoverLovin2',
+    name=__app_name__,
     version=__version__,
     author=__author__,
     url=__url__,
@@ -37,6 +38,7 @@ setup(
         'mutagen >= 1.42.0',
         'Pillow >= 5.4.1',
     ],
+    setup_requires=['wheel'],
     # see https://pypi.org/classifiers/
     classifiers=[
         'Development Status :: 3 - Alpha',
