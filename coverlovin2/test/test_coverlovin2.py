@@ -1272,13 +1272,13 @@ class Test_complex_funcs(object):
     @pytest.mark.parametrize('args, ret_expect',
         (
             pytest.param(['-s-', '.'],
-                         (['.'], None, None, (True, True, True, False), None, None, None, None, logging.WARNING),
+                         (['.'], None, None, (True, True, True, False, False), None, None, None, logging.WARNING),
                          id='-s- .'),
             pytest.param(['.', '-se', '.', '..'],
-                         (['.', '.', '..'], None, None, (False, True, False, False), None, None, None, None, logging.WARNING),
+                         (['.', '.', '..'], None, None, (False, True, False, False, False), None, None, None, logging.WARNING),
                          id='. -se . ..'),
             pytest.param(['-s*', '.',  '--sgkey', 'my key', '--sgid', 'my id'],
-                         (['.'], None, None, (True, True, True, True), None, None, None, None, logging.WARNING),
+                         (['.'], None, None, (True, True, True, True, True), None, None, None, logging.WARNING),
                          id='-s* . …'),
         )
     )

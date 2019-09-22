@@ -2247,7 +2247,6 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
         args.search_likely = True
         args.search_embedded = True
         args.search_musicbrainz = True
-        args.search_discogs = True
         if args.search_googlecse:
             log.warning('--search-googlecse was selected while'
                         ' --search-all-noinit was also selected')
