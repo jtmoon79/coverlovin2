@@ -58,6 +58,8 @@ from ..coverlovin2 import (
     get_artist_album_asf,
     get_artist_album,
     ImageSearcher,
+    ImageSearcher_Medium_Disk,
+    ImageSearcher_Medium_Network,
     ImageSearcher_LikelyCover,
     ImageSearcher_EmbeddedMedia,
     ImageSearcher_MusicBrainz,
@@ -281,10 +283,18 @@ png = ImageType.PNG
 
 class Test_overrides(object):
     """
-    Cannot test @overrides because @overrides check runs at some point prior to
-    run-time, during some sort of Python pre-run phase. Prior to pytest being
-    ready.
+    Cannot test @overrides on made-up functions because @overrides check runs at
+    some point prior to run-time, during some sort of Python pre-run phase,
+    prior to pytest being ready.
     """
+
+    def test_ImageSearcher_Medium_Disk(self):
+        with pytest.raises(TypeError):
+            ImageSearcher_Medium_Disk()
+
+    def test_ImageSearcher_Medium_Network(self):
+        with pytest.raises(TypeError):
+            ImageSearcher_Medium_Network()
 
 
 # placeholder image url for testing downloading

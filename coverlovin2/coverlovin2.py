@@ -462,8 +462,11 @@ LOGFORMAT = '%(levelname)s: [%(threadName)s %(name)s]: %(message)s'
 log = log_new(LOGFORMAT, logging.WARNING)
 
 REFERER_DEFAULT = __url__
+
+SEMAPHORE_COUNT_DISK = 2
+SEMAPHORE_COUNT_NETWORK = 16
 # task_queue has this many threads consuming tasks
-TASK_THREAD_COUNT = 8
+TASK_QUEUE_THREAD_COUNT = SEMAPHORE_COUNT_DISK + SEMAPHORE_COUNT_NETWORK + 1
 
 
 #
@@ -760,6 +763,12 @@ class ImageSearcher(abc.ABC):
         self._log = log_new(LOGFORMAT, loglevel, self._logname)
         super().__init__()
 
+    # TODO: XXX: abstractproperty has been deprecated since Python 3.3
+    #            what technique can abstract a @property now?
+    @abc.abstractmethod
+    def search_medium(self) -> SearcherMedium:
+        pass
+
     @abc.abstractmethod
     def go(self) -> typing.Union[Result, None]:
         pass
@@ -813,7 +822,24 @@ class ImageSearcher(abc.ABC):
         return result
 
 
-class ImageSearcher_LikelyCover(ImageSearcher):
+class ImageSearcher_Medium_Disk(ImageSearcher):
+    @overrides(ImageSearcher)
+    def search_medium(self) -> SearcherMedium:
+        return SearcherMedium.DISK
+
+
+class ImageSearcher_Medium_Network(ImageSearcher):
+    @overrides(ImageSearcher)
+    def search_medium(self) -> SearcherMedium:
+        return SearcherMedium.NETWORK
+
+    # @abc.abstractclassmethod  # XXX: deprecated, what is an alternative?
+    @classmethod
+    def provider(cls) -> str:
+        pass
+
+
+class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     """
     ImageSearcher that searches the parent directory of passed `image_path`
     for files that are likely cover files, e.g. 'album.jpg' or 'album_front.jpg'
@@ -1077,7 +1103,7 @@ class ImageSearcher_LikelyCover(ImageSearcher):
         return result
 
 
-class ImageSearcher_EmbeddedMedia(ImageSearcher):
+class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
     """
     ImageSearcher that searches the media files for an embedded image.
     """
@@ -1186,7 +1212,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher):
         return result
 
 
-class ImageSearcher_GoogleCSE(ImageSearcher):
+class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
     NAME = __qualname__
 
     # google_search_api = 'https://cse.google.com/cse'
@@ -1210,6 +1236,11 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
 
     def __bool__(self) -> bool:
         return bool(self.__google_opts)
+
+    @classmethod
+    #@overrides(ImageSearcher_Medium_Network)
+    def provider(cls) -> str:
+        return 'Google'
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1307,7 +1338,7 @@ class ImageSearcher_GoogleCSE(ImageSearcher):
         return True if self._image_bytes else False
 
 
-class ImageSearcher_MusicBrainz(ImageSearcher):
+class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
     NAME = __qualname__
 
     def __init__(self,
@@ -1318,6 +1349,11 @@ class ImageSearcher_MusicBrainz(ImageSearcher):
                  loglevel: int):
         self.image_path = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
+
+    @classmethod
+    #@overrides(ImageSearcher_Medium_Network)
+    def provider(cls) -> str:
+        return 'musicbrainz.org'
 
     @overrides(ImageSearcher)
     def go(self) -> typing.Union[Result, None]:
@@ -1728,6 +1764,10 @@ def process_dirs(
     return path_list
 
 
+disk_semaphore = threading.Semaphore(value=SEMAPHORE_COUNT_DISK)
+network_semaphore = threading.Semaphore(value=SEMAPHORE_COUNT_NETWORK)
+
+
 def search_create_image(
         artalb: ArtAlb,
         image_type: ImageType,
@@ -1799,10 +1839,23 @@ def search_create_image(
             )
         )
 
+    global disk_semaphore, network_semaphore
+
+    # fallback result
     result = Result.NoSuitableImageFound(artalb, image_path, wropts)
     log.debug('  searching for %s', str_ArtAlb(artalb))
     for is_ in searchers:
+        semaphore = None
         try:
+            if is_.search_medium() is SearcherMedium.DISK:
+                semaphore = disk_semaphore
+            elif is_.search_medium() is SearcherMedium.NETWORK:
+                semaphore = network_semaphore
+            else:
+                raise ValueError('Unknown SearcherMedium %s' %
+                                 is_.search_medium())
+            semaphore.acquire()
+
             res = is_.go()
             if not res:
                 log.debug('  %s did not find an album cover image', is_.NAME)
@@ -1811,6 +1864,9 @@ def search_create_image(
             break
         except Exception as ex:
             log.exception(ex)
+        finally:
+            if semaphore:
+                semaphore.release()
 
     return result
 
@@ -2156,7 +2212,7 @@ def main():
             )
         )
 
-    for _ in range(TASK_THREAD_COUNT):
+    for _ in range(TASK_QUEUE_THREAD_COUNT):
         th = threading.Thread(target=process_tasks,
                               args=(task_queue, result_queue))
         # daemon: don't wait on threads, task_queue signals when complete
