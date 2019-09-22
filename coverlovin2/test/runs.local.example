@@ -1,0 +1,5 @@
+--help
+# ignore this line
+"/home/user/music/" --image-name "folder" -s- --image-type "jpg" --overwrite \
+    --debug --test
+"/home/user/music/" --image-name "folder" -s- --image-type "gif" --test
