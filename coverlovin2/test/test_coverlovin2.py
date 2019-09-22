@@ -612,7 +612,9 @@ class Test_ImageSearcher_LikelyCover(object):
         m = is_._match_likely_name(paths)
         assert m == image_path
 
+    # abbreviate check
     B_cmp_name = lambda x, y: x.name == y.name
+    #
     B2_Dir = 'test_ImageSearcher_LikelyCover2'  # actual sub-directory
     B2_Img = 'album.jpg'  # actual test file in that sub-directory
     B2_image_path = resources.joinpath(B2_Dir, B2_Img)  # file path test resource .../album.jpg
@@ -622,9 +624,15 @@ class Test_ImageSearcher_LikelyCover(object):
     B_image_path_2 = Path(r'./Kraftwerk - Minimum Maximum/Minimum Maximum' + gif.suffix)
     B_image_path_3 = Path(r'./Kraftwerk - Minimum Maximum/Kraftwerk' + jpg.suffix)
     B_image_path_Xid = 'Do match similar file name to similar parent directory name: '
+    #
+    B4_Dir = 'test_ImageSearcher_LikelyCover4'  # actual sub-directory
+    B4_Img = 'album4.jpg'  # actual test file in that sub-directory
+    B4_Img_sz = 0
+    B4_image_path = resources.joinpath(B4_Dir, 'Covers', B4_Img)  # file path test resource .../album4.jpg
+    B4_image_path_ne = resources.joinpath(B4_Dir, 'cover.jpg')  # non-existent file
 
     @pytest.mark.dependency(name='test_res_B2')
-    def test_B2_resources_exist(self):
+    def test_B2_resources_exist(self):  # XXX: this is unnecessary, just fail
         assert self.B2_image_path.exists()
         for fp in (self.B_image_path_ne,
                    self.B_image_path_1,
@@ -659,6 +667,11 @@ class Test_ImageSearcher_LikelyCover(object):
             (
                 jpg, B_image_path_3, (B_image_path_3,), B_image_path_3, B_cmp_name,
                 id=B_image_path_Xid + str(B_image_path_3)
+            ),
+            pytest.param
+            (
+                jpg, B4_image_path_ne, (B4_image_path,), B4_image_path, B_cmp_name,
+                id='image is down one sub-directory'
             ),
         )
     )
@@ -696,25 +709,56 @@ class Test_ImageSearcher_LikelyCover(object):
         #assert self.__class__.B3_image_path2_sz  # might be zero
 
     @pytest.mark.parametrize(
+        'image_type, image_path_src, image_path_dst',
+        (
+            pytest.param
+            (
+                jpg, B3_image_path1, B3_image_path2,
+            ),
+            pytest.param
+            (
+                jpg, B3_image_path1, B3_image_path_ne,
+                id='happy path - copied'
+            ),
+            pytest.param
+            (
+                jpg, B4_image_path, B4_image_path_ne,
+                id='happy path - copied'
+            )
+        )
+    )
+    @pytest.mark.dependency(depends=['init_likelyc', 'test_res_B3'])
+    def test_search_album_image(self, image_type, image_path_src, image_path_dst):
+        is_ = ImageSearcher_LikelyCover(ArtAlb_empty, image_type, image_path_dst, WrOpts(False, True), True)
+        assert is_.search_album_image()
+
+    @pytest.mark.parametrize(
         'image_type, image_path_src, image_path_dst, overwrite, ' +
         'result',
         (
             pytest.param
             (
                 jpg, B3_image_path1, B3_image_path2, False,
-                Result.SkipDueToNoOverwrite(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path2, True),
+                Result.SkipDueToNoOverwrite(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path2, WrOpts(False, True)),
                 id='destination image already exists - overwrite False, returns False'
             ),
             pytest.param
             (
                 jpg, B3_image_path1, B3_image_path2, True,
-                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path2, True, True),
+                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path2, WrOpts(True, True)),
                 id='destination image already exists - overwrite True, returns True'
             ),
             pytest.param
             (
                 jpg, B3_image_path1, B3_image_path_ne, False,
-                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, False, True),
+                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B3_image_path1_sz, B3_image_path1, B3_image_path_ne, WrOpts(False, True)),
+                id='happy path - copied'
+            ),
+            pytest.param
+            (
+                jpg, B4_image_path, B4_image_path_ne, False,
+                Result.Copied(ArtAlb_empty, ImageSearcher_LikelyCover, B4_Img_sz, B4_image_path,
+                              B4_image_path_ne, WrOpts(False, True)),
                 id='happy path - copied'
             )
         )

@@ -1032,25 +1032,42 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
             return None
         return self.write_album_image()
 
+    def _find_likely_covers(self, image_type: ImageType, path: Path) -> Path_List:
+        """
+        Search directory entries under directory `path`.
+        Return list of files that are likely to be an album cover image file.
+        """
+        candidates = []
+        try:
+            re_suffix_exact = '^' + image_type.re_suffix + '$'
+            for fp in path.iterdir():
+                if fp.is_file() and re.match(re_suffix_exact, fp.suffix,
+                                             flags=re.IGNORECASE):
+                    candidates.append(fp)
+        except OSError as ose:
+            self._log.exception(ose)
+        candidates = sorted(candidates)  # iterdir does not guarantee order which may fail pytests
+
+        return candidates
+
+
     @overrides(ImageSearcher)
     def search_album_image(self) -> bool:
         """
-        Search `self.copy_dst.parent` directory for a file that is very likely
-        an album cover image.
-
-        TODO: also search sub-directories `.mediaartlocal`, `scans`, `Artwork`
-              for a matching image file
+        Search `self.copy_dst.parent` directory and subdirectories for a file
+        that is very likely an album cover image.
         """
         self._log.debug('search_album_image(…) self.copy_dst="%s"',
                         self.copy_dst)
 
         candidates = []  # files that are of the same media image type
         try:
-            re_suffix_exact = '^' + self.image_type.re_suffix + '$'
-            for fp in self.copy_dst.parent.iterdir():  # 'fp' means file path
-                if fp.is_file() and re.match(re_suffix_exact, fp.suffix,
-                                             flags=re.IGNORECASE):
-                    candidates.append(fp)
+            candidates += self._find_likely_covers(self.image_type, self.copy_dst.parent)
+            # search directories within directory of image_path for possible
+            # cover art file candidates
+            for fp in self.copy_dst.parent.iterdir():
+                if fp.is_dir():
+                    candidates += self._find_likely_covers(self.image_type, fp)
         except OSError as ose:
             self._log.exception(ose)
         candidates = sorted(candidates)  # iterdir does not guarantee order which may fail pytests
