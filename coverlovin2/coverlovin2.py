@@ -19,7 +19,10 @@ __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2'
 __url_source__ = __url__
 __url_project__ = 'https://pypi.org/project/CoverLovin2/'
-__version__ = '0.5.7'  # canonical version (don't set version anywhere else)
+__app_name__ = 'CoverLovin2'
+__version__ = '0.6.0'
+# https://tools.ietf.org/html/rfc1945#section-3.7
+__product_token__ = __app_name__ + '/' + __version__
 __doc__ = \
     """Recursively process passed directories of audio media files, attempting\
  to create a missing album image file, either via local searching and\
@@ -1314,6 +1317,8 @@ class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
             self._log.debug('Google CSE urllib.request.urlopen("%s")',
                             request.full_url)
             response = self._search_response_json(request, data=None, timeout=5)
+        except urllib.error.HTTPError:
+            return False
         except Exception as err:
             self._log.exception('Error %s returned for url "%s"', str(err), url)
             return False
@@ -1528,12 +1533,18 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         try:
             self._log.debug('· mb.get_image_list("%s")', album_id)
             image_list = mb.get_image_list(album_id)
-        except musicbrainzngs.musicbrainz.ResponseError:
+        except (musicbrainzngs.musicbrainz.ResponseError,
+                musicbrainzngs.musicbrainz.NetworkError):
+            self._log.debug('Exception during get_image_list("%s")', album_id,
+                            exc_info=True)
             pass
         try:
             self._log.debug('· mb.get_release_group_image_list("%s")', album_id)
             image_list.update(mb.get_release_group_image_list(album_id))
-        except musicbrainzngs.musicbrainz.ResponseError:
+        except (musicbrainzngs.musicbrainz.ResponseError,
+                musicbrainzngs.musicbrainz.NetworkError):
+            self._log.debug('Exception during get_release_group_image_list("%s")',
+                            album_id, exc_info=True)
             pass
 
         # do this once
