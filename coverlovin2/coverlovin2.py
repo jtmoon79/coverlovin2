@@ -954,6 +954,8 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
             r'''.*[ \-_]Side 1''' + image_type.re_suffix,
             # SOMETHINGFRONT.JPG
             r'''.*front''' + image_type.re_suffix,
+            # Art.jpg
+            r'''Art''' + image_type.re_suffix,
         ]
 
         for filep in files:
