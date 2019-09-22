@@ -1574,6 +1574,86 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         return True if self._image_bytes else False
 
 
+class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
+    NAME = __qualname__
+
+    def __init__(self,
+                 artalb: ArtAlb,
+                 image_type: ImageType,
+                 image_path: Path,
+                 wropts: WrOpts,
+                 loglevel: int):
+        self.image_path = image_path
+        super().__init__(artalb, image_type, wropts, loglevel)
+
+    @classmethod
+    #@overrides(ImageSearcher_Medium_Network)
+    def provider(cls) -> str:
+        return 'discogs.org'
+
+    @overrides(ImageSearcher)
+    def go(self) -> typing.Union[Result, None]:
+        if not self.search_album_image():
+            return None
+        return self.write_album_image(self.image_path)
+
+    @overrides(ImageSearcher)
+    def search_album_image(self) -> bool:
+        """
+        TODO: INCOMPLETE
+
+        TODO: XXX: this does not account for different image types!
+                   only returns .jpg
+
+        :return: found image or not?
+        """
+
+        artist = self.artalb[0]
+        album = self.artalb[1]
+
+        # if Artist is unknown, the artist search will raise
+        #if not artist:
+        #    return False
+        # if Album is unknown, the image selection will be too broad to be useful
+        #if not album:
+        #    return False
+
+        import discogs_client
+        self._log.debug('· import %s version %s', discogs_client.__name__,
+                        discogs_client.__version__)
+        self._log.debug('· discogs_client.Client(%s)', __product_token__)
+        dc = discogs_client.Client(__product_token__)
+
+        # consumer authentication
+        consumer_key = 'KEY-12345'
+        consumer_secret = 'SECRET-123456789'
+        dc.set_consumer_key(consumer_key, consumer_secret)
+
+        # OAuth 1.0 authentication
+        #request_token, request_secret, authorize_url_here = \
+        #    dc.get_authorize_url()
+        #response = urllib.request.urlopen(authorize_url_here, None, 10)
+        # TODO: scrape the button URL
+        #       looks like https://www.discogs.com/oauth/authorize?oauth_token=mktZaADQtxmnodphbaQTbYnBajrKeTPbBXavDsfS
+        #       POST to that URL
+        #       scrape within the response
+        #           <pre class="auth_success_verify_code">eQiqabcoix</pre>
+        #
+        verifier_code_from_response = 'abFKei2013d'
+        return False  # XXX: NOT YET FUNCTIONAL
+        access_token_here, access_secret_here = \
+            dc.get_access_token(verifier_code_from_response)
+        dc.set_token(access_token_here, access_secret_here)
+
+        # do something useful
+        #art_res = dc.search(artist, type='artist')
+
+        #self._image_bytes = self.download_url(url, self._log)
+
+        #return True if self._image_bytes else False
+        return False
+
+
 def process_dir(dirp: Path,
                 image_nt: str,
                 overwrite: bool,
@@ -1828,6 +1908,7 @@ def search_create_image(
     search_likely, \
         search_embedded, \
         search_musicbrainz, \
+        search_discogs, \
         search_googlecse \
         = searches
 
@@ -1855,6 +1936,16 @@ def search_create_image(
     if search_musicbrainz:
         searchers.append(
             ImageSearcher_MusicBrainz(
+                artalb,
+                image_type,
+                image_path,
+                wropts,
+                loglevel
+            )
+        )
+    if search_discogs:
+        searchers.append(
+            ImageSearcher_Discogs(
                 artalb,
                 image_type,
                 image_path,
@@ -1938,6 +2029,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 (search_likely,
                  search_embedded,
                  search_musicbrainz,
+                 search_discogs,
                  search_googlecse),
                 googlecse_opts,
                 referer,
@@ -1959,6 +2051,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue)\
                 (search_likely,
                  search_embedded,
                  search_musicbrainz,
+                 search_discogs,
                  search_googlecse),
                 googlecse_opts,
                 referer,
@@ -2062,6 +2155,13 @@ Audio files supported are %s.""" % ', '.join(AUDIO_TYPES)
                            ' method.'
                       )
 
+    argg = parser.add_argument_group('Search Discogs webservice')
+    argg.add_argument('-sd', '--search-discogs', dest='search_discogs',
+                      action='store_true', default=False,
+                      help='Search for album cover images using Discogs'
+                           ' webservice. (NOT YET FUNCTIONAL)'
+                      )
+
     argg = parser.add_argument_group('Search Google Custom Search Engine (CSE)')
     gio = ImageSize.list()
     argg.add_argument('-sg', '--search-googlecse', dest='search_googlecse',
@@ -2140,18 +2240,21 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
         args.search_likely = True
         args.search_embedded = True
         args.search_musicbrainz = True
+        args.search_discogs = True
         args.search_googlecse = True
 
     if args.search_all_noinit:
         args.search_likely = True
         args.search_embedded = True
         args.search_musicbrainz = True
+        args.search_discogs = True
         if args.search_googlecse:
             log.warning('--search-googlecse was selected while'
                         ' --search-all-noinit was also selected')
 
     if not (args.search_likely or args.search_musicbrainz
-            or args.search_googlecse or args.search_embedded):
+            or args.search_googlecse or args.search_embedded
+            or args.search_discogs):
         parser.error('no selected search method. Select a search, e.g. -sl or '
                      '--search-musicbrainz or -s*')
 
@@ -2174,6 +2277,14 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
                       '   pip install musicbrainzngs')
             raise err
 
+    if args.search_discogs:
+        try:
+            import discogs_client
+        except ModuleNotFoundError as err:
+            log.error('Discogs client library must be installed\n'
+                      '   pip install discogs_client')
+            raise err
+
     loglevel = logging.WARNING
     if args.debug == 1:
         loglevel = logging.INFO
@@ -2186,6 +2297,7 @@ Inspired by the program coverlovin.""" % (__url_project__, __url_source__)
         (args.search_likely,
          args.search_embedded,
          args.search_musicbrainz,
+         args.search_discogs,
          args.search_googlecse), \
         GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)), \
         args.referer, \
@@ -2204,6 +2316,7 @@ def main():
         (search_likely,
          search_embedded,
          search_musicbrainz,
+         search_discogs,
          search_googlecse),\
         googlecse_opts, \
         referer, \
@@ -2240,6 +2353,7 @@ def main():
                 (search_likely,
                  search_embedded,
                  search_musicbrainz,
+                 search_discogs,
                  search_googlecse),
                 googlecse_opts,
                 referer,
