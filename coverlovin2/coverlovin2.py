@@ -111,7 +111,7 @@ Path_List = typing.List[Path]
 @attr.s(slots=True, frozen=True)
 class WrOpts:
     """Write Options - these should always travel together"""
-    overwrite: bool = attr.ib()
+    overwrite: bool = attr.ib()  # SyntaxError means using Python version < 3.7
     test: bool = attr.ib()
 
 
