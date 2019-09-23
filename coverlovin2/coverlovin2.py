@@ -40,6 +40,7 @@ import sys
 if sys.version_info < (3, 7):
     raise RuntimeError('This script is meant for python 3.7 or newer. It will'
                        ' fail using this python version %s' % sys.version)
+_: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.7 (most likely pip)
 if not 'pytest' in sys.modules:  # workaround for https://github.com/pytest-dev/pytest/issues/4843
     sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
     sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
@@ -61,7 +62,7 @@ import queue  # Queue, SimpleQueue Empty
 # logging and printing
 import logging
 from pprint import pformat
-from pprint import pprint as pp  # for help live-debugging
+from pprint import pprint as pp  # convenience during live-debugging
 
 #
 # non-standard imports
@@ -111,7 +112,7 @@ Path_List = typing.List[Path]
 @attr.s(slots=True, frozen=True)
 class WrOpts:
     """Write Options - these should always travel together"""
-    overwrite: bool = attr.ib()  # SyntaxError means using Python version < 3.7
+    overwrite: bool = attr.ib()
     test: bool = attr.ib()
 
 
