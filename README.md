@@ -16,7 +16,7 @@ copying, or via downloading from various online services.
 A common use-case is creating "`cover.jpg`" files for a large collection of
 ripped Compact Disc albums.
 
-coverlovin2 can only be run by Python version 3.7 (or greater).
+coverlovin2 requires Python version 3.7 or greater.
 
 # Table of Contents
 
@@ -38,9 +38,9 @@ The verbose `--help` message
 
 ```Text
 usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-s-]
-                      [-sl] [-se] [-sm] [-sg] [-sgz {small,medium,large}]
-                      [--sgid GID] [--sgkey GKEY] [-v] [-r REFERER] [-d]
-                      [--test]
+                      [-sl] [-se] [-sm] [-sd] [-sg]
+                      [-sgz {small,medium,large}] [--sgid GID] [--sgkey GKEY]
+                      [-v] [-r REFERER] [-d] [--test]
                       DIRS [DIRS ...]
 
 This Python-based program is for automating downloading album cover art images.
@@ -105,6 +105,11 @@ Search Musicbrainz NGS webservice:
                         webservice. MusicBrainz lookup is the most reliable
                         search method.
 
+Search Discogs webservice:
+  -sd, --search-discogs
+                        Search for album cover images using Discogs
+                        webservice. (NOT YET FUNCTIONAL)
+
 Search Google Custom Search Engine (CSE):
   -sg, --search-googlecse
                         Search for album cover images using Google CSE. Using
@@ -126,7 +131,7 @@ Debugging and Miscellanea:
   -r REFERER, --referer REFERER
                         Referer url used in HTTP GET requests (default:
                         "https://github.com/jtmoon79/coverlovin2")
-  -d, --debug           Print debugging messages
+  -d, --debug           Print debugging messages. May be passed twice.
   --test                Only test, do not write any files
 
 This program attempts to create album cover image files for the passed DIRS.  It
