@@ -34,6 +34,7 @@ setup(
     long_description_content_type='text/markdown',
     license='Apache License 2.0 (Apache-2.0)',
     install_requires=[
+        'attrs >= 19.1.0',
         'musicbrainzngs >= 0.6',
         'mutagen >= 1.42.0',
         'Pillow >= 5.4.1',
