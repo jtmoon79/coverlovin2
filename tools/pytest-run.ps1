@@ -1,6 +1,12 @@
 # run pytest
 
-cd $PSScriptRoot/..
-$COVERAGE_RC='./.coveragerc'
+$PYTHON = 'python'
+if ($env:PYTHON -ne $null) {
+    $PYTHON = $env:PYTHON
+}
+
+Set-Location $PSScriptRoot/..
+$COVERAGE_RC = "./.coveragerc"
 Set-PSDebug -Trace 1
-& pytest -vv --cov=./coverlovin2/ --cov-config=$COVERAGE_RC --cov-report=xml
+& $PYTHON -m pytest -vv `
+    --cov=./coverlovin2/ --cov-config=$COVERAGE_RC --cov-report=xml
