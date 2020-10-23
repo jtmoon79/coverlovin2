@@ -1,5 +1,4 @@
-CoverLovin2
-===========
+# CoverLovin2
 
 [![Build Status](https://travis-ci.com/jtmoon79/coverlovin2.svg?branch=master)](https://travis-ci.com/jtmoon79/coverlovin2)
 [![CircleCI](https://circleci.com/gh/jtmoon79/coverlovin2.svg?style=svg)](https://circleci.com/gh/jtmoon79/coverlovin2)
@@ -20,15 +19,17 @@ coverlovin2 requires Python version 3.7 or greater.
 
 # Table of Contents
 
-* [Script Usage](#script-usage)
-* [Installation](#installation)
-* [Development](#development)
-* [Other Miscellaneous Notes](#other-miscellaneous-notes)
-  * [Issues‼  🐛 🐵](#issues---)
-  * [run phases](#run-phases)
+<!-- TOC auto-updated by VS Code -->
+- [CoverLovin2](#coverlovin2)
+- [Table of Contents](#table-of-contents)
+  - [Script Usage](#script-usage)
+  - [Installation](#installation)
+  - [Development](#development)
+  - [Other Miscellaneous Notes](#other-miscellaneous-notes)
+    - [Issues‼  🐛 🐵](#issues--)
+    - [Run Phases](#run-phases)
 
-Script Usage
-------------
+## Script Usage
 
 To see what it will do without changing any files
 
@@ -168,23 +169,21 @@ Source code: https://github.com/jtmoon79/coverlovin2
 Inspired by the program coverlovin.
 ```
 
-Installation
-------------
+## Installation
 
-* Using `pip` from pypi:
+- Using `pip` from pypi:
 
       pip install coverlovin2
 
-* Using `pip` from source:
-  
+- Using `pip` from source:
+
       pip install mutagen musicbrainzngs Pillow
       pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
 [musicbrainzngs](https://pypi.org/project/musicbrainzngs/), and [Pillow](https://pypi.org/project/Pillow/).
 
-Development
------------
+## Development
 
 Install `pipenv`.
 
@@ -200,8 +199,7 @@ Start the Python virtual environment and install the dependencies:
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
 
-Other Miscellaneous Notes
--------------------------
+## Other Miscellaneous Notes
 
 coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
@@ -212,6 +210,7 @@ _Winamp_ will use file `cover.jpg` for album cover art (if available).
 coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
 Some things the author explored:
+
 - project badges (are fun _and useful_)!
 - online services
   - CI Services
@@ -234,7 +233,7 @@ and mypy seem to catch different type-hint warnings.
 - printing odd UTF-8 characters (for example, `\uFF5B`, `｛`) and coercing UTF8
 mode (within a context without UTF8 support; MinGW bash on Windows)
 
-#### Issues‼  🐛 🐵
+### Issues‼  🐛 🐵
 
 Other projects Bug Issues 🐛 and Feature Issues 🐵 the author created in the
 course of writing this application:
@@ -255,7 +254,7 @@ course of writing this application:
 
 🐛 [ant-druha/PowerShell #16](https://github.com/ant-druha/PowerShell/issues/16)
 
-#### run phases
+### Run Phases
 
 coverlovin2 runs in a few phases:
 
