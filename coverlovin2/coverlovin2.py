@@ -885,6 +885,9 @@ class ImageSearcher_Medium_Disk(ImageSearcher):
 
 
 class ImageSearcher_Medium_Network(ImageSearcher):
+    # specific Request class to allow pytest override with stub
+    RequestClass = urllib.request.Request
+
     @overrides(ImageSearcher)
     def search_medium(self) -> SearcherMedium:
         return SearcherMedium.NETWORK
@@ -1362,8 +1365,8 @@ class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
                 + '&fields=items(title,link,image(thumbnailLink))'
                 + '&num=' + str(1)
         )
-        request = urllib.request.Request(url, data=None,
-                                         headers={'Referer': self.referer})
+        request = self.RequestClass(url, data=None,
+                                    headers={'Referer': self.referer})
 
         # make request from the provided url
         try:

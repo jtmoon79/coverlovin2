@@ -76,6 +76,13 @@ emp_Art = Artist('')
 emp_Alb = Album('')
 
 
+class RequestClassNoop(object):
+    """stub class to override actual requests"""
+
+    def __init__(self, *args, **kwargs):
+        self.full_url = ""
+
+
 def exists_or_skip(*args) -> typing.Union[Path, None]:
     """helper for skipping a test if path is not available"""
     fp = resources.joinpath(*args)
@@ -1015,6 +1022,7 @@ class Test_ImageSearcher_GoogleCSE(object):
     def _6_fixture(self, request):
         request.addfinalizer(self._6_rm_testfile)
 
+    @pytest.mark.skip(reason="TODO: fix up for newer Google CSE Search")
     @pytest.mark.dependency(depends=['net_access'])
     @pytest.mark.usefixtures("_6_fixture")
     def test_search_album_image__use_altgooglecache(self, _6_fixture):
@@ -1023,6 +1031,7 @@ class Test_ImageSearcher_GoogleCSE(object):
         """
 
         is_ = ImageSearcher_GoogleCSE(ArtAlb_new('my artist', 'my album'), jpg, self._6_testfile, self.C_gopt, 'referrer!', WrOpts(False, False), True)
+        is_.RequestClass = RequestClassNoop
         is_._search_response_json = self._stub_response2
         # XXX: hopefully the image URL within the test file remains valid!
         assert is_.search_album_image()
