@@ -549,7 +549,7 @@ def get_artist_album_mp3(ffp: Path) -> ArtAlb:
     try:
         media = EasyID3(ffp)
     except (ID3NoHeaderError, ID3TagError) as err:
-        log.error(err)
+        log.debug(err)
         return ArtAlb_empty
 
     artist = ''
@@ -606,7 +606,7 @@ def get_artist_album_flac(ffp: Path) -> ArtAlb:
     try:
         media = FLAC(ffp)
     except (FLACVorbisError, FLACNoHeaderError) as err:
-        log.error(err)
+        log.debug(err)
         return ArtAlb_empty
 
     artist = ''
@@ -634,7 +634,7 @@ def get_artist_album_ogg(ffp: Path) -> ArtAlb:
     try:
         media = OggVorbis(ffp)
     except OggError as err:
-        log.error(err)
+        log.debug(err)
         return ArtAlb_empty
 
     artist = ''
@@ -702,7 +702,7 @@ def get_artist_album_asf(ffp: Path) -> ArtAlb:
     try:
         media = ASF(ffp)
     except ASFHeaderError as err:
-        log.error(err)
+        log.debug(err)
         return ArtAlb_empty
 
     artist = ''
