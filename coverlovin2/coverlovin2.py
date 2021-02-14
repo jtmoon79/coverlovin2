@@ -2441,7 +2441,7 @@ def main():
     # done with all the hard work
 
     # pop all result from the queue into a list
-    results = []
+    results: typing.List[Result] = []
     try:
         while True:
             result = result_queue.get_nowait()
