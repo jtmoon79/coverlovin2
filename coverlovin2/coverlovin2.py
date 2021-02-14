@@ -2403,6 +2403,7 @@ def main():
                             image_type,
                             wropts.overwrite,
                             result_queue)
+    print("Found {0} Album directories.".format(len(daa_list)))
 
     #
     # do the remaining tasks in separate threads relying on a Queue
