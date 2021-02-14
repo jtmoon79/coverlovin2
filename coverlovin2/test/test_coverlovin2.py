@@ -128,8 +128,8 @@ class Test_helpers(object):
 
     @pytest.mark.parametrize('artist, album, ti_exp',
         (
-            pytest.param('', '', '''｛ "" • "" ｝''', id='empty'),
-            pytest.param('Foo', 'Bar', '''｛ "Foo" • "Bar" ｝''', id='Foo Bar'),
+            pytest.param('', '', '''[ "" • "" ]''', id='empty'),
+            pytest.param('Foo', 'Bar', '''[ "Foo" • "Bar" ]''', id='Foo Bar'),
         )
     )
     def test_str_AA(self, artist, album, ti_exp):

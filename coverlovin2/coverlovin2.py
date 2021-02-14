@@ -462,11 +462,18 @@ def overrides(interface_class):
     return confirm_override
 
 
+strAAL = '['  # string AlbumArtist left-side
+strAAR = ']'  # string AlbumArtist right-side
+strAAM = '•'  # string AlbumArtist middle separator
+
+
 def str_AA(artist: Artist, album: Album) -> str:
-    return '｛ "%s" • "%s" ｝' % (artist, album)
+    return '%s "%s" %s "%s" %s' % (strAAL, artist, strAAM, album, strAAR)
 
 
 def str_ArtAlb(artalb: ArtAlb) -> str:
+    #if not artalb:
+    #    return '%s %s %s' % (strAAL, strAAM, strAAR)
     return str_AA(artalb[0], artalb[1])
 
 
