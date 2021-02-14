@@ -1,17 +1,33 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
+#
+# black line length 100
 
-"""
+"""\
 Recursively process subdirectories looking for audio media files. Download
  appropriate cover images for the directory that is presumed to be an album.
 
-The author wanted to learn more about the unexpected and welcome addition of
-type-hinting in Python. Code in this file uses several methods of type-hinting.
+The author wanted to learn more about the addition of type-hinting in Python.
+Code in this file uses several methods of type-hinting.
 Some readers might think it's overzealous, others will welcome it.
 
 This also makes use of inheritance decorators @overrides and @abstractmethod.
 
-And other little Python 3.x novelties!
+And other Python 3.x novelties!
+
+TODO: add a simple --exclude filter for paths. globbing style matching
+
+TODO: update Result class with TODO within it
+
+TODO: improve summary message with counts of
+      images found,
+      images not found due to cannot find,
+      images not found or written due to errors,
+      total albums paths processed,
+
+TODO: improve summary message with better table formatting that considers
+      terminal width,
+      sorts by path,
 """
 
 # DRY canonical informations
@@ -28,10 +44,10 @@ __doc__ = \
  to create a missing album image file, either via local searching and\
  copying, or via downloading from various online services."""
 
-
 #
 # stdlib imports
 #
+
 import sys
 # XXX: PEP8 complains about non-import statements before imports are done. But
 #      do this check sooner so the user does not install non-standard libraries
@@ -166,7 +182,6 @@ class SearcherMedium(enum.Enum):
 # Google CSE Options
 #
 
-
 class ImageSize(enum.Enum):
     """
     must match https://developers.google.com/custom-search/v1/cse/list
@@ -244,9 +259,10 @@ class Result(typing.NamedTuple):
     Save the results of ImageSearcher work in a formalized manner. Intended for
     later printing in a meaningful way.
 
-    XXX: This class is clunky and overwrought.
-         No need to save all this data, just create a message at time of
-         instantiation and move on.
+    TODO: This class is clunky and terribly overwrought.
+          No need to save all this data, just create a message at time of
+          instantiation and move on. This class could become an enum.Enum
+          class. Add an `_ignore_` field `message` that explains specifics.
     """
 
     artalb: ArtAlb
