@@ -260,7 +260,7 @@ class Result(typing.NamedTuple):
     error: bool  # was there an error?
     error_mesg: str  # if error: the error message the user should see
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         if self.error or self.result_nosuitable:
             return False
         if self.image_path == Path():  # this instance was not initialized
@@ -482,13 +482,17 @@ TASK_QUEUE_THREAD_COUNT = SEMAPHORE_COUNT_DISK + SEMAPHORE_COUNT_NETWORK + 1
 #
 
 
-func_name = lambda n=0: sys._getframe(n + 1).f_code.co_name
+def func_name(foffset: int = 0) -> str:
+    """
+    return the name of the function at frame offset `foffset`
+    by default, the current function
+    """
+    return sys._getframe(foffset + 1).f_code.co_name
 
 
 #
 # audio file types (i.e. file name extensions)
 #
-
 
 def get_artist_album_mp3(ffp: Path) -> ArtAlb:
     """
