@@ -15,7 +15,6 @@ if ! python -B ./tools/is_venv.py &>/dev/null; then
     exit 1
 fi
 
-
 set -x
 # uninstall any previous install (must be done outside the project directory)
 cd ..
