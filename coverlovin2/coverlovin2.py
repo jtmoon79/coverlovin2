@@ -2456,14 +2456,19 @@ def main():
 
     results_table = []
     for r_ in results:
+        sAA = ''
+        if r_.artalb:
+            sAA = str_ArtAlb(r_.artalb)
         if not r_:
             results_table.append(
-                ('✗', str_ArtAlb(r_.artalb), r_.message, r_.image_path.parent)
+                ('✗', sAA, r_.message, r_.image_path.parent)
             )
         else:
             results_table.append(
-                ('✓', str_ArtAlb(r_.artalb), r_.message, r_.image_path)
+                ('✓', sAA, r_.message, r_.image_path)
             )
+    sys.stderr.flush()
+    sys.stdout.flush()
     print(
         tabulate(results_table, ('', 'Artist & Album', 'Result', 'Path'))
     )
