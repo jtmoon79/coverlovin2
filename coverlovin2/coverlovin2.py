@@ -314,8 +314,8 @@ class Result(typing.NamedTuple):
             raise ValueError('WriteOptions.overwrite must be False')
         #message = '%sfile already exists and --overwrite not enabled; skipping'\
         #          ' "%s"' % (cls.strt(test), image_path)
-        message = '%sfile already exists and --overwrite not enabled' % \
-                  cls.strt(wropts.test)
+        message = '%sfile "%s" already exists and --overwrite not enabled' % \
+                  (cls.strt(wropts.test), image_path.name)
         return Result(artalb,
                       imagesearcher,
                       None,
