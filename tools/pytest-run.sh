@@ -10,8 +10,11 @@ if ! [[ "${PYTHON+x}" ]]; then
 fi
 readonly COVERAGE_RC='./.coveragerc'
 
-"${PYTHON}" -m pytest -vv \
+set -x
+exec \
+    "${PYTHON}" -m pytest -vv \
     --full-trace --showlocals \
     --cov-config="${COVERAGE_RC}" \
     --cov-report=xml \
+    "${@-}" \
     ./coverlovin2/

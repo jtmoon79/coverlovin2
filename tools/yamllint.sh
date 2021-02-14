@@ -5,4 +5,5 @@ set -u
 
 cd "$(dirname -- "${0}")/.."
 
-yamllint --strict --config-file ./tools/yamllint.yml ./.circleci/
+set -x
+exec yamllint --strict --config-file ./tools/yamllint.yml ./.circleci/

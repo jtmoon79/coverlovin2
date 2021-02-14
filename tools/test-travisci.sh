@@ -2,7 +2,7 @@
 #
 # for Travis CI runs
 #
-# this will modify the system is not recommended to be run on a development
+# This will modify the system. Not recommended to be run on a development
 # host.
 
 set -e

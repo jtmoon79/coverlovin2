@@ -43,4 +43,4 @@ eval "$("${pipenv}" --completion)"
 # BUG: the exported `PS1` is not used by the shell spawned by `pipenv shell`
 #bash --rcfile <(cat ~/.bashrc; echo 'export PS1="${PS1} foo\n"'; "${pipenv}" shell)
 set -x
-"${pipenv}" shell --fancy
+exec "${pipenv}" shell --fancy
