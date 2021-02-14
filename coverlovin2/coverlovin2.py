@@ -1754,6 +1754,7 @@ def process_dir(dirp: Path,
     :param dirp: directory path to process
     :param image_nt: image name and type, e.g. "cover.jpg"
     :param overwrite: --overwrite
+    :param result_queue: append Result about any found image files
     :param daa_list: accumulated directories for later processing
     :return accumulated directories for later processing
     """
@@ -1804,8 +1805,11 @@ def process_dir(dirp: Path,
         if not overwrite:
             log.debug('cover file "%s" exists and no overwrite,'
                       ' skip directory "%s"', image_nt, dirp)
-            result_queue.put('cover file "%s" exists and no overwrite,'
-                             ' skip directory "%s"' % (image_nt, dirp))
+            r_ = Result.SkipDueToNoOverwrite(
+                artalb=None, imagesearcher=None,
+                image_path=image_path, wropts=WrOpts(overwrite, False),
+            )
+            result_queue.put(r_)
             return daa_list
         else:
             log.debug('cover file "%s" exists and passed --overwrite',
