@@ -1,3 +1,6 @@
+# virtualenvs
+.venv*/
+
 # various IDE settings directories
 .idea/
 .vscode/
