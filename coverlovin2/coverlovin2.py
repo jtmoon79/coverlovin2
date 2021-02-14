@@ -1287,7 +1287,14 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             return result
 
         if not self.wropts.test:
-            self._image.save(self.copy_dst, self.image_type.value.upper())
+            ext = self.image_type.value.upper()
+            if self.image_type is ImageType.JPG:
+                ext = 'JPEG'
+            try:
+                self._image.save(self.copy_dst, ext)
+            except PermissionError as pe:
+                log.error(str(pe))
+                return Result.Error(self.artalb, self.__class__, self.copy_dst, str(pe))
 
         result = Result.Extracted(
             self.artalb, self.__class__, self._image.size_pixels,
