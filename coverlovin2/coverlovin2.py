@@ -41,24 +41,29 @@ if sys.version_info < (3, 7):
     raise RuntimeError('This script is meant for python 3.7 or newer. It will'
                        ' fail using this python version %s' % sys.version)
 _: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.7 (most likely pip)
-if not 'pytest' in sys.modules:  # workaround for https://github.com/pytest-dev/pytest/issues/4843
+if 'pytest' not in sys.modules:  # workaround for https://github.com/pytest-dev/pytest/issues/4843
     sys.stdout.reconfigure(encoding='utf-8', errors='namereplace')
     sys.stderr.reconfigure(encoding='utf-8', errors='namereplace')
-import os
+
+import abc  # ABC, abstractmethod
+import argparse  # ArgumentParser
+import difflib  # SequenceMatcher
+import io  # BytesIO
 import json
+import os
 import re
+import shutil  # copy2
 import urllib.request
 import urllib.error
 import urllib.parse
-import argparse  # ArgumentParser
-import shutil  # copy2
-import difflib  # SequenceMatcher
-import collections  # defaultdict
-import abc  # ABC, abstractmethod
-import io  # BytesIO
 # threading stuff
 import threading
 import queue  # Queue, SimpleQueue Empty
+# type hints and type precision
+from pathlib import Path
+import collections  # namedtuple
+import enum  # Enum
+import typing  # Union, NewType, Tuple, List
 # logging and printing
 import logging
 from pprint import pformat
@@ -67,24 +72,23 @@ from pprint import pprint as pp  # convenience during live-debugging
 #
 # non-standard imports
 #
-# XXX: PEP8 complaint that this is not used.  But try this import before going
-#      too far.
-import mutagen  # see README.md for installation help
-from tabulate import tabulate
 
+# XXX: PEP8 complaint that this is not used.  But try this import before going
+#      too far
+# see README.md for installation help
 #
-# type hints and type precision
-#
-from pathlib import Path
-import typing  # Union, NewType, Tuple, List
-import enum  # Enum
-import collections  # namedtuple
+# https://pypi.org/project/mutagen/
+import mutagen
+# https://pypi.org/project/tabulate/
+from tabulate import tabulate
+# https://pypi.org/project/attrs/
 import attr
 
 
 #
 # Using a few different methods for typing things.
 #
+
 Artist = typing.NewType('Artist', str)
 Album = typing.NewType('Album', str)
 ArtAlb = typing.NewType('ArtAlb', typing.Tuple[Artist, Album])
