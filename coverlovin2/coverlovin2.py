@@ -404,7 +404,28 @@ class Result(typing.NamedTuple):
                       False,
                       message,
                       False,
-                      '')
+                      '',
+                      )
+
+    @classmethod
+    def Error(cls,
+                  artalb: ArtAlb,
+                  imagesearcher: typing.Any,
+                  copy_dst: Path,
+                  err_msg: str):
+        message = 'An error occurred for %s' % \
+                  (str_ArtAlb(artalb),)
+        return Result(artalb,
+                      imagesearcher,
+                      None,
+                      copy_dst,
+                      True,
+                      WrOpts(False, False),
+                      False,
+                      message,
+                      False,
+                      '',
+                      )
 
 
 def overrides(interface_class):
