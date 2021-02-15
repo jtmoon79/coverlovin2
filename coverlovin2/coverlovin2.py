@@ -28,6 +28,10 @@ TODO: improve summary message with counts of
 TODO: improve summary message with better table formatting that considers
       terminal width,
       sorts by path,
+
+BUG: some Album directories may return an empty ArtAlb value, e.g.
+     [ "" - "" ]
+
 """
 
 # DRY canonical informations
