@@ -34,11 +34,11 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
-        "musicbrainzngs >= 0.6.1",
-        "mutagen >= 1.42.0",
-        "Pillow >= 5.4.1",
+        "musicbrainzngs == 0.7.1",
+        "mutagen == 1.45.1",
+        "Pillow == 8.1.0",
         "tabulate == 0.8.7",
-        "attrs == 20",
+        "attrs == 20.3.0",
     ],
     setup_requires=["wheel"],
     # see https://pypi.org/classifiers/
