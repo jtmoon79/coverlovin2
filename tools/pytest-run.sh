@@ -16,5 +16,5 @@ exec \
     --full-trace --showlocals \
     --cov-config="${COVERAGE_RC}" \
     --cov-report=xml \
-    "${@-}" \
+    "${@}" \
     ./coverlovin2/
