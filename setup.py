@@ -21,7 +21,7 @@ from coverlovin2.coverlovin2 import __app_name__
 
 # Get the long description from the README.md file
 __here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(__here, 'README.md'), encoding='utf-8') as f_:
+with open(os.path.join(__here, "README.md"), encoding="utf-8") as f_:
     long_description = f_.read()
 
 setup(
@@ -29,50 +29,49 @@ setup(
     version=__version__,
     author=__author__,
     url=__url__,
-    description='Download music album cover art for a music collection.',
+    description="Download music album cover art for a music collection.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    license='Apache License 2.0 (Apache-2.0)',
+    long_description_content_type="text/markdown",
+    license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
-        'musicbrainzngs >= 0.6',
-        'mutagen >= 1.42.0',
-        'Pillow >= 5.4.1',
+        "musicbrainzngs >= 0.6",
+        "mutagen >= 1.42.0",
+        "Pillow >= 5.4.1",
     ],
-    setup_requires=['wheel'],
+    setup_requires=["wheel"],
     # see https://pypi.org/classifiers/
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Environment :: Console',
-        'Operating System :: OS Independent',
-        'Natural Language :: English',
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "Operating System :: OS Independent",
+        "Natural Language :: English",
         # XXX: as of 2019/02/07, the Apache-2.0 License is an OSI approved
         #      license: https://opensource.org/licenses/alphabetical
         #      However the listed classifier string is not listed at
         #      https://pypi.org/classifiers/
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.7',
-        'Topic :: Multimedia :: Sound/Audio'
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3.7",
+        "Topic :: Multimedia :: Sound/Audio"
     ],
-    keywords='audio image music',
-    python_requires='>=3.7',
+    keywords="audio image music",
+    python_requires=">=3.7",
     # XXX: should Pipfile* also be distributed???
     packages=find_packages(
         exclude=[
-            'coverlovin2/test/',
+            "coverlovin2/test/",
             ],
         include=[
-            'coverlovin2/'
+            "coverlovin2/"
         ]),
-    scripts=['coverlovin2/coverlovin2.py'],
+    scripts=["coverlovin2/coverlovin2.py"],
     # TODO: does this need work?
     entry_points={
-        'console_scripts': [
-            'coverlovin2=coverlovin2:main',
+        "console_scripts": [
+            "coverlovin2=coverlovin2:main",
         ],
     },
     project_urls={  # Optional
-        'Source': __url__,
-        'Bug Reports': 'https://github.com/jtmoon79/coverlovin2/issues',
-        'Say Thanks!': 'http://saythanks.io/to/coverlovin2',
+        "Source": __url__,
+        "Bug Reports": "https://github.com/jtmoon79/coverlovin2/issues",
     },
 )
