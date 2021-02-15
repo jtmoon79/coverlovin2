@@ -26,7 +26,7 @@ coverlovin2 requires Python version 3.7 or greater.
   - [Installation](#installation)
   - [Development](#development)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
-    - [Issues‼  🐛 🐵](#issues--)
+    - [Issues‼  🐛 🐵](#issues---)
     - [Run Phases](#run-phases)
 
 ## Script Usage
@@ -198,6 +198,20 @@ Start the Python virtual environment and install the dependencies:
     pipenv install --dev
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
+
+Run `pytest` tests (bash)
+
+    ./tools/pytest-run.sh
+
+or (Powershell)
+
+    .\tools\pytest-run.ps1
+
+Update `Pipfile.lock` with latest libraries
+
+    pipenv update
+    git add Pipefile.lock
+    git commit
 
 ## Other Miscellaneous Notes
 
