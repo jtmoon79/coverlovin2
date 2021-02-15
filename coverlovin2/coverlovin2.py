@@ -1942,6 +1942,7 @@ def process_dir(
     #      `search_album_image`. It is used in
     #      `ImageSearcher_LikelyCover.search_album_image`.
     #      Not ideal.
+    #      See Issue #7
     daa = DirArtAlb((dirp, ArtAlb_empty))
 
     # XXX: development self-check
