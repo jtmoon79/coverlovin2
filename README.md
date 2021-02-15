@@ -29,6 +29,7 @@ coverlovin2 requires Python version 3.7 or greater.
       - [pipenv](#pipenv)
       - [pipenv update](#pipenv-update)
       - [pytest](#pytest)
+      - [build](#build)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
     - [Issues‼  🐛 🐵](#issues---)
     - [Run Phases](#run-phases)
@@ -234,6 +235,10 @@ Run `pytest` tests (bash)
 or (Powershell)
 
     .\tools\pytest-run.ps1
+
+#### build
+
+    python setup.py bdist_wheel
 
 ## Other Miscellaneous Notes
 

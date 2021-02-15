@@ -40,7 +40,7 @@ __url__ = "https://github.com/jtmoon79/coverlovin2"
 __url_source__ = __url__
 __url_project__ = "https://pypi.org/project/CoverLovin2/"
 __app_name__ = "CoverLovin2"
-__version__ = "0.6.1"
+__version__ = "0.6.2"
 # https://tools.ietf.org/html/rfc1945#section-3.7
 __product_token__ = __app_name__ + "/" + __version__
 __doc__ = """Recursively process passed directories of audio media files, attempting\
