@@ -1997,6 +1997,8 @@ def process_dirs(
     # remove duplicates
     path_list: Path_List = list(set(daa for daa in daa_list))
     log.debug("directories to process:\n%s", pformat(path_list))
+    # sort
+    path_list.sort()
 
     return path_list
 
