@@ -34,9 +34,11 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
-        "musicbrainzngs >= 0.6",
+        "musicbrainzngs >= 0.6.1",
         "mutagen >= 1.42.0",
         "Pillow >= 5.4.1",
+        "tabulate == 0.8.7",
+        "attrs == 20",
     ],
     setup_requires=["wheel"],
     # see https://pypi.org/classifiers/
