@@ -1891,13 +1891,23 @@ def process_dir(
     # based on directory name. Try several re patterns to match the directory
     # name
     # tuple of (re pattern, artist match group index, album match group index)
+    # TODO: move this name matching subsection into an easily testable function
     artist = Artist("")
     album = Album("")
     bname = dirp.name
-    for patt in [  # Artist -- Year -- Album
-        (r"""([\w\W]+)[ ]+[\-]{1,2}[ ]+([\d]{4})[ ]+[\-]{1,2}[ ]+([\w\W]+)""", 0, 2),
+    for patt in [
+        # Artist -- Year -- Album
+        (r"""([\w\W]+) -- ([12][\d]{3}) -- ([\w\W]+)""", 0, 2),
+        # Artist • Year • Album
+        (r"""([\w\W]+) • ([12][\d]{3}) • ([\w\W]+)""", 0, 2),
+        # Artist - Year - Album
+        (r"""([\w\W]+) [\-] ([12][\d]{3}) [\-] ([\w\W]+)""", 0, 2),
         # Artist -- Album
-        (r"""([\w\W]+) [\-]{1,2} ([\w\W]+)""", 0, 1),
+        (r"""([\w\W]+) -- ([\w\W]+)""", 0, 1),
+        # Artist • Album
+        (r"""([\w\W]+) • ([\w\W]+)""", 0, 1),
+        # Artist - Album
+        (r"""([\w\W]+) - ([\w\W]+)""", 0, 1),
     ]:
         try:
             fm = re.fullmatch(patt[0], bname)
