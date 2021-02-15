@@ -18,14 +18,16 @@ coveralls = "*"
 attrs = "*"
 
 [packages]
-musicbrainzngs = ">=0.6"
-mutagen = ">=1.42.0"
-pillow = ">=5.4.1"
-tabulate = "*"
+# this should match file setup.py
+attrs = "==20.3.0"
 discogs-client = "*"
+musicbrainzngs = "==0.7.1"
+mutagen = "==1.45.1"
+Pillow = "==8.1.0"
+tabulate = "==0.8.7"
 
 [requires]
-# `python_version` does not support version range https://github.com/pypa/pipfile/issues/87
+# XXX: `python_version` does not support version range https://github.com/pypa/pipfile/issues/87
 python_version = "3.7"
 
 [pipenv]
