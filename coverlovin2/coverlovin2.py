@@ -2559,6 +2559,8 @@ def main():
         return 0
 
     results_table = []
+    count_total = 0
+    count_image = 0
     for r_ in results:
         sAA = ""
         if r_.artalb:
@@ -2567,9 +2569,22 @@ def main():
             results_table.append(("✗", sAA, r_.message, r_.image_path.parent))
         else:
             results_table.append(("✓", sAA, r_.message, r_.image_path))
+            count_image += 1
+        count_total += 1
     sys.stderr.flush()
     sys.stdout.flush()
-    print(tabulate(results_table, ("", "Artist & Album", "Result", "Path")))
+    print(
+        tabulate(
+            results_table,
+            ("", "Artist & Album", "Result", "Path"),
+            colalign=("left", "left", "left", "left"),
+        )
+    )
+    print(
+        "Among {} Album directories, wrote or found {} '{}{}' files.".format(
+            count_total, count_image, image_name, image_type.suffix,
+        )
+    )
 
     return 0
 
