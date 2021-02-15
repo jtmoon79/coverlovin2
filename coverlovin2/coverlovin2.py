@@ -29,9 +29,30 @@ TODO: improve summary message with better table formatting that considers
       terminal width,
       sorts by path,
 
+TODO: do not bury `import`s. Not Pythonic.
+
+TODO: manually truncate `tabulate` strings to fit the console window
+      add command option to not attempt to fit console window
+
 BUG: some Album directories may return an empty ArtAlb value, e.g.
      [ "" - "" ]
 
+BUG: on some Linux, `pip install Pillow` does not retrieve necessary apt package
+     Result:
+    ERROR: [Thread-4 coverlovin2]: libopenjp2.so.7: cannot open shared object file: No such file or directory
+        Traceback (most recent call last):
+        File "/tmp/.venv3/bin/coverlovin2.py", line 2048, in search_create_image
+            res = is_.go()
+        File "/tmp/.venv3/bin/coverlovin2.py", line 1218, in go
+            if not self.search_album_image():
+        File "/tmp/.venv3/bin/coverlovin2.py", line 1245, in search_album_image
+            from PIL import Image
+        File "/tmp/.venv3/lib/python3.7/site-packages/PIL/Image.py", line 94, in <module>
+            from . import _imaging as core
+        ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
+    Must run
+        apt install libopenjp2-7
+    https://stackoverflow.com/questions/48012582/pillow-libopenjp2-so-7-cannot-open-shared-object-file-no-such-file-or-directo
 """
 
 # DRY canonical informations
