@@ -181,7 +181,7 @@ Inspired by the program coverlovin.
 
 - Using `pip` from source:
 
-      python -m pip install mutagen musicbrainzngs Pillow tabulate discogs-client
+      python -m pip install mutagen musicbrainzngs Pillow tabulate discogs-client attrs
       python -m pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
