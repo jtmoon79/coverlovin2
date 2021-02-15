@@ -231,6 +231,11 @@ class GoogleCSE_Opts(collections.namedtuple("GoogleCSE_Opts", "key id image_size
 
 
 class ImageType(enum.Enum):
+    """
+    Represent different Image Types as an Enum
+    Add workarounds for the ongoing indecision of ".jpg" vs. ".jpeg" phrasing
+    and file naming.
+    """
 
     JPG = "jpg"
     PNG = "png"
@@ -265,6 +270,17 @@ class ImageType(enum.Enum):
         except ValueError:
             return None
         return ImageType(fmt)
+
+    @property
+    def pil_value(self) -> str:
+        """
+        Pillow Image module prefers the identifier 'JPEG', not 'JPG'
+        else, PIL/Image.py:Image.save raises KeyError 'JPG'
+        Accurate as of Pillow version 6.1.0
+        """
+        if self is ImageType.JPG:
+            return 'jpeg'
+        return self.value
 
 
 class Result(typing.NamedTuple):
@@ -1276,7 +1292,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             return result
 
         if not self.wropts.test:
-            ext = self.image_type.value.upper()
+            ext = self.image_type.pil_value.upper()
             if self.image_type is ImageType.JPG:
                 ext = "JPEG"
             try:
