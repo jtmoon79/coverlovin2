@@ -2281,7 +2281,7 @@ Audio files supported are %s.""" % ", ".join(
         default=False,
         help="Search for album cover images using musicbrainz NGS"
         " webservice."
-        " MusicBrainz lookup is the most reliable search"
+        " MusicBrainz lookup is the most reliable web search"
         " method.",
     )
 
@@ -2308,7 +2308,8 @@ Audio files supported are %s.""" % ", ".join(
         " Key. Google CSE reliability entirely depends upon"
         ' the added "Sites to search".'
         " The end of this help message has more advice"
-        " around using Google CSE.",
+        " around using Google CSE."
+        " Google CSE is the most cumbersome search method.",
     )
     argg.add_argument(
         "-sgz",
