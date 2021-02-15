@@ -17,14 +17,18 @@ ripped Compact Disc albums.
 
 coverlovin2 requires Python version 3.7 or greater.
 
-# Table of Contents
+----
 
 <!-- TOC auto-updated by VS Code -->
 - [CoverLovin2](#coverlovin2)
-- [Table of Contents](#table-of-contents)
   - [Script Usage](#script-usage)
   - [Installation](#installation)
   - [Development](#development)
+    - [First development session](#first-development-session)
+    - [Subsequent development sessions](#subsequent-development-sessions)
+      - [pipenv](#pipenv)
+      - [pipenv update](#pipenv-update)
+      - [pytest](#pytest)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
     - [Issues‼  🐛 🐵](#issues---)
     - [Run Phases](#run-phases)
@@ -185,6 +189,8 @@ Inspired by the program coverlovin.
 
 ## Development
 
+### First development session
+
 Install `pipenv`.
 
 Clone the repository:
@@ -199,6 +205,28 @@ Start the Python virtual environment and install the dependencies:
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
 
+### Subsequent development sessions
+
+#### pipenv
+
+Start the `pipenv` shell (bash)
+
+    ./tools/pipenv-shell.sh
+
+(Powershell)
+
+    .\tools\pipenv-shell.ps1
+
+#### pipenv update
+
+Update `Pipfile.lock` with latest libraries
+
+    pipenv update
+    git add Pipefile.lock
+    git commit
+
+#### pytest
+
 Run `pytest` tests (bash)
 
     ./tools/pytest-run.sh
@@ -206,12 +234,6 @@ Run `pytest` tests (bash)
 or (Powershell)
 
     .\tools\pytest-run.ps1
-
-Update `Pipfile.lock` with latest libraries
-
-    pipenv update
-    git add Pipefile.lock
-    git commit
 
 ## Other Miscellaneous Notes
 
