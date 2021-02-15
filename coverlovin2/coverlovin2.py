@@ -276,15 +276,16 @@ class ImageType(enum.Enum):
         return ImageType(fmt)
 
     @property
-    def pil_value(self) -> str:
+    def pil_format(self) -> str:
         """
         Pillow Image module prefers the identifier 'JPEG', not 'JPG'
         else, PIL/Image.py:Image.save raises KeyError 'JPG'
+        Pass this for `format` keyword
         Accurate as of Pillow version 6.1.0
         """
         if self is ImageType.JPG:
-            return 'jpeg'
-        return self.value
+            return 'JPEG'
+        return self.value.upper()
 
 
 class Result(typing.NamedTuple):
@@ -1296,11 +1297,9 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             return result
 
         if not self.wropts.test:
-            ext = self.image_type.pil_value.upper()
-            if self.image_type is ImageType.JPG:
-                ext = "JPEG"
+            format_ = self.image_type.pil_format
             try:
-                self._image.save(self.copy_dst, ext)
+                self._image.save(self.copy_dst, format=format_)
             except PermissionError as pe:
                 log.error(str(pe))
                 return Result.Error(self.artalb, self.__class__, self.copy_dst, str(pe))
