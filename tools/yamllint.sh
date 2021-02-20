@@ -6,4 +6,8 @@ set -u
 cd "$(dirname -- "${0}")/.."
 
 set -x
-exec yamllint --strict --config-file ./tools/yamllint.yml ./.circleci/
+exec \
+  yamllint \
+    --config-file ./tools/yamllint.yml \
+    "${@}" \
+    ./tools/yamllint.yml ./.travis.yml ./.circleci/
