@@ -15,8 +15,6 @@ copying, or via downloading from various online services.
 A common use-case is creating "`cover.jpg`" files for a large collection of
 ripped Compact Disc albums.
 
-coverlovin2 requires Python version 3.7 or greater.
-
 ----
 
 <!-- TOC auto-updated by VS Code -->
@@ -242,11 +240,15 @@ or (Powershell)
 
 ## Other Miscellaneous Notes
 
+coverlovin2 requires Python version 3.7 or greater.
+
 coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
-_Sonos_ systems will use file `folder.jpg` for album cover art (if available).
+_Sonos_ systems will use file `folder.jpg`.
 
-_Winamp_ will use file `cover.jpg` for album cover art (if available).
+_VLC Media Player_ will use file `folder.jpg` if media-embedded images are not available.
+
+_Winamp_ will use file `cover.jpg`.
 
 coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
