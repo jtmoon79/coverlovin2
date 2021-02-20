@@ -1143,7 +1143,8 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
 
         candidates = []  # files that are of the same media image type
         try:
-            candidates += self._find_likely_covers(self.image_type, self.copy_dst.parent)
+            candidates += self._find_likely_covers(self.image_type,
+                                                   self.copy_dst.parent)
             # search directories within directory of image_path for possible
             # cover art file candidates
             for fp in self.copy_dst.parent.iterdir():
@@ -1512,13 +1513,13 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         artist = self.artalb[0]
         album = self.artalb[1]
 
-        # XXX: these next two checks are an easy way out of making a complicated search
-        #      for these special cases
+        # XXX: these next two checks are an easy way out of making a complicated
+        #      search for these special cases
 
         # if Artist is unknown, the artist search will raise
         if not artist:
             return False
-        # if Album is unknown, the image selection will be too broad to be useful
+        # if Album is unknown, the image selection will be too broad
         if not album:
             return False
 
