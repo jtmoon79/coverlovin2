@@ -1,4 +1,4 @@
-# Python CircleCI 2.1 configuration file
+# Python CircleCI 2.1 configuration file for coverlovin2
 #
 # environment variable CACHE_VERSION value is set at
 # https://circleci.com/gh/jtmoon79/coverlovin2/edit#env-vars
