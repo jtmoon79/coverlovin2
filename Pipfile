@@ -4,18 +4,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-mypy = "*"
-pytest-dependency = "*"
-pytest-cov = "*"
+attrs = "*"
 codecov = "*"
+coveralls = "*"
+mypy = "*"
+pipenv = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-dependency = "*"
+pyyaml = ">=4.2b1"
 setuptools = "*"
 wheel = "*"
-pipenv = "*"
-pyyaml = ">=4.2b1"
 yamllint = "*"
-coveralls = "*"
-attrs = "*"
 
 [packages]
 # this should match file setup.py
