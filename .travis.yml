@@ -1,21 +1,44 @@
+# Travis CI configuration file for coverlovin2
+#
+# docs https://docs.travis-ci.com/user/languages/python/
+# schema https://raw.githubusercontent.com/travis-ci/travis-yml/ddfadc679cc80478b84f7b3cffde7cef991eace6/schema.json
+---
 language: python
-#python:
-#  - "3.7"  # running this fails
-#  - "3.6"
+os: linux
 branches:
   only:
-  - master
+    - master
+    - travis-improvements1
 notifications:
   email: true
-matrix:
-  include:
-  - name: "3.7 pytest"
-    python: "3.7"
-    dist: xenial  # currently required for Python 3.7 on Travis CI
-  - name: "3.6 check version failure"
-    python: "3.6"
-# the executable bit is not set on scripts under `tools/`, so force it
-before_script: chmod -vR +x,-w -- ./tools/
-script: ./tools/test-travisci.sh
 git:
   depth: 1
+matrix:
+  include:
+    - name: "3.7 pytest"
+      python: 3.7
+      dist: xenial
+    - name: "3.8 pytest"
+      python: 3.8
+    - name: "3.9 pytest"
+      python: 3.9
+install:
+  - pip install pipenv
+  - pipenv install --dev
+before_script:
+  # the executable bit is not set on scripts under `tools/`, so force it
+  - chmod -vR +x,-w -- ./tools/
+script:
+  # sanity check coverlovin2.py can start
+  - python ./coverlovin2/coverlovin2.py --version
+  - ./tools/yamllint.sh
+  - ./tools/pytest-run.sh
+    --cov=./coverlovin2/ --cov-config=./.coveragerc --cov-report=xml
+    --log-cli-level=DEBUG --verbosity=1
+  - ./tools/build-install-test.sh
+after_success:
+  - coveralls
+  # upload coverage report to codecov.io
+  # requires setting secret environment variable COVERALLS_REPO_TOKEN within
+  # Travis -> Settings -> Environment Variables
+  - codecov --file coverage.xml
