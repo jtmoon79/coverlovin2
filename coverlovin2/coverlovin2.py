@@ -36,23 +36,6 @@ TODO: manually truncate `tabulate` strings to fit the console window
 
 BUG: some Album directories may return an empty ArtAlb value, e.g.
      [ "" - "" ]
-
-BUG: on some Linux, `pip install Pillow` does not retrieve necessary apt package
-     Result:
-    ERROR: [Thread-4 coverlovin2]: libopenjp2.so.7: cannot open shared object file: No such file or directory
-        Traceback (most recent call last):
-        File "/tmp/.venv3/bin/coverlovin2.py", line 2048, in search_create_image
-            res = is_.go()
-        File "/tmp/.venv3/bin/coverlovin2.py", line 1218, in go
-            if not self.search_album_image():
-        File "/tmp/.venv3/bin/coverlovin2.py", line 1245, in search_album_image
-            from PIL import Image
-        File "/tmp/.venv3/lib/python3.7/site-packages/PIL/Image.py", line 94, in <module>
-            from . import _imaging as core
-        ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
-    Must run
-        apt install libopenjp2-7
-    https://stackoverflow.com/questions/48012582/pillow-libopenjp2-so-7-cannot-open-shared-object-file-no-such-file-or-directo
 """
 
 # DRY canonical informations
@@ -89,7 +72,8 @@ if sys.version_info < (3, 7):
         " fail using this python version %s" % sys.version
     )
 _: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.7 (most likely pip)
-if "pytest" not in sys.modules:  # workaround for https://github.com/pytest-dev/pytest/issues/4843
+# XXX: workaround for https://github.com/pytest-dev/pytest/issues/4843
+if "pytest" not in sys.modules:
     sys.stdout.reconfigure(encoding="utf-8", errors="namereplace")
     sys.stderr.reconfigure(encoding="utf-8", errors="namereplace")
 
@@ -104,38 +88,42 @@ import shutil  # copy2
 import urllib.request
 import urllib.error
 import urllib.parse
-
 # threading stuff
 import threading
 import queue  # Queue, SimpleQueue Empty
-
 # type hints and type precision
 from pathlib import Path
 import collections  # namedtuple
 import enum  # Enum
 import typing  # Union, NewType, Tuple, List
-
 # logging and printing
 import logging
 from pprint import pformat
 from pprint import pprint as pp  # convenience during live-debugging
 
 #
-# non-standard imports
+# vendor/3rd party imports
 #
-
-# XXX: PEP8 complaint that this is not used.  But try this import before going
-#      too far
-# see README.md for installation help
-#
-# https://pypi.org/project/mutagen/
-import mutagen
-
-# https://pypi.org/project/tabulate/
-from tabulate import tabulate
 
 # https://pypi.org/project/attrs/
 import attr
+# https://pypi.org/project/mutagen/
+import mutagen
+# https://pypi.org/project/Pillow/
+try:
+    from PIL import Image
+except ImportError as ie:
+    # XXX: on some Linux, `pip install Pillow` does not install required OS library, results in
+    #        ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
+    #      https://stackoverflow.com/q/48012582/471376
+    if "libopenjp2" in str(ie):
+        print(
+            "It appears library libopenjp2 is missing. apt install command is:\n    apt install libopenjp2-7\n",
+            file=sys.stderr
+        )
+        raise
+# https://pypi.org/project/tabulate/
+from tabulate import tabulate
 
 
 #
@@ -1268,7 +1256,6 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
         # the bytes with a PIL.Image class instance, store that as `self._image`
         # help from https://stackoverflow.com/a/54773705/471376
         from mutagen.id3 import ID3
-        from PIL import Image
 
         key_apic = "APIC:"
         for fp in media_files:
