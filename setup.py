@@ -14,6 +14,10 @@ import os
 
 from setuptools import setup
 from setuptools import find_packages
+
+# https://pypi.org/project/py2exe/
+import py2exe
+
 from coverlovin2.coverlovin2 import __version__
 from coverlovin2.coverlovin2 import __author__
 from coverlovin2.coverlovin2 import __url__
@@ -77,4 +81,12 @@ setup(
         "Source": __url__,
         "Bug Reports": "https://github.com/jtmoon79/coverlovin2/issues",
     },
+    options={
+        'py2exe': {
+            'compressed': True,
+            'optimize': 2,
+            'bundle_files': 3,
+        },
+    },
+    console=['coverlovin2/coverlovin2.py'],
 )

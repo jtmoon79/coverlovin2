@@ -68,6 +68,11 @@ __doc__ = """Recursively process passed directories of audio media files, attemp
  to create a missing album image file, either via local searching and\
  copying, or via downloading from various online services."""
 
+# if built with py2exe and run as an .exe then exception
+#   NameError: name '__file__' is not defined
+# so make sure it is defined
+if "__file__" not in globals():
+    __file__ = "coverlovin2.py"
 #
 # stdlib imports
 #
