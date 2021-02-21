@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7aecf103d41eb97217d27cfeec3c22e4e5ac3b5051874f2f9108c967d72485cc"
+            "sha256": "5871c674d60da4cf6562b575298aff1a5ba31cf4f8c42c19215e3d2ef610896f"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -22,6 +22,38 @@
             "index": "pypi",
             "version": "==20.3.0"
         },
+        "certifi": {
+            "hashes": [
+                "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c",
+                "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"
+            ],
+            "version": "==2020.12.5"
+        },
+        "chardet": {
+            "hashes": [
+                "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa",
+                "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==4.0.0"
+        },
+        "discogs-client": {
+            "hashes": [
+                "sha256:777094c0be682048a31d2c463d37e1c5725f3c3177d4f3eb05394d9f34931005",
+                "sha256:7e91f62a1bfee802e155d1f7c543e47fb5ef158d099e90e6b28f5e44a1f41d94",
+                "sha256:cc979fcbb5283f74d388c7111c8ed6bef920b01614a014d6b1c5d6fbb554bfc3"
+            ],
+            "index": "pypi",
+            "version": "==2.3.0"
+        },
+        "idna": {
+            "hashes": [
+                "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
+                "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==2.10"
+        },
         "musicbrainzngs": {
             "hashes": [
                 "sha256:ab1c0100fd0b305852e65f2ed4113c6de12e68afd55186987b8ed97e0f98e627",
@@ -37,6 +69,14 @@
             ],
             "index": "pypi",
             "version": "==1.45.1"
+        },
+        "oauthlib": {
+            "hashes": [
+                "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889",
+                "sha256:df884cd6cbe20e32633f1db1072e9356f53638e4361bef4e8b03c9127c9328ea"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==3.1.0"
         },
         "pillow": {
             "hashes": [
@@ -76,6 +116,22 @@
             "index": "pypi",
             "version": "==8.1.0"
         },
+        "requests": {
+            "hashes": [
+                "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804",
+                "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==2.25.1"
+        },
+        "six": {
+            "hashes": [
+                "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
+                "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==1.15.0"
+        },
         "tabulate": {
             "hashes": [
                 "sha256:26f2589d80d332fefd2371d396863dedeb806f51b54bdb4b264579270b621e92",
@@ -83,6 +139,14 @@
             ],
             "index": "pypi",
             "version": "==0.8.8"
+        },
+        "urllib3": {
+            "hashes": [
+                "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80",
+                "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
+            "version": "==1.26.3"
         }
     },
     "develop": {

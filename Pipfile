@@ -23,7 +23,7 @@ yamllint = "*"
 py2exe = "*"
 
 [packages]
-# this should match file setup.py
+# XXX: this should match file setup.py
 attrs = "~=20.3"
 discogs-client = "~=2.3"
 musicbrainzngs = "~=0.7"

@@ -42,11 +42,12 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
-        # this should match file Pipefile
-        "attrs == 20.3.0",
-        "musicbrainzngs == 0.7.1",
-        "mutagen == 1.45.1",
-        "Pillow == 8.1.0",
+        # XXX: this should match file Pipefile
+        "attrs ~= 20.3",
+        "discogs-client ~=2.3",
+        "musicbrainzngs ~= 0.7",
+        "mutagen ~= 1.45",
+        "Pillow ~= 8.1",
         "tabulate == 0.8.7",
     ],
     setup_requires=["wheel"],
