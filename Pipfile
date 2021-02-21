@@ -17,6 +17,9 @@ setuptools = "*"
 wheel = "*"
 yamllint = "*"
 
+[win-packages]
+py2exe = "*"
+
 [packages]
 # this should match file setup.py
 attrs = "==20.3.0"

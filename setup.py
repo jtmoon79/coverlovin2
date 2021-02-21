@@ -16,7 +16,11 @@ from setuptools import setup
 from setuptools import find_packages
 
 # https://pypi.org/project/py2exe/
-import py2exe
+try:
+    import py2exe
+except ImportError:
+    # not needed for typical builds, fails to install on non-Windows Python
+    pass
 
 from coverlovin2.coverlovin2 import __version__
 from coverlovin2.coverlovin2 import __author__
@@ -71,7 +75,6 @@ setup(
             "coverlovin2/"
         ]),
     scripts=["coverlovin2/coverlovin2.py"],
-    # TODO: does this need work?
     entry_points={
         "console_scripts": [
             "coverlovin2=coverlovin2:main",
@@ -82,11 +85,14 @@ setup(
         "Bug Reports": "https://github.com/jtmoon79/coverlovin2/issues",
     },
     options={
+        # build this option with command:
+        #    python setup.py py2exe
         'py2exe': {
             'compressed': True,
             'optimize': 2,
             'bundle_files': 3,
         },
     },
+    # added for py2exe
     console=['coverlovin2/coverlovin2.py'],
 )
