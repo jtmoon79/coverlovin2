@@ -180,6 +180,13 @@ Inspired by the program coverlovin.
 
 - Using `pip` from source:
 
+      wget https://github.com/jtmoon79/coverlovin2/archive/master.zip
+      unzip master.zip
+      cd coverlovin2-master
+      python setup.py -e install
+
+  _or_
+
       python -m pip install mutagen musicbrainzngs Pillow tabulate discogs-client attrs
       python -m pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
