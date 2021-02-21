@@ -14,28 +14,6 @@ Some readers might think it's overzealous, others will welcome it.
 This also makes use of inheritance decorators @overrides and @abstractmethod.
 
 And other Python 3.x novelties!
-
-TODO: add a simple --exclude filter for paths. globbing style matching
-
-TODO: update Result class with TODO within it
-
-TODO: improve summary message with counts of
-      images found,
-      images not found due to cannot find,
-      images not found or written due to errors,
-      total albums paths processed,
-
-TODO: improve summary message with better table formatting that considers
-      terminal width,
-      sorts by path,
-
-TODO: do not bury `import`s. Not Pythonic.
-
-TODO: manually truncate `tabulate` strings to fit the console window
-      add command option to not attempt to fit console window
-
-BUG: some Album directories may return an empty ArtAlb value, e.g.
-     [ "" - "" ]
 """
 
 # DRY canonical informations
