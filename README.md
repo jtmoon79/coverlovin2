@@ -238,6 +238,10 @@ or (Powershell)
 
     python setup.py bdist_wheel
 
+or use the helper script
+
+    ./tools/build-install-test.sh
+
 ## Other Miscellaneous Notes
 
 coverlovin2 requires Python version 3.7 or greater.
