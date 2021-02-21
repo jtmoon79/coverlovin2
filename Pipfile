@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+# pipenv install --dev
 attrs = "*"
 codecov = "*"
 coveralls = "*"
@@ -18,6 +19,7 @@ wheel = "*"
 yamllint = "*"
 
 [win-packages]
+# pipenv install --win
 py2exe = "*"
 
 [packages]
