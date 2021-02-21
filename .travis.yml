@@ -8,7 +8,7 @@ os: linux
 branches:
   only:
     - master
-    - travis-improvements1
+    - travis
 notifications:
   email: true
 git:
