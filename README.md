@@ -184,7 +184,7 @@ Inspired by the program coverlovin.
       python -m pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 *coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
-[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), [Pillow](https://pypi.org/project/Pillow/), [Tabulate](https://pypi.org/project/tabulate/), and [attrs](https://pypi.org/project/attrs/).
+[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), [Pillow](https://pypi.org/project/Pillow/), [Tabulate](https://pypi.org/project/tabulate/), [discogs-client](https://pypi.org/project/discogs-client/), and [attrs](https://pypi.org/project/attrs/).
 
 ## Development
 
