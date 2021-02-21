@@ -66,14 +66,17 @@ import shutil  # copy2
 import urllib.request
 import urllib.error
 import urllib.parse
+
 # threading stuff
 import threading
 import queue  # Queue, SimpleQueue Empty
+
 # type hints and type precision
 from pathlib import Path
 import collections  # namedtuple
 import enum  # Enum
 import typing  # Union, NewType, Tuple, List
+
 # logging and printing
 import logging
 from pprint import pformat
@@ -85,8 +88,10 @@ from pprint import pprint as pp  # convenience during live-debugging
 
 # https://pypi.org/project/attrs/
 import attr
+
 # https://pypi.org/project/mutagen/
 import mutagen
+
 # https://pypi.org/project/Pillow/
 try:
     from PIL import Image
@@ -97,7 +102,7 @@ except ImportError as ie:
     if "libopenjp2" in str(ie):
         print(
             "It appears library libopenjp2 is missing. apt install command is:\n    apt install libopenjp2-7\n",
-            file=sys.stderr
+            file=sys.stderr,
         )
         raise
 # https://pypi.org/project/tabulate/
@@ -276,7 +281,7 @@ class ImageType(enum.Enum):
         Accurate as of Pillow version 6.1.0
         """
         if self is ImageType.JPG:
-            return 'JPEG'
+            return "JPEG"
         return self.value.upper()
 
 
@@ -333,7 +338,16 @@ class Result(typing.NamedTuple):
             image_path.name,
         )
         return Result(
-            artalb, imagesearcher, None, image_path, False, wropts, False, message, False, ""
+            artalb,
+            imagesearcher,
+            None,
+            image_path,
+            False,
+            wropts,
+            False,
+            message,
+            False,
+            "",
         )
 
     @classmethod
@@ -342,7 +356,12 @@ class Result(typing.NamedTuple):
 
     @classmethod
     def Downloaded(
-        cls, artalb: ArtAlb, imagesearcher: typing.Any, size: int, image_path: Path, wropts: WrOpts
+        cls,
+        artalb: ArtAlb,
+        imagesearcher: typing.Any,
+        size: int,
+        image_path: Path,
+        wropts: WrOpts,
     ):
         # message = '%s%s found %s and downloaded %d bytes to "%s"' % \
         #          (cls.strt(test), imagesearcher.NAME, str_ArtAlb(artalb),
@@ -354,7 +373,16 @@ class Result(typing.NamedTuple):
             imagesearcher.provider(),
         )
         return Result(
-            artalb, imagesearcher, None, image_path, True, wropts, False, message, False, ""
+            artalb,
+            imagesearcher,
+            None,
+            image_path,
+            True,
+            wropts,
+            False,
+            message,
+            False,
+            "",
         )
 
     @classmethod
@@ -376,7 +404,16 @@ class Result(typing.NamedTuple):
             source = 'likely cover "%s"' % copy_src.name
         message = "%sCopied %d bytes from %s" % (cls.strt(wropts.test), size, source)
         return Result(
-            artalb, imagesearcher, None, copy_dst, True, wropts, False, message, False, ""
+            artalb,
+            imagesearcher,
+            None,
+            copy_dst,
+            True,
+            wropts,
+            False,
+            message,
+            False,
+            "",
         )
 
     @classmethod
@@ -914,7 +951,12 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     NAME = __qualname__
 
     def __init__(
-        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
+        self,
+        artalb: ArtAlb,
+        image_type: ImageType,
+        image_path: Path,
+        wropts: WrOpts,
+        loglevel: int,
     ):
         self.copy_src = None
         self.copy_dst = image_path
@@ -1121,8 +1163,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
 
         candidates = []  # files that are of the same media image type
         try:
-            candidates += self._find_likely_covers(self.image_type,
-                                                   self.copy_dst.parent)
+            candidates += self._find_likely_covers(self.image_type, self.copy_dst.parent)
             # search directories within directory of image_path for possible
             # cover art file candidates
             for fp in self.copy_dst.parent.iterdir():
@@ -1198,7 +1239,12 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
     NAME = __qualname__
 
     def __init__(
-        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
+        self,
+        artalb: ArtAlb,
+        image_type: ImageType,
+        image_path: Path,
+        wropts: WrOpts,
+        loglevel: int,
     ):
         self.copy_dst = image_path
         self.image_type_PIL = None
@@ -1446,7 +1492,12 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
     NAME = __qualname__
 
     def __init__(
-        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
+        self,
+        artalb: ArtAlb,
+        image_type: ImageType,
+        image_path: Path,
+        wropts: WrOpts,
+        loglevel: int,
     ):
         self.image_path = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
@@ -1523,12 +1574,15 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return False
         if type(artist_list) is not dict:
             self._log.debug(
-                'search_artists("%s") returned unexpected type %s', artist, type(artist_list)
+                'search_artists("%s") returned unexpected type %s',
+                artist,
+                type(artist_list),
             )
             return False
         if "artist-list" not in artist_list:
             self._log.debug(
-                'search_artists("%s") results do not include an ' '"artist-list" entry', artist
+                'search_artists("%s") results do not include an ' '"artist-list" entry',
+                artist,
             )
             return False
         if len(artist_list["artist-list"]) < 1:
@@ -1561,17 +1615,23 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return False
         if type(releases) is not dict:
             self._log.debug(
-                'browse_releases("%s") returned unexpected type %s', artist_id, type(releases)
+                'browse_releases("%s") returned unexpected type %s',
+                artist_id,
+                type(releases),
             )
             return False
         if "release-list" not in releases:
             self._log.debug(
-                'browse_releases("%s") results do not include a ' '"release-list" entry', artist_id
+                'browse_releases("%s") results do not include a ' '"release-list" entry',
+                artist_id,
             )
             return False
 
         possible = list(
-            filter(lambda rle: similar(rle["title"], album) >= 0.4, releases["release-list"])
+            filter(
+                lambda rle: similar(rle["title"], album) >= 0.4,
+                releases["release-list"],
+            )
         )
         self._log.debug('· mb.browse_release_groups(artist="%s", limit=500)', artist_id)
         release_groups = mb.browse_release_groups(artist=artist_id, limit=100)
@@ -1608,15 +1668,23 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         try:
             self._log.debug('· mb.get_image_list("%s")', album_id)
             image_list = mb.get_image_list(album_id)
-        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
+        except (
+            musicbrainzngs.musicbrainz.ResponseError,
+            musicbrainzngs.musicbrainz.NetworkError,
+        ):
             self._log.debug('Exception during get_image_list("%s")', album_id, exc_info=True)
             pass
         try:
             self._log.debug('· mb.get_release_group_image_list("%s")', album_id)
             image_list.update(mb.get_release_group_image_list(album_id))
-        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
+        except (
+            musicbrainzngs.musicbrainz.ResponseError,
+            musicbrainzngs.musicbrainz.NetworkError,
+        ):
             self._log.debug(
-                'Exception during get_release_group_image_list("%s")', album_id, exc_info=True
+                'Exception during get_release_group_image_list("%s")',
+                album_id,
+                exc_info=True,
             )
             pass
 
@@ -1650,7 +1718,12 @@ class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
     NAME = __qualname__
 
     def __init__(
-        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
+        self,
+        artalb: ArtAlb,
+        image_type: ImageType,
+        image_path: Path,
+        wropts: WrOpts,
+        loglevel: int,
     ):
         self.image_path = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
@@ -1690,7 +1763,9 @@ class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
         import discogs_client
 
         self._log.debug(
-            "· import %s version %s", discogs_client.__name__, discogs_client.__version__
+            "· import %s version %s",
+            discogs_client.__name__,
+            discogs_client.__version__,
         )
         self._log.debug("· discogs_client.Client(%s)", __product_token__)
         dc = discogs_client.Client(__product_token__)
@@ -1810,7 +1885,9 @@ def process_dir(
     if image_path.exists():
         if not overwrite:
             log.debug(
-                'cover file "%s" exists and no overwrite,' ' skip directory "%s"', image_nt, dirp
+                'cover file "%s" exists and no overwrite,' ' skip directory "%s"',
+                image_nt,
+                dirp,
             )
             r_ = Result.SkipDueToNoOverwrite(
                 artalb=None,
@@ -1927,7 +2004,10 @@ def process_dir(
         except:
             pass
 
-    log.debug("no Artist or Album found or derived or no suitable media files" ' within "%s"', dirp)
+    log.debug(
+        "no Artist or Album found or derived or no suitable media files" ' within "%s"',
+        dirp,
+    )
 
     # XXX: This special case must be handled in implementations of
     #      `search_album_image`. It is used in
@@ -1999,7 +2079,13 @@ def search_create_image(
     #       command-line arguments passed). Search in order of passed script
     #       options.
 
-    search_likely, search_embedded, search_musicbrainz, search_discogs, search_googlecse = searches
+    (
+        search_likely,
+        search_embedded,
+        search_musicbrainz,
+        search_discogs,
+        search_googlecse,
+    ) = searches
 
     searchers = []
     if search_likely:
@@ -2019,7 +2105,13 @@ def search_create_image(
     if search_googlecse:
         searchers.append(
             ImageSearcher_GoogleCSE(
-                artalb, image_type, image_path, googlecse_opts, referer, wropts, loglevel
+                artalb,
+                image_type,
+                image_path,
+                googlecse_opts,
+                referer,
+                wropts,
+                loglevel,
             )
         )
 
@@ -2461,7 +2553,13 @@ def main():
         dirs,
         image_type,
         image_name,
-        (search_likely, search_embedded, search_musicbrainz, search_discogs, search_googlecse),
+        (
+            search_likely,
+            search_embedded,
+            search_musicbrainz,
+            search_discogs,
+            search_googlecse,
+        ),
         googlecse_opts,
         referer,
         wropts,
@@ -2553,7 +2651,10 @@ def main():
     )
     print(
         "Among {} Album directories, wrote or found {} '{}{}' files.".format(
-            count_total, count_image, image_name, image_type.suffix,
+            count_total,
+            count_image,
+            image_name,
+            image_type.suffix,
         )
     )
 
