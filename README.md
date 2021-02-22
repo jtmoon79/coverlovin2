@@ -20,6 +20,7 @@ ripped Compact Disc albums.
 <!-- TOC auto-updated by VS Code -->
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
+    - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
   - [Development](#development)
     - [First development session](#first-development-session)
@@ -29,8 +30,9 @@ ripped Compact Disc albums.
       - [pytest](#pytest)
       - [build](#build)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
-    - [Issues‼  🐛 🐵](#issues---)
-    - [Run Phases](#run-phases)
+    - [Practice Project](#practice-project)
+      - [Issues‼  🐛 🐵](#issues---)
+      - [Run Phases](#run-phases)
 
 ## Script Usage
 
@@ -172,6 +174,18 @@ Source code: https://github.com/jtmoon79/coverlovin2
 Inspired by the program coverlovin.
 ```
 
+### Common Media Player expectations
+
+_Sonos_ systems will use file `folder.jpg`.
+
+_Windows Media Player_ will use file `folder.jpg` if media-embedded images are not available.
+
+_VLC Media Player_ will use file `folder.jpg` if media-embedded images are not available.
+
+_MusicBee_ will use file `cover.png` or `cover.jpg` within the _MUSIC_ library view, _Album and Tracks_ pane if media-embedded images are not available.
+
+_Winamp_ will use file `cover.png` or `cover.jpg` if media-embedded images are not available.
+
 ## Installation
 
 - Using `pip` from pypi:
@@ -246,15 +260,11 @@ or use the helper script
 
 ## Other Miscellaneous Notes
 
-coverlovin2 requires Python version 3.7 or greater.
-
 coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
-_Sonos_ systems will use file `folder.jpg`.
+### Practice Project
 
-_VLC Media Player_ will use file `folder.jpg` if media-embedded images are not available.
-
-_Winamp_ will use file `cover.jpg`.
+coverlovin2 requires Python version 3.7 or greater.
 
 coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
@@ -282,7 +292,7 @@ and mypy seem to catch different type-hint warnings.
 - printing odd UTF-8 characters (for example, `\uFF5B`, `｛`) and coercing UTF8
 mode (within a context without UTF8 support; MinGW bash on Windows)
 
-### Issues‼  🐛 🐵
+#### Issues‼  🐛 🐵
 
 Other projects Bug Issues 🐛 and Feature Issues 🐵 the author created in the
 course of writing this application:
@@ -303,7 +313,7 @@ course of writing this application:
 
 🐛 [ant-druha/PowerShell #16](https://github.com/ant-druha/PowerShell/issues/16)
 
-### Run Phases
+#### Run Phases
 
 coverlovin2 runs in a few phases:
 
