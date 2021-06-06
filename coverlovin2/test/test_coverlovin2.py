@@ -45,6 +45,7 @@ from ..coverlovin2 import (
     Result,
     WrOpts,
     URL,
+    SearcherMedium,
     str_AA,
     str_ArtAlb,
     func_name,
@@ -197,6 +198,9 @@ class Test_helpers(object):
     def test_URL_True(self):
         assert URL('https://foo.com')
 
+    def test_SearcherMedium_list(self):
+        assert SearcherMedium.list()
+
     def test_log_new_1(self):
         log1 = log_new('log1', logging.DEBUG)
         assert log1.hasHandlers()
@@ -281,6 +285,12 @@ class Test_ImageType(object):
         cases will need to be added.
         """
         assert len(ImageType.list()) == 3
+
+    def test_pil_format_JPG(self):
+        assert ImageType.JPG.pil_format
+
+    def test_pil_format_notJPG(self):
+        assert ImageType.PNG.pil_format
 
 
 jpg = ImageType.JPG
