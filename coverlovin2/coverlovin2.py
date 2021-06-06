@@ -1643,7 +1643,11 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         )
 
         # filter possible based on whether cover-art is actually available
-        possible = [el for el in possible if "cover-art-archive" in el and el["cover-art-archive"]["artwork"] == "true"]
+        possible = [
+            el
+            for el in possible
+            if "cover-art-archive" in el and el["cover-art-archive"]["artwork"] == "true"
+        ]
 
         # store tuple pairs of (`similar` score, release/release_group entry)
 
