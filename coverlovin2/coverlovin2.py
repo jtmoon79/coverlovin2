@@ -95,6 +95,13 @@ import mutagen
 # https://pypi.org/project/Pillow/
 try:
     from PIL import Image
+    # XXX: py2exe kludge
+    #      https://www.py2exe.org/index.cgi/py2exeAndPIL
+    from PIL import PngImagePlugin
+    from PIL import JpgImagePlugin
+    from PIL import BmpImagePlugin
+    from PIL import GifImagePlugin
+    Image._initialized=2
 except ImportError as ie:
     # XXX: on some Linux, `pip install Pillow` does not install required OS library, results in
     #        ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory

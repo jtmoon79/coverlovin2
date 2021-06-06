@@ -18,6 +18,23 @@ from setuptools import find_packages
 # https://pypi.org/project/py2exe/
 try:
     import py2exe
+    #import pdb; pdb.set_trace()
+    from pathlib import Path
+    import sys
+    #venv_path = Path(sys.executable) + Path("..\Lib\site-packages")
+    import site
+    sitep = site.getsitepackages()
+    import modulefinder
+    for site_ in sitep:
+        sp = Path(site_)
+        sp = sp / Path("PIL")
+        if sp.exists():
+            print(f"Add {sp}")
+            modulefinder.AddPackagePath("PIL", sp)
+        modulefinder.AddPackagePath("bz2", 'C:\\Python\\python.org.3.9.0\\lib\\bz2.py')
+        modulefinder.AddPackagePath("_bz2", 'C:\\Python\\python.org.3.9.0\\DLLs\\_bz2.pyd')
+    #import win32com
+    #modulefinder.AddPackagePath("win32com", path)
 except ImportError:
     # not needed for typical builds, fails to install on non-Windows Python
     pass
@@ -88,10 +105,44 @@ setup(
     options={
         # build this option with command:
         #    python setup.py py2exe
-        'py2exe': {
-            'compressed': True,
-            'optimize': 2,
-            'bundle_files': 3,
+        # only builds on Windows platform
+        # see https://py2exe.org/index.cgi/ListOfOptions
+        "py2exe": {
+            "compressed": False,
+            "unbuffered": True,
+            "xref": True,
+            "optimize": 2,
+            "bundle_files": 1,
+            "includes": [
+                "bz2",
+                "_bz2",
+                "encodings.bz2_codec",
+                "cffi",
+                "PIL",
+                "PIL.Image",
+            ],
+            "dll_excludes": [
+                "tk84.dll",
+                "tcl84.dll",
+                "_tkinter.pyd",
+                "_imagingtk.pyd",
+                "w9xpopen.exe",
+                'msvcr71.dll',
+                'win32ui.pyd',
+                "MSVCP90.dll",
+                # starting with Windows 7
+                "kernelbase.dll",
+                "mpr.dll",
+                "powrprof.dll",
+                "secur32.dll",
+                "shfolder.dll",
+                "API-MS-Win-Core-LocalRegistry-L1-1-0.dll",
+                "API-MS-Win-Core-ProcessThreads-L1-1-0.dll",
+                "API-MS-Win-Security-Base-L1-1-0.dll",
+                # starting with Windows 10
+                "CRYPT32.dll",
+                "bcrypt.dll",
+            ]
         },
     },
     # added for py2exe
