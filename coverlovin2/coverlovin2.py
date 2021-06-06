@@ -1646,7 +1646,9 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         possible = [
             el
             for el in possible
-            if "cover-art-archive" in el and el["cover-art-archive"]["artwork"] == "true"
+            if "cover-art-archive" in el
+               and "artwork" in el["cover-art-archive"]
+               and el["cover-art-archive"]["artwork"] == "true"
         ]
 
         # store tuple pairs of (`similar` score, release/release_group entry)
