@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
 #
-# black line length 100
+# black --line-length 100
 
 """\
 Recursively process subdirectories looking for audio media files. Download
