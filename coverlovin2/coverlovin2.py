@@ -2312,11 +2312,11 @@ Audio files supported are %s.""" % ", ".join(
         dest="search_likely",
         action="store_true",
         default=False,
-        help="For any directory with audio media files but no"
-        ' file "IMAGE_NAME.IMAGE_TYPE", search the directory'
+        help="For any Album directory (a directory with audio media files) but no"
+        ' file "IMAGE_NAME.IMAGE_TYPE", search that directory'
         " for files that are likely album cover images. For"
         ' example, given options: --name "cover" --type'
-        ' "jpg", and a directory of .mp3 files with a file'
+        ' "jpg", and a directory of .mp3 files with one file'
         ' "album.jpg", it is reasonable to guess'
         ' "album.jpg" is a an album cover image file. So'
         ' copy file "album.jpg" to "cover.jpg" . This will'
