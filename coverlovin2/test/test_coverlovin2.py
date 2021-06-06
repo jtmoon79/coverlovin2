@@ -305,7 +305,7 @@ class Test_overrides(object):
 
 
 # placeholder image url for testing downloading
-image_url = 'http://via.placeholder.com/2'
+image_url = "file://{resources}/2x2.PNG".format(resources=resources)
 
 
 class Test_ImageSearcher(object):
