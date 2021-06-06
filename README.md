@@ -6,6 +6,7 @@
 [![Coveralls Coverage Status](https://coveralls.io/repos/github/jtmoon79/coverlovin2/badge.svg?branch=master)](https://coveralls.io/github/jtmoon79/coverlovin2?branch=master)
 [![PyPI version](https://badge.fury.io/py/CoverLovin2.svg)](https://badge.fury.io/py/CoverLovin2)
 [![Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True)](https://pypi.org/pypi/coverlovin2/)
+[![Commits since](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)
 [![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -18,6 +19,7 @@ ripped Compact Disc albums.
 ----
 
 <!-- TOC auto-updated by VS Code -->
+
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
     - [Common Media Player expectations](#common-media-player-expectations)
