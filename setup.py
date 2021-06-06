@@ -43,12 +43,12 @@ setup(
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
         # XXX: this should match file Pipefile
-        "attrs ~= 20.3",
+        "attrs ~= 21.2",
         "discogs-client ~=2.3",
         "musicbrainzngs ~= 0.7",
         "mutagen ~= 1.45",
-        "Pillow ~= 8.1",
-        "tabulate == 0.8.7",
+        "Pillow ~= 8.2",
+        "tabulate == 0.8.9",
     ],
     setup_requires=["wheel"],
     # see https://pypi.org/classifiers/

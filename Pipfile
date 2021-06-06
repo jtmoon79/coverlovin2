@@ -23,13 +23,25 @@ yamllint = "*"
 py2exe = "*"
 
 [packages]
-# XXX: this should match file setup.py
-attrs = "~=20.3"
+# To update:
+# 1. force upgrade within pip virtual environment
+#      python -m pip install --upgrade attrs discogs-client musicbrainzngs mutagen Pillow tabulate
+# 2. run pytests (they must pass)
+# 3. manually note versions installed
+#      python -m pip list -v
+# 4. tweak below versions with `pip list` versions
+# 5. update Pipfile.lock
+#      python -m pipenv update
+# 6. commit changes
+#      git add Pipfile Pipfile.lock setup.py
+#
+# XXX: these versions should match those in file setup.py
+attrs = "~=21.2"
 discogs-client = "~=2.3"
 musicbrainzngs = "~=0.7"
 mutagen = "~=1.45"
-Pillow = "~=8.1"
-tabulate = "~=0.8.7"
+Pillow = "~=8.2"
+tabulate = "~=0.8.9"
 
 #[requires]
 # XXX: `python_version` does not support version range https://github.com/pypa/pipfile/issues/87
