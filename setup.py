@@ -53,7 +53,7 @@ setup(
     setup_requires=["wheel"],
     # see https://pypi.org/classifiers/
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Operating System :: OS Independent",
         "Natural Language :: English",
@@ -95,5 +95,5 @@ setup(
         },
     },
     # added for py2exe
-    console=['coverlovin2/coverlovin2.py'],
+    console=["coverlovin2/coverlovin2.py"],
 )
