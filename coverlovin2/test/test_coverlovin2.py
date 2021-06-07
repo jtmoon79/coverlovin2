@@ -1248,10 +1248,21 @@ class Test_complex_funcs(object):
         assert daa_list == daa_list_expect
         assert qsize == sq.qsize()
 
-    # TODO: add testing of process_dir that exercises more code
-    #       need to add test "album" directories
-    #def test_process_dirs(self):
-    #    return True
+    res1e = resources.joinpath('test_process_dirs_1_empty')
+
+    @pytest.mark.parametrize(
+        "dirpl, image_nt, qsize, daa_list_expect",
+        (
+            pytest.param(
+                [res1e,], "cover.jpg", 0, [],
+            ),
+        ),
+        # TODO: add variations
+    )
+    def test_process_dirs(self, dirpl, image_nt, qsize, daa_list_expect):
+        sq = queue.SimpleQueue()
+        rets = process_dirs(dirpl, image_nt, ImageType.JPG, True, sq)
+        assert rets == daa_list_expect
 
     @pytest.mark.parametrize('args',
         (
