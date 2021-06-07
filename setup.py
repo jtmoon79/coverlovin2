@@ -70,15 +70,9 @@ setup(
     ],
     keywords="audio image music",
     python_requires=">=3.7",
-    # XXX: should Pipfile* also be distributed???
-    packages=find_packages(
-        exclude=[
-            "coverlovin2/test/",
-            ],
-        include=[
-            "coverlovin2/"
-        ]),
+    packages=["coverlovin2"],
     scripts=["coverlovin2/coverlovin2.py"],
+    py_modules=["coverlovin2.__main__"],  # enables `python -m coverlovin2`
     entry_points={
         "console_scripts": [
             "coverlovin2=coverlovin2:main",
@@ -89,6 +83,7 @@ setup(
         "Bug Reports": "https://github.com/jtmoon79/coverlovin2/issues",
     },
     options={
+        # py2exe
         # build this option with command:
         #    python setup.py py2exe
         'py2exe': {
@@ -97,6 +92,6 @@ setup(
             'bundle_files': 3,
         },
     },
-    # added for py2exe
+    # py2exe
     console=["coverlovin2/coverlovin2.py"],
 )

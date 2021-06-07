@@ -51,7 +51,13 @@ function on_exit(){
 trap on_exit EXIT
 
 # does it run?
-(set -x; coverlovin2 --version)
+(
+  cd ~
+  set -eux
+  which coverlovin2
+  coverlovin2 --version
+  python -m coverlovin2 --version
+)
 
 if ${uninstall}; then
     # and test uninstall if asked
