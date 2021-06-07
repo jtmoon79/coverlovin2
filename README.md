@@ -24,6 +24,7 @@ ripped Compact Disc albums.
   - [Script Usage](#script-usage)
     - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
+    - [Invocation](#invocation)
   - [Development](#development)
     - [First development session](#first-development-session)
     - [Subsequent development sessions](#subsequent-development-sessions)
@@ -201,8 +202,30 @@ _Winamp_ will use file `cover.png` or `cover.jpg` if media-embedded images are n
       cd coverlovin2-master
       python setup.py -e install
 
-*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
-[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), [Pillow](https://pypi.org/project/Pillow/), [Tabulate](https://pypi.org/project/tabulate/), [discogs-client](https://pypi.org/project/discogs-client/), and [attrs](https://pypi.org/project/attrs/).
+### Invocation
+
+As a program:
+
+    coverlovin2 --version
+
+As a module:
+
+    python -m coverlovin2 --version
+
+Using `pip-run`:
+
+    pip-run --use-pep517 --quiet git+https://github.com/jtmoon79/coverlovin2@feature/runpy-invoke -- -m coverlovin2 --version
+
+<br />
+
+*coverlovin2* depends on non-standard libraries
+[attrs](https://pypi.org/project/attrs/),
+[discogs-client](https://pypi.org/project/discogs-client/),
+[musicbrainzngs](https://pypi.org/project/musicbrainzngs/),
+[mutagen](https://pypi.org/project/mutagen/),
+[Pillow](https://pypi.org/project/Pillow/),
+and
+[Tabulate](https://pypi.org/project/tabulate/),
 
 ## Development
 
