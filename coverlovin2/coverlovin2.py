@@ -2226,7 +2226,23 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue) -> N
         task_queue.task_done()
 
 
-def parse_args_opts(args=None):
+def parse_args_opts(args=None) -> \
+    (
+        str,
+        ImageType,
+        str,
+        (
+            bool,
+            bool,
+            bool,
+            bool,
+            bool,
+        ),
+        GoogleCSE_Opts,
+        str,
+        WrOpts,
+        int,
+    ):
     """parse command line arguments and options"""
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -2553,7 +2569,7 @@ Inspired by the program coverlovin.""" % (
     )
 
 
-def main():
+def main() -> int:
     """
     Recursively download cover images for music files in a
     given directory and its sub-directories

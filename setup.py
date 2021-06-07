@@ -22,10 +22,12 @@ except ImportError:
     # not needed for typical builds, fails to install on non-Windows Python
     pass
 
-from coverlovin2.coverlovin2 import __version__
-from coverlovin2.coverlovin2 import __author__
-from coverlovin2.coverlovin2 import __url__
-from coverlovin2.coverlovin2 import __app_name__
+from coverlovin2.coverlovin2 import (
+    __version__,
+    __author__,
+    __url__,
+    __app_name__,
+)
 
 # Get the long description from the README.md file
 __here = os.path.abspath(os.path.dirname(__file__))
