@@ -40,7 +40,7 @@ attrs = "~=21.2"
 discogs-client = "~=2.3"
 musicbrainzngs = "~=0.7"
 mutagen = "~=1.45"
-Pillow = "~=8.2"
+Pillow = "~=8.3"
 tabulate = "~=0.8.9"
 
 #[requires]
