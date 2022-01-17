@@ -30,7 +30,7 @@ from mutagen.asf import ASFHeaderError
 from mutagen.flac import FLACNoHeaderError
 
 # custom imports
-from ..coverlovin2 import (
+from ..app import (
     Artist,
     Album,
     ArtAlb,
@@ -40,6 +40,7 @@ from ..coverlovin2 import (
     DirArtAlb,
     DirArtAlb_List,
     GoogleCSE_Opts,
+    Discogs_Args,
     ImageSize,
     ImageType,
     Result,
@@ -65,6 +66,7 @@ from ..coverlovin2 import (
     ImageSearcher_EmbeddedMedia,
     ImageSearcher_MusicBrainz,
     ImageSearcher_GoogleCSE,
+    ImageSearcher_Discogs,
     process_dir,
     process_dirs,
     parse_args_opts,
@@ -130,6 +132,23 @@ class Test_GoogleCSE_Opts(object):
     def test_init_TypeError(self, ti):
         with pytest.raises(TypeError):
             GoogleCSE_Opts(*ti)
+
+
+class Test_Discogs_Args(object):
+
+    @pytest.mark.parametrize('arg',
+        (
+            pytest.param((None,),),
+            pytest.param(("",), ),
+            pytest.param(("abc",), ),
+        )
+    )
+    def test_init(self, arg):
+        if arg is not None:
+            da = Discogs_Args(arg)
+        else:
+            da = Discogs_Args()
+        assert da
 
 
 class Test_helpers(object):
@@ -368,7 +387,8 @@ class Test_ImageSearcher(object):
 
 class Test_ImageSearcher_LikelyCover(object):
 
-    def _new_imagesearcher_likelycover(self, image_type: ImageType = jpg) ->\
+    @staticmethod
+    def _new_imagesearcher_likelycover(image_type: ImageType = jpg) ->\
             ImageSearcher_LikelyCover:
         """return a new bland instance of ImageSearcher_LikelyCover"""
         return ImageSearcher_LikelyCover(ArtAlb_empty, image_type, Path(''), WrOpts(False, False), True)
@@ -1063,6 +1083,28 @@ class Test_ImageSearcher_GoogleCSE(object):
         assert C_isg.go()
 
 
+class Test_ImageSearcher_Discogs(object):
+    """
+    TODO: complete this
+    """
+
+    @pytest.mark.parametrize("pat_token",
+        (
+            "abc",
+        )
+    )
+    def test_init(self, pat_token):
+        da = Discogs_Args(pat_token)
+        ImageSearcher_Discogs(
+            ArtAlb_empty,
+            jpg,
+            Path(),
+            da,
+            WrOpts(False, True),
+            False
+        )
+
+
 class Test_ImageSearcher_MusicBrainz(object):
     """
     Test the ImageSearcher_MusicBrainz class
@@ -1278,7 +1320,6 @@ class Test_complex_funcs(object):
         with pytest.raises(SystemExit):
             parse_args_opts(args=args)
 
-
     # These tests do not need to be elaborate. Enough confidence can be had of
     # the argparse.ArgumentParser setup via code inspection; not worth the time
     # trade-off. These tests are to increase code coverage score.
@@ -1302,13 +1343,13 @@ class Test_complex_funcs(object):
     @pytest.mark.parametrize('args, ret_expect',
         (
             pytest.param(['-s-', '.'],
-                         (['.'], None, None, (True, True, True, False, False), None, None, None, logging.WARNING),
+                         (['.'], None, None, (True, True, True, False, False), None, None, None, None, logging.WARNING),
                          id='-s- .'),
             pytest.param(['.', '-se', '.', '..'],
-                         (['.', '.', '..'], None, None, (False, True, False, False, False), None, None, None, logging.WARNING),
+                         (['.', '.', '..'], None, None, (False, True, False, False, False), None, None, None, None, logging.WARNING),
                          id='. -se . ..'),
-            pytest.param(['-s*', '.',  '--sgkey', 'my key', '--sgid', 'my id'],
-                         (['.'], None, None, (True, True, True, True, True), None, None, None, logging.WARNING),
+            pytest.param(['-s*', '.',  '--sgkey', 'FAKE GOOGLECSE KEY', '--sgid', 'FAKE GOOGLECSE ID', '-sd', '-dt', 'FAKE DISCOGS TOKEN'],
+                         (['.'], None, None, (True, True, True, True, True), None, None, None, None, logging.WARNING),
                          id='-s* . …'),
         )
     )
@@ -1318,8 +1359,7 @@ class Test_complex_funcs(object):
         for i in range(len(ret_expect)):
             if ret_expect[i] is None:
                 continue
-            assert ret[i] == ret_expect[i]
-
+            assert ret[i] == ret_expect[i], "argument %s is '%s', expected '%s'" % (i, ret[i], ret_expect[i])
 
 
 class Test_media(object):

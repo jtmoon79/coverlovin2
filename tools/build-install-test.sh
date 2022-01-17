@@ -4,64 +4,90 @@
 #
 # presumes python in $PATH is expected (this should be run in a virtual env)
 
-set -e
-set -u
-set -o pipefail
+set -euo pipefail
 
 cd "$(dirname -- "${0}")/.."
 
 if ! python -B ./tools/is_venv.py &>/dev/null; then
-    echo "ERROR: $(basename -- "${0}") must be run in a python virtual environment"
+    echo "ERROR: $(basename -- "${0}") must be run in a python virtual environment" >&2
     exit 1
 fi
 
+(
+    set -x
+    python --version
+    python -m pip --version
+    python -m pip list -vvv
+)
+
 # uninstall any previous install (must be done outside the project directory)
-cd ..
-(set -x; python -m pip uninstall --yes coverlovin2)
+(
+    cd ..
+    set -x
+    python -m pip uninstall \
+        --verbose --debug --disable-pip-version-check --yes coverlovin2
+)
 # remove previous build artifacts
 rm -rfv ./dist/ ./CoverLovin2.egg-info/
 
+# does coverlovin2 run when not formally installed?
+(
+    set -eux
+    python coverlovin2/app.py --version
+)
+
 # build using wheels
-cd -
-version=$(python -B -c 'from coverlovin2 import coverlovin2 as c2;print(c2.__version__)')
-(set -x; python setup.py bdist_wheel)
+version=$(python -B -c 'from coverlovin2 import app as ca;print(ca.__version__, end="")')
+(
+    set -x
+    python setup.py bdist_wheel
+)
 # note the contents of dist
-(set -x; ls -l ./dist/)
+(
+    set -x
+    ls -l ./dist/
+)
 # get the full path to the wheel file
 # (usually, `basename $PWD` is 'coverlovin2' but on circleci it's 'project')
 cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3-none-any.whl")
-if ! [ -f "${cv_whl}" ]; then
+if ! [[ -f "${cv_whl}" ]]; then
     cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3.7-none-any.whl")
 fi
 
 # install the wheel (must be done outside the project directory)
-cd ..
-(set -x; python -m pip install "${cv_whl}")
+(
+    cd ..
+    set -x
+    python -m pip install --verbose --debug "${cv_whl}"
+)
 
 # make sure to attempt uninstall if asked
 uninstall=false
-if [ "${1+x}" == '--uninstall' ]; then
+if [[ "${1-}" == "--uninstall" ]]; then
     uninstall=true
 fi
-function on_exit(){
+
+function exit_() {
     if ${uninstall}; then
-        (set -x; python -m pip uninstall "coverlovin2")
+        (
+            set -x
+            python -m pip uninstall -v --yes "coverlovin2"
+        )
+    else
+        echo "Skip uninstall" >&2
     fi
 }
-trap on_exit EXIT
+trap exit_ EXIT
 
 # does it run?
 (
-  cd ~
-  set -eux
-  which coverlovin2
-  coverlovin2 --version
-  python -m coverlovin2 --version
+    set -eux
+    python coverlovin2/app.py --version
 )
-
-if ${uninstall}; then
-    # and test uninstall if asked
-    (set -x; python -m pip uninstall "coverlovin2")
-    # if script got here then no need to run uninstall on EXIT
-    uninstall=false
-fi
+(
+    cd ~
+    set -eux
+    which coverlovin2
+    coverlovin2 --version
+    python -m coverlovin2 --version
+)

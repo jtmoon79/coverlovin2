@@ -1,7 +1,11 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# app.py
 #
-# black --line-length 100
+# black line length 100
+#     $ black -l 100 app.py
+#
+# … ← ↑ → ↓
 
 """\
 Recursively process subdirectories looking for audio media files. Download
@@ -12,28 +16,49 @@ Code in this file uses several methods of type-hinting.
 Some readers might think it's overzealous, others will welcome it.
 
 This also makes use of inheritance decorators @overrides and @abstractmethod.
-
 And other Python 3.x novelties!
+
+Because the author was concentrating on experimentation, the program flow is
+somewhat cumbersome, overwrought, and inefficient. However, the program should
+accomplish what is needed for the user.
 """
 
-# DRY canonical informations
-__author__ = "James Thomas Moon"
-__url__ = "https://github.com/jtmoon79/coverlovin2"
-__url_source__ = __url__
-__url_project__ = "https://pypi.org/project/CoverLovin2/"
-__app_name__ = "CoverLovin2"
-__version__ = "0.6.9"
-# https://tools.ietf.org/html/rfc1945#section-3.7
-__product_token__ = __app_name__ + "/" + __version__
-__doc__ = """Recursively process passed directories of audio media files, attempting\
- to create a missing album image file, either via local searching and\
- copying, or via downloading from various online services."""
+# HACK: Begin workaround for Python's exasperating package+import system.
+#       It's easy to get importing working. It's difficult to get it working for the various
+#       circumstances of program execution and module packaging.
+#       This will satisfy all modes of execution in `tools/build-install-test.sh`.
+#       see
+#       https://gideonbrimleaf.github.io/2021/01/26/relative-imports-python.html
+#       https://stackoverflow.com/questions/2632199/how-do-i-get-the-path-of-the-current-executed-file-in-python
+#       https://stackoverflow.com/a/21233334/471376
+import inspect
+import os.path
+import sys
 
-# if built with py2exe and run as an .exe then exception will occur
-#   NameError: name '__file__' is not defined
-# so make sure __file__ is defined
+__frame_filename__ = inspect.getframeinfo(inspect.currentframe()).filename
+__frame_dirpath__ = os.path.dirname(os.path.relpath(__frame_filename__))
+sys.path.insert(0, __frame_dirpath__)
+
+# do relative import
+from __init__ import (
+    name,
+    __url__,
+    __url_source__,
+    __url_project__,
+    __version__,
+    __product_token__,
+)
+
+sys.path.pop(0)
+
+# HACK: End workaround for Python's exasperating package+import system.
+
+# HACK: if built with py2exe and run as an .exe then exception
+#           NameError: name '__file__' is not defined
+#       force __file__ to be defined
 if "__file__" not in globals():
-    __file__ = "coverlovin2.py"
+    __file__ = "app.py"
+
 #
 # stdlib imports
 #
@@ -50,6 +75,7 @@ if sys.version_info < (3, 7):
         " fail using this python version %s" % sys.version
     )
 _: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.7 (most likely pip)
+
 # XXX: workaround for https://github.com/pytest-dev/pytest/issues/4843
 if "pytest" not in sys.modules:
     sys.stdout.reconfigure(encoding="utf-8", errors="namereplace")
@@ -57,12 +83,15 @@ if "pytest" not in sys.modules:
 
 import abc  # ABC, abstractmethod
 import argparse  # ArgumentParser
+import datetime
 import difflib  # SequenceMatcher
 import io  # BytesIO
 import json
 import os
+import time
 import re
 import shutil  # copy2
+import tempfile
 import urllib.request
 import urllib.error
 import urllib.parse
@@ -75,7 +104,8 @@ import queue  # Queue, SimpleQueue Empty
 from pathlib import Path
 import collections  # namedtuple
 import enum  # Enum
-import typing  # Union, NewType, Tuple, List
+import typing
+from typing import Dict, List, Optional, Tuple, Union
 
 # logging and printing
 import logging
@@ -108,6 +138,13 @@ except ImportError as ie:
 # https://pypi.org/project/tabulate/
 from tabulate import tabulate
 
+# https://pypi.org/project/requests/
+import requests
+
+PREFERENCE_FILE_NAME = name + ".prefs.py"
+
+HTTP_GET = "GET"
+HTTP_POST = "POST"
 
 #
 # Using a few different methods for typing things.
@@ -117,6 +154,8 @@ Artist = typing.NewType("Artist", str)
 Album = typing.NewType("Album", str)
 ArtAlb = typing.NewType("ArtAlb", typing.Tuple[Artist, Album])
 
+Headers = typing.NewType("Headers", typing.Dict[str, str])
+
 
 # add this method to act as __bool__
 # TODO: XXX: how to override __bool__ for typing.NewType ? Should that be done?
@@ -125,7 +164,7 @@ def ArtAlb_is(artalb: ArtAlb) -> bool:
     return bool(artalb[0]) or bool(artalb[1])
 
 
-def ArtAlb_new(artist: typing.Union[str, Artist], album: typing.Union[str, Album]) -> ArtAlb:
+def ArtAlb_new(artist: Union[str, Artist], album: Union[str, Album]) -> ArtAlb:
     return ArtAlb(
         (
             Artist(artist),
@@ -177,11 +216,11 @@ class SearcherMedium(enum.Enum):
     """
     Distinguish the medium the ImageSearcher class uses.
 
-    XXX: someday, somehow this would assist in queuing ImageSearcher work
-         by medium. Work via NETWORK would allow many simultaneous ImageSearcher
-         instances, and work via DISK would allow fewer.
-         For now, this information is a NOOP (though a fun little exercise in
-         class organization).
+    TODO: someday, somehow this would assist in queuing ImageSearcher work
+          by medium. Work via NETWORK would allow many simultaneous ImageSearcher
+          instances, and work via DISK would allow fewer.
+          For now, this information is a NOOP (though a fun little exercise in
+          class organization).
     """
 
     DISK = "disk"
@@ -225,10 +264,17 @@ class GoogleCSE_Opts(collections.namedtuple("GoogleCSE_Opts", "key id image_size
 
     # XXX: How to best `assert image_size in ImageSize.list()` ?
 
-    def __bool__(self):
-        if self.id and self.key and self.image_size:
-            return True
-        return False
+    def __bool__(self) -> bool:
+        return bool(self.id) and bool(self.key) and bool(self.image_size)
+
+
+class Discogs_Args(collections.namedtuple("Discogs_Args", "pat_token")):
+    """
+    pat_token is Discogs Personal Access Token
+    """
+
+    def __bool__(self) -> bool:
+        return bool(self.pat_token)
 
 
 class ImageType(enum.Enum):
@@ -290,15 +336,16 @@ class Result(typing.NamedTuple):
     Save the results of ImageSearcher work in a formalized manner. Intended for
     later printing in a meaningful way.
 
-    TODO: This class is clunky and terribly overwrought.
+    TODO: This class is clunky and terribly overwrought. It was an
+          experiment with NamedTuple that turned out ugly.
           No need to save all this data, just create a message at time of
           instantiation and move on. This class could become an enum.Enum
           class. Add an `_ignore_` field `message` that explains specifics.
     """
 
-    artalb: ArtAlb
+    artalb: Optional[ArtAlb]
     imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
-    image_type: typing.Union[ImageType, None]
+    image_type: Optional[ImageType]
     image_path: Path
     result_written: bool  # bytes that comprise an image were written to `image_path`
     wropts: WrOpts  # was --overwrite or --test enabled?
@@ -314,58 +361,38 @@ class Result(typing.NamedTuple):
             return False
         return True
 
+    @staticmethod
+    def strt(test: bool) -> str:
+        """if test then return prepended string"""
+        return "(--test) " if test else ""
+
     @classmethod
     def NoSuitableImageFound(cls, artalb: ArtAlb, image_path: Path, wropts: WrOpts):
-        # message = 'No suitable image found that could be written to "%s"' % image_path
-        # if artalb != (Artist(''), Album('')):
-        # message = 'No suitable image found for %s that could be written to "%s"' % (
-        # str_ArtAlb(artalb), image_path)
-        message = "%sNo suitable image found" % cls.strt(wropts.test)
+        message = "%sNo suitable image found" % cls.strt(
+            wropts.test,
+        )
         return Result(artalb, None, None, image_path, False, wropts, True, message, False, "")
 
     @classmethod
     def SkipDueToNoOverwrite(
-        cls, artalb: ArtAlb, imagesearcher: typing.Any, image_path: Path, wropts: WrOpts
+        cls, artalb: Optional[ArtAlb], imagesearcher: typing.Any, image_path: Path, wropts: WrOpts
     ):
         if not image_path.exists():
             raise RuntimeError('expected a file that exists, does not "%s"', image_path)
         if wropts.overwrite:
             raise ValueError("WriteOptions.overwrite must be False")
-        # message = '%sfile already exists and --overwrite not enabled; skipping'\
-        #          ' "%s"' % (cls.strt(test), image_path)
         message = '%sfile "%s" already exists and --overwrite not enabled' % (
             cls.strt(wropts.test),
             image_path.name,
         )
         return Result(
-            artalb,
-            imagesearcher,
-            None,
-            image_path,
-            False,
-            wropts,
-            False,
-            message,
-            False,
-            "",
+            artalb, imagesearcher, None, image_path, False, wropts, False, message, False, ""
         )
 
     @classmethod
-    def strt(cls, test: bool) -> str:
-        return "(--test) " if test else ""
-
-    @classmethod
     def Downloaded(
-        cls,
-        artalb: ArtAlb,
-        imagesearcher: typing.Any,
-        size: int,
-        image_path: Path,
-        wropts: WrOpts,
+        cls, artalb: ArtAlb, imagesearcher: typing.Any, size: int, image_path: Path, wropts: WrOpts
     ):
-        # message = '%s%s found %s and downloaded %d bytes to "%s"' % \
-        #          (cls.strt(test), imagesearcher.NAME, str_ArtAlb(artalb),
-        #           size, image_path)
         message = "%sFound %s and downloaded %d bytes from %s" % (
             cls.strt(wropts.test),
             str_ArtAlb(artalb),
@@ -373,16 +400,7 @@ class Result(typing.NamedTuple):
             imagesearcher.provider(),
         )
         return Result(
-            artalb,
-            imagesearcher,
-            None,
-            image_path,
-            True,
-            wropts,
-            False,
-            message,
-            False,
-            "",
+            artalb, imagesearcher, None, image_path, True, wropts, False, message, False, ""
         )
 
     @classmethod
@@ -395,8 +413,6 @@ class Result(typing.NamedTuple):
         copy_dst: Path,
         wropts: WrOpts,
     ):
-        # message = '%s%s copied %d bytes from "%s" to "%s"' % \
-        #          (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
         source = "?"
         if imagesearcher is ImageSearcher_EmbeddedMedia:
             source = 'embedded image in "%s"' % copy_src.name
@@ -404,16 +420,7 @@ class Result(typing.NamedTuple):
             source = 'likely cover "%s"' % copy_src.name
         message = "%sCopied %d bytes from %s" % (cls.strt(wropts.test), size, source)
         return Result(
-            artalb,
-            imagesearcher,
-            None,
-            copy_dst,
-            True,
-            wropts,
-            False,
-            message,
-            False,
-            "",
+            artalb, imagesearcher, None, copy_dst, True, wropts, False, message, False, ""
         )
 
     @classmethod
@@ -426,8 +433,6 @@ class Result(typing.NamedTuple):
         copy_dst: Path,
         wropts: WrOpts,
     ):
-        # message = '%s%s extracted %d pixels embedded in "%s", wrote to "%s"' % \
-        #          (cls.strt(test), imagesearcher.NAME, size, copy_src, copy_dst)
         message = '%sExtracted %d pixels from embedded media "%s"' % (
             cls.strt(wropts.test),
             size,
@@ -448,7 +453,7 @@ class Result(typing.NamedTuple):
 
     @classmethod
     def Error(cls, artalb: ArtAlb, imagesearcher: typing.Any, copy_dst: Path, err_msg: str):
-        message = "An error occurred for %s" % (str_ArtAlb(artalb),)
+        message = "An error occurred for %s %s" % (str_ArtAlb(artalb), err_msg)
         return Result(
             artalb,
             imagesearcher,
@@ -505,8 +510,6 @@ def str_AA(artist: Artist, album: Album) -> str:
 
 
 def str_ArtAlb(artalb: ArtAlb) -> str:
-    # if not artalb:
-    #    return '%s %s %s' % (strAAL, strAAM, strAAR)
     return str_AA(artalb[0], artalb[1])
 
 
@@ -540,7 +543,7 @@ def log_new(logformat: str, level: int, logname: str = None) -> logging.Logger:
 # global instances
 #
 
-# recomended format
+# recommended format
 LOGFORMAT = "%(levelname)s: [%(threadName)s %(name)s]: %(message)s"
 # the file-wide logger instance
 log = log_new(LOGFORMAT, logging.WARNING)
@@ -551,6 +554,8 @@ SEMAPHORE_COUNT_DISK = 2
 SEMAPHORE_COUNT_NETWORK = 16
 # task_queue has this many threads consuming tasks
 TASK_QUEUE_THREAD_COUNT = SEMAPHORE_COUNT_DISK + SEMAPHORE_COUNT_NETWORK + 1
+# XXX: for help during development
+# TASK_QUEUE_THREAD_COUNT = 1
 
 
 #
@@ -564,6 +569,81 @@ def func_name(foffset: int = 0) -> str:
     by default, the current function
     """
     return sys._getframe(foffset + 1).f_code.co_name
+
+
+def split_parameters(
+    parm_str: str, keys_ret: typing.Sequence[str], maxsplit: int = -1
+) -> typing.Tuple[str, ...]:
+    """
+    given a `parm_str` like "a=1&bb=22&ccc=333", return the values of `keys_ret`
+    helper to do some more pro-active checking as it goes
+    """
+    FS = "&"
+    EQ = "="
+    if not parm_str:
+        return tuple()
+    if parm_str.count(FS) == 0:
+        raise ValueError("Bad parameter string; has no field separator '%s'" % (FS,))
+    parameters = parm_str.split(FS, maxsplit=maxsplit)
+    # create dict of parameter keys values
+    kv = dict()  # type: typing.Dict[str, str]
+    for p_ in parameters:
+        if p_.count(EQ) == 0:
+            raise ValueError("Bad parameter field '%s'; has no equal '%s'" % (p_, EQ))
+        k, v = p_.split(EQ, 1)
+        kv[k] = v
+    # collect the values for keys-of-interest
+    ret = list()
+    for kr in keys_ret:
+        if kr not in kv.keys():
+            raise ValueError(
+                "Parameter '%s' not in parameter string '%s'"
+                % (
+                    kr,
+                    parm_str[0:1000],
+                )
+            )
+        ret.append(kv[kr])
+    # return as tuple
+    return tuple(ret)
+
+
+def preferences_file() -> (Path, typing.Any):
+    """
+    find the most suitable `pypref` Preferences path
+    """
+    # Linux
+    home = Path.home()
+    tmpd = Path(tempfile.gettempdir())
+    # Windows
+    localappdata = os.environ.get("LOCALAPPDATA")
+    if localappdata:
+        localappdata = Path(localappdata)
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        appdata = Path(appdata)
+    # search in order of preferred path
+    for configd in (
+        localappdata,
+        appdata,
+        home.joinpath(".config"),
+        home,
+        tmpd,
+    ):
+        if not configd:
+            continue
+        if configd.is_dir() and os.access(configd, os.W_OK):
+            break
+        configd = None
+    if not configd:
+        raise RuntimeError("No writeable preferences directory found")
+
+    # https://bachiraoun.github.io/pypref/
+    from pypref import Preferences
+
+    pref = Preferences(filename=str(PREFERENCE_FILE_NAME), directory=str(configd))
+    path_ = configd.joinpath(PREFERENCE_FILE_NAME)
+    return path_, pref
 
 
 #
@@ -857,15 +937,18 @@ class ImageSearcher(abc.ABC):
     #            what technique can abstract a @property now?
     @abc.abstractmethod
     def search_medium(self) -> SearcherMedium:
-        pass
+        # pass
+        raise NotImplementedError("child class failed to implement abstractmethod")
 
     @abc.abstractmethod
-    def go(self) -> typing.Union[Result, None]:
-        pass
+    def go(self) -> Optional[Result]:
+        # pass
+        raise NotImplementedError("child class failed to implement abstractmethod")
 
     @abc.abstractmethod
     def search_album_image(self) -> bytes:
-        pass
+        # pass
+        raise NotImplementedError("child class failed to implement abstractmethod")
 
     @staticmethod
     def download_url(url: URL, log_: logging.Logger) -> bytes:
@@ -887,13 +970,18 @@ class ImageSearcher(abc.ABC):
         return response.read()
 
     def write_album_image(self, image_path: Path) -> Result:
-        """Write `self.image_bytes` to Path `image_path`
+        """
+        Write `self._image_bytes` to passed Path `image_path`
 
         :param image_path: full file path to image file
         """
-        assert self._image_bytes, (
-            "Error: self._image_bytes not set. Was " "%s.search_album_image called?" % self.NAME
-        )
+        if not self._image_bytes:
+            emsg = (
+                "self._image_bytes not set, skip writing album image for %s . Was %s.search_album_image called?"
+                % (str_ArtAlb(self.artalb), self.NAME)
+            )
+            self._log.warning(emsg)
+            return Result.Error(self.artalb, self, image_path, emsg)
 
         if image_path.exists() and not self.wropts.overwrite:
             result = Result.SkipDueToNoOverwrite(
@@ -930,7 +1018,7 @@ class ImageSearcher_Medium_Network(ImageSearcher):
     # @abc.abstractclassmethod  # XXX: deprecated, what is an alternative?
     @classmethod
     def provider(cls) -> str:
-        pass
+        raise NotImplementedError("child class failed to implement abstractmethod")
 
 
 class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
@@ -951,18 +1039,13 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     NAME = __qualname__
 
     def __init__(
-        self,
-        artalb: ArtAlb,
-        image_type: ImageType,
-        image_path: Path,
-        wropts: WrOpts,
-        loglevel: int,
+        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
         self.copy_src = None
         self.copy_dst = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
 
-    def _match_likely_name(self, files: typing.Sequence[Path]) -> typing.Union[None, Path]:
+    def _match_likely_name(self, files: typing.Sequence[Path]) -> Optional[Path]:
         """
         Given a sequence of image files (Paths), find the most likely album cover
         match by analyzing the image file name.
@@ -1131,7 +1214,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
         return copy_src
 
     @overrides(ImageSearcher)
-    def go(self) -> typing.Union[Result, None]:
+    def go(self) -> Optional[Result]:
         if not self.search_album_image():
             return None
         return self.write_album_image()
@@ -1239,12 +1322,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
     NAME = __qualname__
 
     def __init__(
-        self,
-        artalb: ArtAlb,
-        image_type: ImageType,
-        image_path: Path,
-        wropts: WrOpts,
-        loglevel: int,
+        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
         self.copy_dst = image_path
         self.image_type_PIL = None
@@ -1253,7 +1331,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
         super().__init__(artalb, image_type, wropts, loglevel)
 
     @overrides(ImageSearcher)
-    def go(self) -> typing.Union[Result, None]:
+    def go(self) -> Optional[Result]:
         if not self.search_album_image():
             return None
         return self.write_album_image()
@@ -1387,7 +1465,7 @@ class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
         return "Google"
 
     @overrides(ImageSearcher)
-    def go(self) -> typing.Union[Result, None]:
+    def go(self) -> Optional[Result]:
         if not self.search_album_image():
             return None
         return self.write_album_image(self.image_path)
@@ -1492,12 +1570,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
     NAME = __qualname__
 
     def __init__(
-        self,
-        artalb: ArtAlb,
-        image_type: ImageType,
-        image_path: Path,
-        wropts: WrOpts,
-        loglevel: int,
+        self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
         self.image_path = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
@@ -1508,7 +1581,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         return "musicbrainz.org"
 
     @overrides(ImageSearcher)
-    def go(self) -> typing.Union[Result, None]:
+    def go(self) -> Optional[Result]:
         if not self.search_album_image():
             return None
         return self.write_album_image(self.image_path)
@@ -1574,15 +1647,12 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return False
         if type(artist_list) is not dict:
             self._log.debug(
-                'search_artists("%s") returned unexpected type %s',
-                artist,
-                type(artist_list),
+                'search_artists("%s") returned unexpected type %s', artist, type(artist_list)
             )
             return False
         if "artist-list" not in artist_list:
             self._log.debug(
-                'search_artists("%s") results do not include an ' '"artist-list" entry',
-                artist,
+                'search_artists("%s") results do not include an ' '"artist-list" entry', artist
             )
             return False
         if len(artist_list["artist-list"]) < 1:
@@ -1615,23 +1685,17 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return False
         if type(releases) is not dict:
             self._log.debug(
-                'browse_releases("%s") returned unexpected type %s',
-                artist_id,
-                type(releases),
+                'browse_releases("%s") returned unexpected type %s', artist_id, type(releases)
             )
             return False
         if "release-list" not in releases:
             self._log.debug(
-                'browse_releases("%s") results do not include a ' '"release-list" entry',
-                artist_id,
+                'browse_releases("%s") results do not include a ' '"release-list" entry', artist_id
             )
             return False
 
         possible = list(
-            filter(
-                lambda rle: similar(rle["title"], album) >= 0.4,
-                releases["release-list"],
-            )
+            filter(lambda rle: similar(rle["title"], album) >= 0.4, releases["release-list"])
         )
         self._log.debug('· mb.browse_release_groups(artist="%s", limit=500)', artist_id)
         release_groups = mb.browse_release_groups(artist=artist_id, limit=100)
@@ -1641,15 +1705,6 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
                 release_groups["release-group-list"],
             )
         )
-
-        # filter possible based on whether cover-art is actually available
-        possible = [
-            el
-            for el in possible
-            if "cover-art-archive" in el
-               and "artwork" in el["cover-art-archive"]
-               and el["cover-art-archive"]["artwork"] == "true"
-        ]
 
         # store tuple pairs of (`similar` score, release/release_group entry)
 
@@ -1677,23 +1732,15 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         try:
             self._log.debug('· mb.get_image_list("%s")', album_id)
             image_list = mb.get_image_list(album_id)
-        except (
-            musicbrainzngs.musicbrainz.ResponseError,
-            musicbrainzngs.musicbrainz.NetworkError,
-        ):
+        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
             self._log.debug('Exception during get_image_list("%s")', album_id, exc_info=True)
             pass
         try:
             self._log.debug('· mb.get_release_group_image_list("%s")', album_id)
             image_list.update(mb.get_release_group_image_list(album_id))
-        except (
-            musicbrainzngs.musicbrainz.ResponseError,
-            musicbrainzngs.musicbrainz.NetworkError,
-        ):
+        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
             self._log.debug(
-                'Exception during get_release_group_image_list("%s")',
-                album_id,
-                exc_info=True,
+                'Exception during get_release_group_image_list("%s")', album_id, exc_info=True
             )
             pass
 
@@ -1723,7 +1770,763 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         return True if self._image_bytes else False
 
 
+# discogs HTTP requests must handle rate-limit
+# this is a slightly inefficient way to simplify handling the rate-limit response value
+Discogs_Request_Lock = threading.RLock()
+
+
+class Discogs_Downloader(abc.ABC):
+    """
+    "Interface" class for discogs.com album image downloads and API interaction.
+
+    Inheriting classes must implement the underlying authentication mechanism, HTTP
+    session handling, and @override the @abc.abstractmethod.
+    """
+
+    NAME = __qualname__
+
+    HEADER_ACCEPT = "application/vnd.discogs.v2.plaintext+json"
+
+    """
+    from https://www.discogs.com/developers/#page:database,header:database-search
+
+        /database/search?q={query}&{?type,title,release_title,credit,artist,anv,label,genre,style,country,year,format,catno,barcode,track,submitter,contributor}
+    """
+    URL_SEARCH = "https://api.discogs.com/database/search"
+
+    """
+    Requests are throttled by the server by source IP to 60 per minute for authenticated
+    requests, and 25 per minute for unauthenticated requests, with some exceptions.
+    Example rate-limit response headers:
+
+        X-Discogs-Ratelimit: 60
+        X-Discogs-Ratelimit-Remaining: 57
+        X-Discogs-Ratelimit-Used: 3
+
+    See https://www.discogs.com/developers/#page:home,header:home-rate-limiting
+
+    Because of rate-limiting, a global `Discogs_Request_Lock` is used to coordinate
+    Discogs requests, and the necessary sleeps when the X-Discogs-Ratelimit-Used goes to 0.
+    If not for the rate-limiting, this class could just use then requests.Session
+    to handle the multi-threaded requests.
+    Currently, this causes only one discogs.com HTTP request to occur at a time, which is
+    somewhat inefficient but also easiest to implement.
+    """
+    k_header_ratelimit = "X-Discogs-Ratelimit"
+    k_header_ratelimit_remain = "X-Discogs-Ratelimit-Remaining"
+    k_header_ratelimit_used = "X-Discogs-Ratelimit-Used"
+    Ratelimit_Reset_Wait = 60 + 1  # wait time in seconds
+
+    """
+    class-wide requests.Session
+    requests.Session underlying implementation users urllib3.HTTPConnectionPool which is thread-safe
+    from https://urllib3.readthedocs.io/en/latest/reference/urllib3.connectionpool.html
+
+         Thread-safe connection pool for one host.
+    """
+    __Session = requests.Session()
+    __Session.rate_limit_time_last = float(0)
+
+    def __init__(self, loglevel: int):
+        self._logname = self.NAME + "(0x%08x)" % id(self)
+        self._log = log_new(LOGFORMAT, loglevel, self._logname)
+        self._log.debug("class-wide requests.Session object @0x%08X", id(self._session))
+
+    @property
+    def _session(self) -> requests.Session:
+        return self.__Session
+
+    def _ratelimit_wait(self) -> None:
+        if self._session.rate_limit_time_last != 0:
+            wait_another = Discogs_Downloader.Ratelimit_Reset_Wait - (
+                time.time() - self._session.rate_limit_time_last
+            )
+            self._log.debug("Waiting %.3fs to so Discogs servers reset rate-limit…", wait_another)
+            while Discogs_Downloader.Ratelimit_Reset_Wait > (
+                time.time() - self._session.rate_limit_time_last
+            ):
+                time.sleep(1)
+            self._session.rate_limit_time_last = float(0)
+            self._log.debug("Session.rate_limit_time_last has been reset to 0")
+        else:
+            self._log.debug("Session.rate_limit_time_last is 0; skip waiting")
+
+    def _ratelimit_update(self, remain: Optional[int]) -> None:
+        self._log.debug("X-Discogs-Ratelimit-Remaining is %s", remain)
+        if remain is None or remain > 1:
+            return
+        self._session.rate_limit_time_last = time.time()
+        self._log.debug("Updated Discogs wait time to %.3f", self._session.rate_limit_time_last)
+
+    def _do_request(self, request: requests.Request) -> requests.Response:
+        """
+        safe-wrapper for `self.__do_request_unsafe`
+        """
+        global Discogs_Request_Lock
+        self._log.debug("Discogs_Request_Lock.acquire()…")
+        if not Discogs_Request_Lock.acquire():
+            raise RuntimeError("Failed to Discogs_Request_Lock.acquire() during _ratelimit_wait")
+        try:
+            self._log.debug("Discogs_Request_Lock.acquired")
+            response = self.__do_request_unsafe(request)
+        finally:
+            self._log.debug("Discogs_Request_Lock.release()")
+            Discogs_Request_Lock.release()
+        return response
+
+    def __do_request_unsafe(self, request: requests.Request) -> requests.Response:
+        """
+        Perform an HTTP Request with much debug logging.
+        Handles discogs.com rate-limit throttling.
+        """
+        prequest = request.prepare()
+
+        self._ratelimit_wait()
+
+        headers_text = ""
+        if self._log.isEnabledFor(logging.DEBUG):
+            headers_text = pformat(
+                [(h + ": " + v) for h, v in prequest.headers.items()], indent=4, sort_dicts=True
+            ).replace("\n", "\n\t")
+        self._log.debug(
+            """
+request:
+    method: %s
+    url: '%s'
+    all headers:
+        %s
+    body:
+        %s
+""",
+            prequest.method,
+            prequest.url,
+            headers_text,
+            prequest.body,
+        )
+
+        response = self._session.send(prequest)  # type: requests.Response
+
+        h_content_length = "Content-Length"
+        content_length = ""
+        try:
+            content_length = response.headers[h_content_length]
+            content_length = content_length
+        except KeyError:
+            self._log.debug("Header '%s' not found", h_content_length)
+
+        h_content_type = "Content-Type"
+        content_type = ""
+        try:
+            content_type = response.headers[h_content_type]
+        except KeyError:
+            self._log.debug("Header '%s' not found", h_content_type)
+
+        headers_text = ""
+        if self._log.isEnabledFor(logging.DEBUG):
+            headers_text = pformat(
+                [(h + ": " + v) for h, v in response.headers.items()], indent=4, sort_dicts=True
+            ).replace("\n", "\n\t")
+        debug_text = ""
+        if self._log.isEnabledFor(logging.DEBUG):
+            # TODO: match smaller set of printable types, instead of matching large set of non-printable
+            if content_type.startswith("image/"):
+                debug_text = "*binary image data*"
+            else:
+                debug_text = response.text[0:5000].replace("\n", "\n\t").strip()
+        self._log.debug(
+            """
+response:
+    url: '%s'
+    status_code: %s
+    reason: %s
+    encoding: %s
+    content-type: %s
+    content-length: %s
+    all headers:
+        %s
+    text:
+        %s
+""",
+            response.url,
+            response.status_code,
+            response.reason,
+            response.encoding,
+            content_type,
+            content_length,
+            headers_text,
+            debug_text,
+        )
+
+        if not Discogs_Downloader.is_response_success(response):
+            self._log.error(
+                "Discogs request returned %s %s for '%s'",
+                response.status_code,
+                response.reason,
+                prequest.url,
+            )
+
+        remain = None
+        try:
+            if Discogs_Downloader.k_header_ratelimit_remain in response.headers:
+                remain = int(response.headers[Discogs_Downloader.k_header_ratelimit_remain])
+        except Exception:
+            self._log.exception("failed to parse X-Discogs-Ratelimit headers")
+            return response
+
+        self._ratelimit_update(remain)
+
+        return response
+
+    @staticmethod
+    def _search_url_assemble(artalb: ArtAlb) -> str:
+        """
+        return URL for searching discogs for given ArtAlb
+        see https://www.discogs.com/developers/#page:database,header:database-search
+        """
+        return (
+            Discogs_Downloader.URL_SEARCH
+            + "?"
+            + "&".join(
+                (
+                    "type=release",
+                    "artist=" + urllib.parse.quote_plus(artalb[0]),
+                    "release_title=" + urllib.parse.quote_plus(artalb[1]),
+                    # rely on discogs.com sorting to have the first entry in the search
+                    # be the most relevant
+                    # see https://www.discogs.com/developers/#page:home,header:home-pagination
+                    "page=1",
+                    "per_page=1",
+                ),
+            )
+        )
+
+    @staticmethod
+    def extract_cover_image(json_str: str, log_: logging.Logger) -> Optional[str]:
+        """
+        Navigate JSON string returned from a search response.
+        Return the value of `cover_image` or `thumb`, prefer `cover_image`.
+        The returned value should be a URL as a string.
+        Return None if anything unexpected occurs.
+
+        example JSON response for GET https://api.discogs.com/database/search?type=release&artist=Bob+Dylan&release_title=Highway+61+Revisited&page=2&per_page=1
+
+        {'pagination': {'items': 351,
+                        'page': 1,
+                        'pages': 351,
+                        'per_page': 1,
+                        'urls': {'first': 'https://api.discogs.com/database/search?type=release&artist=Bob+Dylan&release_title=Highway+61+Revisited&page=1&per_page=1',
+                                 'last': 'https://api.discogs.com/database/search?type=release&artist=Bob+Dylan&release_title=Highway+61+Revisited&page=351&per_page=1',
+                                 'next': 'https://api.discogs.com/database/search?type=release&artist=Bob+Dylan&release_title=Highway+61+Revisited&page=3&per_page=1',
+                                 'prev': 'https://api.discogs.com/database/search?type=release&artist=Bob+Dylan&release_title=Highway+61+Revisited&page=1&per_page=1'}},
+         'results': [{'barcode': ['ASCAP',
+                                  '7',
+                                  'XSM 110640',
+                                  'XSM 110641',
+                                  'XSM110640 1A',
+                                  'XSM110641 1A',
+                                  'XSM110640 1B',
+                                  'XSM110641 1B'],
+                      'catno': 'CS 9189',
+                      'community': {'have': 1750, 'want': 1193},
+                      'country': 'US',
+                      'cover_image': 'https://img.discogs.com/ES6RsrOk7uWbQJ-lqyc-kfkzREc=/fit-in/600x604/filters:strip_icc():format(jpeg):mode_rgb():quality(90)/discogs-images/R-3336238-1436579911-6632.jpeg.jpg',
+                      'format': ['Vinyl', 'LP', 'Album', 'Stereo'],
+                      'format_quantity': 1,
+                      'formats': [{'descriptions': ['LP', 'Album', 'Stereo'],
+                                   'name': 'Vinyl',
+                                   'qty': '1',
+                                   'text': 'Alternate Take Of "From A Buick 6"'}],
+                      'genre': ['Rock'],
+                      'id': 3336238,
+                      'label': ['Columbia',
+                                'Bob Dylan',
+                                'Customatrix',
+                                'M. Witmark & Sons'],
+                      'master_id': 3986,
+                      'master_url': 'https://api.discogs.com/masters/3986',
+                      'resource_url': 'https://api.discogs.com/releases/3336238',
+                      'style': ['Blues Rock', 'Folk Rock'],
+                      'thumb': 'https://img.discogs.com/xKdGaGmgnus0YwZRqC3ut-flF4E=/fit-in/150x150/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-3336238-1436579911-6632.jpeg.jpg',
+                      'title': 'Bob Dylan - Highway 61 Revisited',
+                      'type': 'release',
+                      'uri': '/release/3336238-Bob-Dylan-Highway-61-Revisited',
+                      'user_data': {'in_collection': False, 'in_wantlist': False},
+                      'year': '1965'}]}
+        """
+
+        resp_json = dict()
+        try:
+            resp_json = json.loads(json_str)  # type: dict
+            log_.debug("JSON:\n%s", pformat(resp_json).replace("\n", "\n\t").strip())
+        except Exception as ex:
+            log_.warning("Response fails to parse as json %s", ex)
+            return
+        cover_image_url = None
+        try:
+            results = resp_json["results"]
+            if not results:
+                log_.debug("'results' is empty")
+                return
+            result0 = results[0]
+            # prefer the `cover_image` image but fallback to `thumb` image
+            if "cover_image" in result0:
+                cover_image_url = result0["cover_image"]
+            elif "thumb" in result0:
+                cover_image_url = result0["thumb"]
+        except Exception as ex:
+            log_.warning("Request response fails to find expected json structure %s", ex)
+            return
+
+        return cover_image_url
+
+    @staticmethod
+    def is_response_success(response: requests.Response):
+        return 200 <= response.status_code < 300
+
+    @abc.abstractmethod
+    def download_album_cover(self, artalb: ArtAlb) -> Optional[bytes]:
+        raise NotImplementedError(
+            "child class failed to implement @abc.abstractmethod" " 'download_album_cover'"
+        )
+
+
+class Discogs_Downloader_PAT(Discogs_Downloader):
+    """
+    Download images from discogs.com using Personal Access Token authentication.
+    Handles PAT authentication header.
+
+    "Personal Access Token" can be generated from
+    https://www.discogs.com/settings/developers (requires login)
+    """
+
+    NAME = __qualname__
+
+    def __init__(self, discogs_token: str, *args: Tuple[typing.Any]):
+        self.pat_token = discogs_token
+        super().__init__(*args)
+
+    @staticmethod
+    def _headers(pat_token: str) -> Headers:
+        """
+        return HTTP headers for a request
+
+        See https://www.discogs.com/developers/#page:authentication,header:authentication-discogs-auth-flow
+        """
+        return Headers({"Authorization": "Discogs token=%s" % (pat_token,)})
+
+    @overrides(Discogs_Downloader)
+    def download_album_cover(self, artalb: ArtAlb) -> Optional[bytes]:
+        self._log.debug("%s.download_album_cover(%s)", self.NAME, artalb)
+        url = self._search_url_assemble(artalb)
+        request1 = requests.Request(method=HTTP_GET, url=url, headers=self._headers(self.pat_token))
+        self._log.info("HTTP Request '%s'", request1.url)
+        response1 = self._do_request(request1)
+        if not Discogs_Downloader.is_response_success(response1):
+            return
+        cover_image_url = Discogs_Downloader.extract_cover_image(response1.text, self._log)
+        if cover_image_url:
+            request2 = requests.Request(
+                method=HTTP_GET,
+                url=cover_image_url,
+                headers=self._headers(self.pat_token),
+            )
+            self._log.info("HTTP Request '%s'", request2.url)
+            response2 = self._do_request(request2)
+            if not Discogs_Downloader.is_response_success(response2):
+                return
+            return response2.content
+        return
+
+
+# global thread lock for all `Discogs_Downloader_OAuth` instances
+# XXX: should this declaration be moved to within the class?
+Discogs_Oauth_Prefs_Mutex = threading.Lock()
+
+
+class Discogs_Downloader_OAuth(Discogs_Downloader):
+    """
+    XXX: INCOMPLETE: Consumer Key and Consumer Secret are hardcoded to erroneous values.
+                     This authentication method, OAuth 1.0a, remains mostly completed but not
+                     plumbed end-to-end.
+
+    Download images from discogs.com using OAuth authentication.
+    Handles OAuth authentication, caching, and other varied HTTP requests.
+
+    See https://www.discogs.com/developers (https://archive.ph/onn00)
+
+    TODO: identity test is still done once per class instance. Only needs to be done
+          once per set of Oauth credentials (effectively, once for the entire process run)
+    """
+
+    NAME = __qualname__
+
+    """
+    URLs from https://www.discogs.com/developers/#page:authentication,header:authentication-discogs-auth-flow
+    """
+    URL_REQUEST_TOKEN = "https://api.discogs.com/oauth/request_token"
+    URL_AUTHORIZE = "https://www.discogs.com/oauth/authorize"
+    URL_ACCESS_TOKEN = "https://api.discogs.com/oauth/access_token"
+    URL_IDENTITY = "https://api.discogs.com/oauth/identity"
+    """
+    values from https://www.discogs.com/applications/edit/24597 (requires app owner login)
+    """
+    # XXX: hardcoded erroneous values, must manually override to use this
+    #      Oauth 1.0a authentication
+    DISCOGS_CONSUMER_KEY = "Erroneous Consumer Key"
+    DISCOGS_CONSUMER_SECRET = "Erroneous Consumer Secret"
+
+    def __init__(self, *args: Tuple[typing.Any]):
+        super().__init__(*args)
+        self._oauth = dict()
+        self._oauth.update(
+            {
+                "consumer_key": self.DISCOGS_CONSUMER_KEY,
+                "consumer_secret": self.DISCOGS_CONSUMER_SECRET,
+            }
+        )
+        self.__identity_test = False
+
+    @staticmethod
+    def _headers(**kwargs) -> Headers:
+        headers = {
+            "Accept": Discogs_Downloader_OAuth.HEADER_ACCEPT,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "User-Agent": __product_token__,
+        }
+        header_value_oauth = Discogs_Downloader_OAuth._oauth_header_create(**kwargs)
+        headers["Authorization"] = header_value_oauth
+        return Headers(headers)
+
+    @staticmethod
+    def _oauth_header_create(
+        consumer_key: str = "",
+        consumer_secret: str = "",
+        oauth_token: str = "",
+        oauth_token_secret: str = "",
+        oauth_callback: str = "",
+        oauth_verifier: str = "",
+    ):
+        """
+        from https://oauth.net/core/1.0/#nonce
+
+            The Consumer SHALL then generate a Nonce value that is unique
+            for all requests with that timestamp.
+        """
+        ts = datetime.datetime.now(tz=datetime.timezone.utc).timestamp()
+        oauth_nonce = ts
+        oath_timestamp = int(ts)
+
+        oauth_consumer_key = consumer_key
+
+        """
+        from https://www.discogs.com/developers/#page:authentication
+
+            This is an explanation of how a web application may work with Discogs
+            using OAuth 1.0a.
+        """
+        oath_version = "1.0a"
+
+        """
+        from https://www.discogs.com/developers/#page:authentication,header:authentication-oauth-flow
+
+            we suggest sending requests with HTTPS and the PLAINTEXT signature method over HMAC-SHA1
+            due to its simple yet secure nature. This involves setting your oauth_signature_method to
+            “PLAINTEXT” and your oauth_signature to be your consumer secret followed by an
+            ampersand (&).
+        """
+        oauth_signature_method = "PLAINTEXT"
+        oauth_signature = consumer_secret + "&"
+        if oauth_token_secret:
+            oauth_signature += oauth_token_secret
+
+        header_value_oauth = """\
+OAuth \
+oath_version={oath_version}, \
+oauth_nonce="{oauth_nonce}", \
+oauth_timestamp="{oath_timestamp}", \
+oauth_consumer_key="{oauth_consumer_key}", \
+oauth_signature_method="{oauth_signature_method}", \
+oauth_signature="{oauth_signature}"\
+""".format(
+            oath_version=oath_version,
+            oauth_nonce=oauth_nonce,
+            oath_timestamp=oath_timestamp,
+            oauth_consumer_key=oauth_consumer_key,
+            oauth_signature_method=oauth_signature_method,
+            oauth_signature=oauth_signature,
+        )
+        if oauth_callback:
+            header_value_oauth += ', oauth_callback="{oauth_callback}"'.format(
+                oauth_callback=oauth_callback
+            )
+        if oauth_token:
+            header_value_oauth += ', oauth_token="{oauth_token}"'.format(oauth_token=oauth_token)
+        if oauth_verifier:
+            header_value_oauth += ', oauth_verifier="{oauth_verifier}"'.format(
+                oauth_verifier=oauth_verifier
+            )
+        return header_value_oauth
+
+    def __oauth_establish_unsafe(self) -> None:
+        """
+        Discogs images download requires authentication (i.e. user login and app credentials)
+        from https://www.discogs.com/developers/#page:images
+
+            Image requests require authentication and are subject to rate limiting.
+        """
+        self._log.debug("→ __oauth_establish_unsafe()")
+
+        k_oauth_token = "oauth_token"
+        k_oauth_token_secret = "oauth_token_secret"
+
+        self._log.debug("Searching for preferences file…")
+        prefs_path, prefs = preferences_file()
+        pf = str(prefs).strip().replace("\r", "").replace("\n", "\n\t")
+        self._log.debug("Preferences (%s):\n\t%s", prefs_path, pf)
+        oauth_token = prefs.get(k_oauth_token)
+        oauth_token_secret = prefs.get(k_oauth_token_secret)
+        if oauth_token and oauth_token_secret:
+            self._log.info("Prior OAuth credentials will be used")
+            self._oauth.update(
+                {
+                    k_oauth_token: oauth_token,
+                    k_oauth_token_secret: oauth_token_secret,
+                }
+            )
+            self._log.debug("← __oauth_establish_unsafe()")
+            return
+        # self-check
+        if (oauth_token and not oauth_token_secret) or (not oauth_token and oauth_token_secret):
+            self._log.warning(
+                "unexpected oauth_token '%s' yet oauth_token_secret '%s'",
+                oauth_token,
+                oauth_token_secret,
+            )
+
+        self._log.debug("import %s version %s", requests.__name__, requests.__version__)
+        self._log.debug("requests User-Agent: %s", __product_token__)
+
+        """
+        from https://www.discogs.com/applications/edit/24597
+
+            Callback URL (optional)
+                Where should the user be directed after authorization?
+                OAuth 1.0a applications should provide an oauth_callback during the request token step
+                regardless of what's entered here.
+        """
+        oauth_callback = "https://api.discogs.com/oauth/identity"
+        # using `oauth_callback = https://api.discogs.com/oauth/identity` results in redirect to page with JSON body
+        #    {"message": "You must authenticate to access this resource."}
+        """
+        from https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_1_flows.htm&type=5
+
+            oob = Out Of Band
+        """
+        oauth_callback = "oob"
+        request1 = requests.Request(
+            method=HTTP_POST,
+            url=self.URL_REQUEST_TOKEN,
+            headers=self._headers(**self._oauth, oauth_callback=oauth_callback),
+        )
+        response1 = self._do_request(request1)
+        """
+        response body example:
+
+            oauth_token=EvbRqfuLpPugOtKUciplzRitBSnYtzLvxZqPtIYY&oauth_token_secret=nglMVUAClSnrxzxhNvGCZeBhvVvbBwrEUWUfltyH&oauth_callback_confirmed=true
+
+        response body as one field per line:
+            oauth_token=EvbRqfuLpPugOtKUciplzRitBSnYtzLvxZqPtIYY
+            oauth_token_secret=nglMVUAClSnrxzxhNvGCZeBhvVvbBwrEUWUfltyH
+            oauth_callback_confirmed=true
+        """
+        if not Discogs_Downloader.is_response_success(response1):
+            raise ConnectionRefusedError(
+                "Discogs API returned HTTP %s %s, refused OAuth request for a token '%s'"
+                % response1.status_code,
+                response1.reason,
+                request1.url,
+            )
+        oauth_token, oauth_token_secret = split_parameters(
+            response1.text, [k_oauth_token, k_oauth_token_secret]
+        )
+        self._oauth.update(
+            {
+                k_oauth_token: oauth_token,
+                k_oauth_token_secret: oauth_token_secret,
+            }
+        )
+
+        url_auth = "https://discogs.com/oauth/authorize?oauth_token=" + oauth_token
+        print("Authorize this application by browsing to", url_auth)
+        """
+        discogs page in user browser should display HTML that reads:
+
+            Authorization successful
+            If the application asks you for a code, enter the following:
+                iHCGVwxCBg
+            You can now close this window.
+
+        code will vary.
+        """
+        print("Enter the code displayed: ", end="")
+        oauth_verifier = input()
+        oauth_verifier = oauth_verifier.strip()
+
+        """
+        https://www.discogs.com/developers#page:authentication,header:authentication-oauth-flow
+
+            Send a POST request to the Discogs access token URL
+
+        https://www.discogs.com/forum/thread/402590
+
+            be sure that your oauth_timestamp is dynamically generated at the time of the request; the OAuth server we
+            use returns 401s if these timestamps are too old (5 minutes, I believe).
+        """
+        headers2 = self._headers(
+            **self._oauth,
+            oauth_verifier=oauth_verifier,
+        )
+        request2 = requests.Request(
+            method=HTTP_POST,
+            url=self.URL_ACCESS_TOKEN,
+            headers=headers2,
+        )
+        response2 = self._do_request(request2)
+        if not Discogs_Downloader.is_response_success(response2):
+            raise ConnectionRefusedError(
+                "Discogs API returned HTTP %s %s, refused OAuth access of a token '%s'"
+                % (
+                    response1.status_code,
+                    response1.reason,
+                    request2.url,
+                )
+            )
+        """
+        https://www.discogs.com/developers/#page:authentication,header:authentication-oauth-flow
+
+            A successful request will return a response that contains an OAuth access token
+            (oauth_token) and an OAuth access token secret (oauth_token_secret). These tokens
+            do not expire (unless the user revokes access from your app), so you should store
+            these tokens in a database or persistent storage to make future requests signed
+            with OAuth. All requests that require OAuth will require these two tokens to be
+            sent in the request.
+
+        response body example:
+
+            oauth_token=PJpiKwdfmPtHmJEJfiZDhJgThUOncATSgGJvjvcs&oauth_token_secret=GSutOLUpEALwOBLursEBvQLSsRaxKMiIPjJYdVqr
+
+        response body example one field per line:
+
+            oauth_token=PJpiKwdfmPtHmJEJfiZDhJgThUOncATSgGJvjvcs
+            oauth_token_secret=GSutOLUpEALwOBLursEBvQLSsRaxKMiIPjJYdVqr
+
+        """
+        oauth_token, oauth_token_secret = split_parameters(
+            response2.text, [k_oauth_token, k_oauth_token_secret]
+        )
+        tokens = {
+            k_oauth_token: oauth_token,
+            k_oauth_token_secret: oauth_token_secret,
+        }
+        self._log.debug("set_preferences(%s)", tokens)
+        prefs.set_preferences(preferences=tokens)
+        self._log.info("New OAuth credentials established, saved in '%s'", prefs_path)
+        self._oauth.update(tokens)
+        self._log.debug("← __oauth_establish_unsafe()")
+
+    def _oauth_establish(self) -> None:
+        """
+        call `self.__oauth_establish_unsafe` wrapping call with lock of mutex
+        """
+        global Discogs_Oauth_Prefs_Mutex
+        if not Discogs_Oauth_Prefs_Mutex.acquire():
+            raise RuntimeError("Failed Discogs_Oauth_Prefs_Mutex.acquire()")
+        try:
+            self.__oauth_establish_unsafe()
+        finally:
+            Discogs_Oauth_Prefs_Mutex.release()
+
+    def _oauth_identity_test(self) -> bool:
+        """
+        Establish OAuth credentials and then test that OAuth credentials are functioning
+        by doing a simple user identity request.
+        https://www.discogs.com/developers/#page:user-identity,header:user-identity-identity
+
+            You can use this resource to find out who you’re authenticated as,
+            and it also doubles as a good sanity check to ensure that you’re using OAuth correctly.
+
+        TODO: only do identity test once per process
+        """
+        if self.__identity_test:
+            self._log.debug("_oauth_identity_test already passed; skip")
+            return True
+
+        self._log.debug("→ _oauth_identity_test()")
+
+        self._oauth_establish()
+        request = requests.Request(
+            method=HTTP_GET,
+            url=self.URL_IDENTITY,
+            headers=self._headers(**self._oauth),
+        )
+        self._log.info(
+            "Request identity URL '%s' to verify Discogs OAuth Credentials", self.URL_IDENTITY
+        )
+        response = self._do_request(request)
+        if not Discogs_Downloader.is_response_success(response):
+            self._log.warning(
+                "Discogs identity request '%s' returned %s %s, something is wrong with Oauth Credentials",
+                self.URL_IDENTITY,
+                response.status_code,
+                response.reason,
+            )
+            self._log.debug("← _oauth_identity_test()")
+            return False
+        self._log.info("Discogs OAuth Credentials satisfied identity request:\n\t%s", response.text)
+        self.__identity_test = True
+        self._log.debug("← _oauth_identity_test()")
+        return True
+
+    @overrides(Discogs_Downloader)
+    def download_album_cover(self, artalb: ArtAlb) -> Optional[bytes]:
+        """
+        construct an album-oriented search query, search discogs, find the image URL for the most
+        likely candidate album.
+        API description https://www.discogs.com/developers/#page:database,header:database-search
+
+        Return album cover image as `bytes`, failure returns `None`
+        """
+        self._log.debug("%s.download_album_cover(%s)", self.NAME, artalb)
+
+        if not self._oauth_identity_test():
+            return
+
+        url = self._search_url_assemble(artalb)
+        request1 = requests.Request(
+            method=HTTP_GET,
+            url=url,
+            headers=self._headers(**self._oauth),
+        )
+        self._log.info("HTTP Request '%s'", request1.url)
+        response1 = self._do_request(request1)
+        if not Discogs_Downloader.is_response_success(response1):
+            return
+        cover_image_url = Discogs_Downloader.extract_cover_image(response1.text, self._log)
+        if cover_image_url:
+            request2 = requests.Request(
+                method=HTTP_GET,
+                url=cover_image_url,
+                headers=self._headers(**self._oauth),
+            )
+            self._log.info("HTTP Request '%s'", request2.url)
+            response2 = self._do_request(request2)
+            if not Discogs_Downloader.is_response_success(response2):
+                return
+            return response2.content
+
+
 class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
+
     NAME = __qualname__
 
     def __init__(
@@ -1731,11 +2534,16 @@ class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
         artalb: ArtAlb,
         image_type: ImageType,
         image_path: Path,
+        discogs_args: Discogs_Args,
         wropts: WrOpts,
         loglevel: int,
     ):
         self.image_path = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
+        # self.discogs_downloader = Discogs_Downloader_OAuth(loglevel)
+        self.discogs_downloader = Discogs_Downloader_PAT(
+            discogs_args.pat_token, loglevel
+        )  # type: Discogs_Downloader
 
     @classmethod
     # @overrides(ImageSearcher_Medium_Network)
@@ -1743,7 +2551,7 @@ class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
         return "discogs.org"
 
     @overrides(ImageSearcher)
-    def go(self) -> typing.Union[Result, None]:
+    def go(self) -> Optional[Result]:
         if not self.search_album_image():
             return None
         return self.write_album_image(self.image_path)
@@ -1751,61 +2559,23 @@ class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
     @overrides(ImageSearcher)
     def search_album_image(self) -> bool:
         """
-        TODO: INCOMPLETE
-
         TODO: XXX: this does not account for different image types!
                    only returns .jpg
-
         :return: found image or not?
         """
 
         artist = self.artalb[0]
         album = self.artalb[1]
 
-        # if Artist is unknown, the artist search will raise
-        # if not artist:
-        #    return False
-        # if Album is unknown, the image selection will be too broad to be useful
-        # if not album:
-        #    return False
+        # if either Artist or Album is unknown, the image search will be too broad to be useful
+        # XXX: is that true?
+        if not artist or not album:
+            return False
 
-        import discogs_client
+        self._image_bytes = self.discogs_downloader.download_album_cover(self.artalb)
+        # self.write_album_image(self.image_path)
 
-        self._log.debug(
-            "· import %s version %s",
-            discogs_client.__name__,
-            discogs_client.__version__,
-        )
-        self._log.debug("· discogs_client.Client(%s)", __product_token__)
-        dc = discogs_client.Client(__product_token__)
-
-        # consumer authentication
-        consumer_key = "KEY-12345"
-        consumer_secret = "SECRET-123456789"
-        dc.set_consumer_key(consumer_key, consumer_secret)
-
-        # OAuth 1.0 authentication
-        # request_token, request_secret, authorize_url_here = \
-        #    dc.get_authorize_url()
-        # response = urllib.request.urlopen(authorize_url_here, None, 10)
-        # TODO: scrape the button URL
-        #       looks like https://www.discogs.com/oauth/authorize?oauth_token=mktZaADQtxmnodphbaQTbYnBajrKeTPbBXavDsfS
-        #       POST to that URL
-        #       scrape within the response
-        #           <pre class="auth_success_verify_code">eQiqabcoix</pre>
-        #
-        verifier_code_from_response = "abFKei2013d"
-        return False  # XXX: NOT YET FUNCTIONAL
-        access_token_here, access_secret_here = dc.get_access_token(verifier_code_from_response)
-        dc.set_token(access_token_here, access_secret_here)
-
-        # do something useful
-        # art_res = dc.search(artist, type='artist')
-
-        # self._image_bytes = self.download_url(url, self._log)
-
-        # return True if self._image_bytes else False
-        return False
+        return True if self._image_bytes else False
 
 
 def process_dir(
@@ -1864,9 +2634,9 @@ def process_dir(
 
     # read dirp directory contents
     try:
-        log.debug('%s: reading directory "%s"', func_name(), dirp)
+        log.debug('%s: processing directory "%s"', func_name(), dirp)
         for fp in dirp.iterdir():  # 'fp' is a file path
-            log.debug('%s: processing "%s"', func_name(), fp)
+            log.debug('%s: found "%s"', func_name(), fp)
             if fp.is_dir():
                 dirs.append(fp)
             elif fp.is_file():
@@ -1894,9 +2664,7 @@ def process_dir(
     if image_path.exists():
         if not overwrite:
             log.debug(
-                'cover file "%s" exists and no overwrite,' ' skip directory "%s"',
-                image_nt,
-                dirp,
+                'cover file "%s" exists and no overwrite,' ' skip directory "%s"', image_nt, dirp
             )
             r_ = Result.SkipDueToNoOverwrite(
                 artalb=None,
@@ -1909,7 +2677,7 @@ def process_dir(
         else:
             log.debug('cover file "%s" exists and passed --overwrite', image_nt)
 
-    # if `dirp` is already within daa_list then no further processing needed
+    # if dirp is already within daa_list then no further processing needed
     if dirp in [d_[0] for d_ in daa_list]:
         log.warning('directory "%s" already in daa_list', dirp)
         return daa_list
@@ -2013,10 +2781,7 @@ def process_dir(
         except:
             pass
 
-    log.debug(
-        "no Artist or Album found or derived or no suitable media files" ' within "%s"',
-        dirp,
-    )
+    log.debug("no Artist or Album found or derived or no suitable media files" ' within "%s"', dirp)
 
     # XXX: This special case must be handled in implementations of
     #      `search_album_image`. It is used in
@@ -2039,28 +2804,36 @@ def process_dirs(
     image_type: ImageType,
     overwrite: bool,
     result_queue: queue.SimpleQueue,
-) -> Path_List:
+) -> DirArtAlb_List:
     """
     Gather list of directories where Album • Artist info can be derived.
+
+    XXX: `process_dirs` and `process_dir` are inefficient. The "album cover search"
+         tasks are not immediately handed off to the global task queues. Instead,
+         this entire "album directory search phase" done within `process_dirs` must
+         entirely complete before further processing. If this program was to be made
+         faster, then this would be a good place ot start; handing off processing
+         task to the global task queue for each "album directory" found as soon as
+         possible.
     """
-    log.debug("")
+    log.debug("process_dirs()")
 
     daa_list: DirArtAlb_List = []
     for dir_ in dirs:
+        log.debug('process_dirs loop "%s"', dir_)
         d_ = Path(dir_)
         image_nt = image_name + os.extsep + image_type.value
         daal = process_dir(d_, image_nt, overwrite, result_queue, daa_list=[])
         if daal:
             daa_list += daal
-        log.debug("")
 
     # remove duplicates
-    path_list: Path_List = list(set(daa for daa in daa_list))
-    log.debug("directories to process:\n%s", pformat(path_list))
+    daa_list: DirArtAlb_List = list(set(daa for daa in daa_list))
+    log.debug("directories to process:\n\t%s", pformat(daa_list))
     # sort
-    path_list.sort()
+    daa_list.sort()
 
-    return path_list
+    return daa_list
 
 
 disk_semaphore = threading.Semaphore(value=SEMAPHORE_COUNT_DISK)
@@ -2073,6 +2846,7 @@ def search_create_image(
     image_path: Path,
     searches,
     googlecse_opts: GoogleCSE_Opts,
+    discogs_args: Discogs_Args,
     referer: str,
     wropts: WrOpts,
     loglevel: int,
@@ -2088,13 +2862,7 @@ def search_create_image(
     #       command-line arguments passed). Search in order of passed script
     #       options.
 
-    (
-        search_likely,
-        search_embedded,
-        search_musicbrainz,
-        search_discogs,
-        search_googlecse,
-    ) = searches
+    search_likely, search_embedded, search_musicbrainz, search_discogs, search_googlecse = searches
 
     searchers = []
     if search_likely:
@@ -2110,17 +2878,13 @@ def search_create_image(
             ImageSearcher_MusicBrainz(artalb, image_type, image_path, wropts, loglevel)
         )
     if search_discogs:
-        searchers.append(ImageSearcher_Discogs(artalb, image_type, image_path, wropts, loglevel))
+        searchers.append(
+            ImageSearcher_Discogs(artalb, image_type, image_path, discogs_args, wropts, loglevel)
+        )
     if search_googlecse:
         searchers.append(
             ImageSearcher_GoogleCSE(
-                artalb,
-                image_type,
-                image_path,
-                googlecse_opts,
-                referer,
-                wropts,
-                loglevel,
+                artalb, image_type, image_path, googlecse_opts, referer, wropts, loglevel
             )
         )
 
@@ -2190,6 +2954,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue) -> N
                     search_googlecse,
                 ),
                 googlecse_opts,
+                discogs_args,
                 referer,
                 wropts,
                 loglevel,
@@ -2214,6 +2979,7 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue) -> N
                     search_googlecse,
                 ),
                 googlecse_opts,
+                discogs_args,
                 referer,
                 wropts,
                 loglevel,
@@ -2226,23 +2992,25 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue) -> N
         task_queue.task_done()
 
 
-def parse_args_opts(args=None) -> \
+def parse_args_opts(
+    args=None,
+) -> (
+    List[Path],
+    ImageType,
+    str,
     (
-        str,
-        ImageType,
-        str,
-        (
-            bool,
-            bool,
-            bool,
-            bool,
-            bool,
-        ),
-        GoogleCSE_Opts,
-        str,
-        WrOpts,
-        int,
-    ):
+        bool,
+        bool,
+        bool,
+        bool,
+        bool,
+    ),
+    GoogleCSE_Opts,
+    Discogs_Args,
+    str,
+    WrOpts,
+    int,
+):
     """parse command line arguments and options"""
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -2324,7 +3092,7 @@ Audio files supported are %s.""" % ", ".join(
         default=False,
         help="Search for album cover images using all methods and"
         " services that do not require user initialization"
-        " (e.g. no Google CSE).",
+        " (e.g. no Google CSE, no Discogs).",
     )
 
     argg = parser.add_argument_group("Search the local directory for likely" " album cover images")
@@ -2334,11 +3102,11 @@ Audio files supported are %s.""" % ", ".join(
         dest="search_likely",
         action="store_true",
         default=False,
-        help="For any Album directory (a directory with audio media files) but no"
-        ' file "IMAGE_NAME.IMAGE_TYPE", search that directory'
+        help="For any directory with audio media files but no"
+        ' file "IMAGE_NAME.IMAGE_TYPE", search the directory'
         " for files that are likely album cover images. For"
         ' example, given options: --name "cover" --type'
-        ' "jpg", and a directory of .mp3 files with one file'
+        ' "jpg", and a directory of .mp3 files with a file'
         ' "album.jpg", it is reasonable to guess'
         ' "album.jpg" is a an album cover image file. So'
         ' copy file "album.jpg" to "cover.jpg" . This will'
@@ -2371,16 +3139,6 @@ Audio files supported are %s.""" % ", ".join(
         " webservice."
         " MusicBrainz lookup is the most reliable web search"
         " method.",
-    )
-
-    argg = parser.add_argument_group("Search Discogs webservice")
-    argg.add_argument(
-        "-sd",
-        "--search-discogs",
-        dest="search_discogs",
-        action="store_true",
-        default=False,
-        help="Search for album cover images using Discogs" " webservice. (NOT YET FUNCTIONAL)",
     )
 
     argg = parser.add_argument_group("Search Google Custom Search Engine (CSE)")
@@ -2427,6 +3185,24 @@ Audio files supported are %s.""" % ", ".join(
         " use Google CSE.",
     )
 
+    argg = parser.add_argument_group("Search Discogs webservice")
+    argg.add_argument(
+        "-sd",
+        "--search-discogs",
+        dest="search_discogs",
+        action="store_true",
+        default=False,
+        help="Search for album cover images using Discogs webservice.",
+    )
+    argg.add_argument(
+        "-dt",
+        "--discogs-token",
+        dest="discogs_token",
+        action="store",
+        default="",
+        help="Discogs authentication Personal Access Token.",
+    )
+
     argg = parser.add_argument_group("Debugging and Miscellanea")
     argg.add_argument("-v", "--version", action="version", version=__version__)
     argg.add_argument(
@@ -2453,7 +3229,8 @@ Audio files supported are %s.""" % ", ".join(
         help="Only test, do not write any files",
     )
 
-    parser.epilog = """\
+    parser.epilog = (
+        """\
 This program attempts to create album cover image files for the passed DIRS.  It
 does this several ways, searching for album cover image files already present in
 the directory (-sl).  If not found, it attempts to figure out the Artist and
@@ -2461,9 +3238,9 @@ Album for that directory then searches online services for an album cover image
 (-sm or -sg).
 
 Directories are searched recursively.  Any directory that contains one or more
-with file name extension %s""" % " or ".join(
-        AUDIO_TYPES
-    ) + """
+with file name extension """
+        + " or ".join(AUDIO_TYPES)
+        + """
 is presumed to be an album directory.  Given a directory of such files, file
 contents will be read for the Artist name and Album name using embedded audio
 tags (ID3, Windows Media, etc.).  If no embedded media tags are present then a
@@ -2484,12 +3261,30 @@ https://console.developers.google.com/apis/credentials.
 Google CSE settings must have "Image search" as "ON"  and "Search the entire
 web" as "OFF".
 
+If option --search-discogs is chosen then you must pass a Discogs Personal
+Access Token (PAT). A PAT is a forty character string generated at
+https://www.discogs.com/settings/developers with the button "Generate new token".
+Requires a discogs account.
+Discogs does rate-limit throttling which this program will wait on. It significantly
+increases the time to search for candidate album cover images.
+
+Shortcomings:
+
+- Does not handle Various Artist albums.
+
+- Multi-threading is only a rudimentary implementation. Does not efficiently queue
+  non-overlapping tasks, i.e. the artist-album directory search phase must entirely
+  finish before the album cover search phase begins, e.g. will not do HTTP searches
+  as soon as possible.
+
 PyPi project: %s
 Source code: %s
 
-Inspired by the program coverlovin.""" % (
-        __url_project__,
-        __url_source__,
+Inspired by the program coverlovin."""
+        % (
+            __url_project__,
+            __url_source__,
+        )
     )
 
     args = parser.parse_intermixed_args(args)
@@ -2507,8 +3302,10 @@ Inspired by the program coverlovin.""" % (
         args.search_musicbrainz = True
         if args.search_googlecse:
             log.warning(
-                "--search-googlecse was selected while" " --search-all-noinit was also selected"
+                "--search-googlecse was selected while --search-all-noinit was also selected"
             )
+        if args.search_discogs:
+            log.warning("--search-discogs was selected while --search-all-noinit was also selected")
 
     if not (
         args.search_likely
@@ -2531,18 +3328,17 @@ Inspired by the program coverlovin.""" % (
             "not passed --search-googlecse (-sg) so --sgkey and --sgid" " are not necessary"
         )
 
+    if args.search_discogs:
+        if not args.discogs_token:
+            parser.error(
+                "Using --search-discogs (-sd) requires passing --discogs-token DISCOGS_TOKEN"
+            )
+
     if args.search_musicbrainz:
         try:
             import musicbrainzngs
         except ModuleNotFoundError as err:
             log.error("MusicBrainz library must be installed\n" "   pip install musicbrainzngs")
-            raise err
-
-    if args.search_discogs:
-        try:
-            import discogs_client
-        except ModuleNotFoundError as err:
-            log.error("Discogs client library must be installed\n" "   pip install discogs_client")
             raise err
 
     loglevel = logging.WARNING
@@ -2563,6 +3359,7 @@ Inspired by the program coverlovin.""" % (
             args.search_googlecse,
         ),
         GoogleCSE_Opts(args.gkey, args.gid, ImageSize(args.gsize)),
+        Discogs_Args(args.discogs_token),
         args.referer,
         WrOpts(args.overwrite, args.test),
         loglevel,
@@ -2578,20 +3375,18 @@ def main() -> int:
         dirs,
         image_type,
         image_name,
-        (
-            search_likely,
-            search_embedded,
-            search_musicbrainz,
-            search_discogs,
-            search_googlecse,
-        ),
+        (search_likely, search_embedded, search_musicbrainz, search_discogs, search_googlecse),
         googlecse_opts,
+        discogs_args,
         referer,
         wropts,
         loglevel,
     ) = parse_args_opts()
 
     log.setLevel(loglevel)
+
+    # XXX: task queuing does not adequately distinguish SearcherMedium.DISK
+    #      tasks and SearcherMedium.NETWORK tasks
 
     # results of attempting to update directories
     # (SimpleQueue is an unbounded queue, new in Python 3.7!)
@@ -2622,16 +3417,25 @@ def main() -> int:
                     search_googlecse,
                 ),
                 googlecse_opts,
+                discogs_args,
                 referer,
                 wropts,
                 loglevel,
             )
         )
+        log.debug("Queued task path '%s'", str(daa[0]))
 
-    for _ in range(TASK_QUEUE_THREAD_COUNT):
+    # When there are few directories to process then no need to start extra
+    # threads.
+    # XXX: task queues does not distinguish SearcherMedium.DISK queues and
+    #      SearcherMedium.NETWORK queues. Would be much faster if it did.
+    task_queue_thread_count = min(TASK_QUEUE_THREAD_COUNT, len(daa_list))
+    log.debug("Starting %s threads for task queue…", task_queue_thread_count)
+    for tc_ in range(task_queue_thread_count):
         th = threading.Thread(target=process_tasks, args=(task_queue, result_queue))
         # daemon: don't wait on threads, task_queue signals when complete
         th.daemon = True
+        log.debug("Thread %s starting…", tc_ + 1)
         th.start()
 
     # `.join` returns when task_queue is empty of tasks (task_done)

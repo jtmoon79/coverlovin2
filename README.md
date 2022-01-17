@@ -19,23 +19,23 @@ ripped Compact Disc albums.
 ----
 
 <!-- TOC auto-updated by VS Code -->
-
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
-    - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
-    - [Invocation](#invocation)
   - [Development](#development)
     - [First development session](#first-development-session)
+      - [Using `pipenv`](#using-pipenv)
+      - [Using `pip`](#using-pip)
     - [Subsequent development sessions](#subsequent-development-sessions)
-      - [pipenv](#pipenv)
-      - [pipenv update](#pipenv-update)
+      - [Using `pipenv`](#using-pipenv-1)
+        - [pipenv](#pipenv)
+        - [pipenv update](#pipenv-update)
+      - [Using `pip`](#using-pip-1)
       - [pytest](#pytest)
       - [build](#build)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
-    - [Practice Project](#practice-project)
-      - [Issues‼  🐛 🐵](#issues---)
-      - [Run Phases](#run-phases)
+    - [Issues‼  🐛 🐵](#issues---)
+    - [Run Phases](#run-phases)
 
 ## Script Usage
 
@@ -46,11 +46,11 @@ To see what it will do without changing any files
 The verbose `--help` message
 
 ```Text
-usage: coverlovin2.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}] [-o] [-s*] [-s-]
-                      [-sl] [-se] [-sm] [-sd] [-sg]
-                      [-sgz {small,medium,large}] [--sgid GID] [--sgkey GKEY]
-                      [-v] [-r REFERER] [-d] [--test]
-                      DIRS [DIRS ...]
+usage: app.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}]
+              [-o] [-s*] [-s-] [-sl] [-se] [-sm]
+              [-sg] [-sgz {small,medium,large}] [--sgid GID] [--sgkey GKEY]
+              [-sd] [-dt DISCOGS_TOKEN] [-v] [-r REFERER] [-d] [--test]
+              DIRS [DIRS ...]
 
 This Python-based program is for automating downloading album cover art images.
 A common use-case is creating a "cover.jpg" file for a collection of ripped
@@ -73,73 +73,52 @@ Required Arguments:
 
 Recommended:
   -n IMAGE_NAME, --image-name IMAGE_NAME
-                        cover image file name IMAGE_NAME. This is the file
-                        name that will be created within passed DIRS. This
-                        will be appended with the preferred image TYPE, e.g.
-                        "jpg", "png", etc. (default: "cover")
+                        cover image file name IMAGE_NAME. This is the file name that will be created within passed DIRS. This will be appended with the preferred
+                        image TYPE, e.g. "jpg", "png", etc. (default: "cover")
   -i {jpg,png,gif}, --image-type {jpg,png,gif}
                         image format IMAGE_TYPE (default: "jpg")
-  -o, --overwrite       overwrite any previous file of the same file
-                        IMAGE_NAME and IMAGE_TYPE (default: False)
+  -o, --overwrite       overwrite any previous file of the same file IMAGE_NAME and IMAGE_TYPE (default: False)
 
 Search all:
-  -s*, --search-all     Search for album cover images using all methods and
-                        services
+  -s*, --search-all     Search for album cover images using all methods and services
   -s-, --search-all-no-init
-                        Search for album cover images using all methods and
-                        services that do not require user initialization (e.g.
-                        no Google CSE).
+                        Search for album cover images using all methods and services that do not require user initialization (e.g. no Google CSE, no Discogs).
 
 Search the local directory for likely album cover images:
   -sl, --search-likely-cover
-                        For any directory with audio media files but no file
-                        "IMAGE_NAME.IMAGE_TYPE", search the directory for
-                        files that are likely album cover images. For example,
-                        given options: --name "cover" --type "jpg", and a
-                        directory of .mp3 files with a file "album.jpg", it is
-                        reasonable to guess "album.jpg" is a an album cover
-                        image file. So copy file "album.jpg" to "cover.jpg" .
-                        This will skip an internet image lookup and download
-                        and could be a more reliable way to retrieve the
-                        correct album cover image.
+                        For any directory with audio media files but no file "IMAGE_NAME.IMAGE_TYPE", search the directory for files that are likely album cover
+                        images. For example, given options: --name "cover" --type "jpg", and a directory of .mp3 files with a file "album.jpg", it is reasonable to
+                        guess "album.jpg" is a an album cover image file. So copy file "album.jpg" to "cover.jpg" . This will skip an internet image lookup and
+                        download and could be a more reliable way to retrieve the correct album cover image.
 
 Search the local directory for an embedded album cover image:
   -se, --search-embedded
-                        Search audio media files for embedded images. If
-                        found, attempt to extract the embedded image.
+                        Search audio media files for embedded images. If found, attempt to extract the embedded image.
 
 Search Musicbrainz NGS webservice:
   -sm, --search-musicbrainz
-                        Search for album cover images using musicbrainz NGS
-                        webservice. MusicBrainz lookup is the most reliable
-                        search method.
-
-Search Discogs webservice:
-  -sd, --search-discogs
-                        Search for album cover images using Discogs
-                        webservice. (NOT YET FUNCTIONAL)
+                        Search for album cover images using musicbrainz NGS webservice. MusicBrainz lookup is the most reliable web search method.
 
 Search Google Custom Search Engine (CSE):
   -sg, --search-googlecse
-                        Search for album cover images using Google CSE. Using
-                        the Google CSE requires an Engine ID and API Key.
-                        Google CSE reliability entirely depends upon the added
-                        "Sites to search". The end of this help message has
-                        more advice around using Google CSE.
+                        Search for album cover images using Google CSE. Using the Google CSE requires an Engine ID and API Key. Google CSE reliability entirely
+                        depends upon the added "Sites to search". The end of this help message has more advice around using Google CSE. Google CSE is the most
+                        cumbersome search method.
   -sgz {small,medium,large}, --sgsize {small,medium,large}
                         Google CSE optional image file size (default: "large")
-  --sgid GID            Google CSE ID (URL parameter "cx") typically looks
-                        like "009494817879853929660:efj39xwwkng". REQUIRED to
-                        use Google CSE.
-  --sgkey GKEY          Google CSE API Key (URL parameter "key") typically
-                        looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst".
-                        REQUIRED to use Google CSE.
+  --sgid GID            Google CSE ID (URL parameter "cx") typically looks like "009494817879853929660:efj39xwwkng". REQUIRED to use Google CSE.
+  --sgkey GKEY          Google CSE API Key (URL parameter "key") typically looks like "KVEIA49cnkwoaaKZKGX_OSIxhatybxc9kd59Dst". REQUIRED to use Google CSE.
+
+Search Discogs webservice:
+  -sd, --search-discogs
+                        Search for album cover images using Discogs webservice.
+  -dt DISCOGS_TOKEN, --discogs-token DISCOGS_TOKEN
+                        Discogs authentication Personal Access Token.
 
 Debugging and Miscellanea:
   -v, --version         show program's version number and exit
   -r REFERER, --referer REFERER
-                        Referer url used in HTTP GET requests (default:
-                        "https://github.com/jtmoon79/coverlovin2")
+                        Referer url used in HTTP GET requests (default: "https://github.com/jtmoon79/coverlovin2")
   -d, --debug           Print debugging messages. May be passed twice.
   --test                Only test, do not write any files
 
@@ -171,6 +150,22 @@ https://console.developers.google.com/apis/credentials.
 Google CSE settings must have "Image search" as "ON"  and "Search the entire
 web" as "OFF".
 
+If option --search-discogs is chosen then you must pass a Discogs Personal
+Access Token (PAT). A PAT is a forty character string generated at
+https://www.discogs.com/settings/developers with the button "Generate new token".
+Requires a discogs account.
+Discogs does rate-limit throttling which this program will wait on. It significantly
+increases the time to search for candidate album cover images.
+
+Shortcomings:
+
+- Does not handle Various Artist albums.
+
+- Multi-threading is only a rudimentary implementation. Does not efficiently queue
+  non-overlapping tasks, i.e. the artist-album directory search phase must entirely
+  finish before the album cover search phase begins, e.g. will not do HTTP searches
+  as soon as possible.
+
 PyPi project: https://pypi.org/project/CoverLovin2/
 Source code: https://github.com/jtmoon79/coverlovin2
 
@@ -197,10 +192,8 @@ _Winamp_ will use file `cover.png` or `cover.jpg` if media-embedded images are n
 
 - Using `pip` from source:
 
-      wget https://github.com/jtmoon79/coverlovin2/archive/master.zip
-      unzip master.zip
-      cd coverlovin2-master
-      python setup.py -e install
+      python -m pip install mutagen musicbrainzngs Pillow tabulate discogs-client attrs
+      python -m pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
 
 ### Invocation
 
@@ -217,37 +210,48 @@ Using `pip-run`:
     pip-run --use-pep517 --quiet git+https://github.com/jtmoon79/coverlovin2@feature/runpy-invoke -- -m coverlovin2 --version
 
 <br />
-
-*coverlovin2* depends on non-standard libraries
-[attrs](https://pypi.org/project/attrs/),
-[discogs-client](https://pypi.org/project/discogs-client/),
-[musicbrainzngs](https://pypi.org/project/musicbrainzngs/),
-[mutagen](https://pypi.org/project/mutagen/),
-[Pillow](https://pypi.org/project/Pillow/),
-and
-[Tabulate](https://pypi.org/project/tabulate/),
+*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
+[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), [Pillow](https://pypi.org/project/Pillow/), [Tabulate](https://pypi.org/project/tabulate/), and [attrs](https://pypi.org/project/attrs/).
 
 ## Development
 
 ### First development session
 
-Install `pipenv`.
-
 Clone the repository:
 
     git clone git@github.com:jtmoon79/coverlovin2.git
 
+#### Using `pipenv`
+
+Install `pipenv`.
+
 Start the Python virtual environment and install the dependencies:
 
     cd coverlovin2
-    pipenv --python 3.7 shell
+    pipenv --python 3.9 shell
     pipenv install --dev
 
 This will install more non-standard libraries. See the [Pipfile](./Pipfile).
 
+#### Using `pip`
+
+Install `pip` and `virtualenv`.
+
+Create a virtual environment and install the dependencies:
+
+    cd coverlovin2
+    python -m virtualenv --copies .venv
+    .venv/Scripts/activate.ps1
+    python -m pip install --upgrade pip wheel setuptools
+    python -m pip install -e ".[dev]"
+
+This will install more non-standard libraries. See the [setup.py](./setup.py).
+
 ### Subsequent development sessions
 
-#### pipenv
+#### Using `pipenv`
+
+##### pipenv
 
 Start the `pipenv` shell (bash)
 
@@ -257,15 +261,21 @@ Start the `pipenv` shell (bash)
 
     .\tools\pipenv-shell.ps1
 
-#### pipenv update
+##### pipenv update
 
-Update `Pipfile.lock` with latest libraries
+Update `Pipfile.lock` with the latest libraries
 
     pipenv update
     git add Pipefile.lock
     git commit
 
+#### Using `pip`
+
+    python -m pip install --upgrade -e .[dev]
+
 #### pytest
+
+If pytests can run then the development environment is ready.
 
 Run `pytest` tests (bash)
 
@@ -285,11 +295,9 @@ or use the helper script
 
 ## Other Miscellaneous Notes
 
-coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
-
-### Practice Project
-
 coverlovin2 requires Python version 3.7 or greater.
+
+coverlovin2 is inspired by [coverlovin](https://github.com/amorphic/coverlovin).
 
 coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
@@ -317,7 +325,7 @@ and mypy seem to catch different type-hint warnings.
 - printing odd UTF-8 characters (for example, `\uFF5B`, `｛`) and coercing UTF8
 mode (within a context without UTF8 support; MinGW bash on Windows)
 
-#### Issues‼  🐛 🐵
+### Issues‼  🐛 🐵
 
 Other projects Bug Issues 🐛 and Feature Issues 🐵 the author created in the
 course of writing this application:
@@ -332,13 +340,15 @@ course of writing this application:
 
 🐛 [pypa/pipenv #3573](https://github.com/pypa/pipenv/issues/3573)
 
+🐛 [pypa/pipenv #4906](https://github.com/pypa/pipenv/issues/4906)
+
 🐛 [python/mypy #6476](https://github.com/python/mypy/issues/6476)
 
 🐛 [python/mypy #6473](https://github.com/python/mypy/issues/6473)
 
 🐛 [ant-druha/PowerShell #16](https://github.com/ant-druha/PowerShell/issues/16)
 
-#### Run Phases
+### Run Phases
 
 coverlovin2 runs in a few phases:
 

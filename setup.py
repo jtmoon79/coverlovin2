@@ -6,6 +6,7 @@ Python setup for coverlovin2 package.
 
 Based on sample https://github.com/pypa/sampleproject/blob/master/setup.py
 and instructions at
+https://setuptools.pypa.io/en/latest/userguide/keywords.html
 https://packaging.python.org/guides/distributing-packages-using-setuptools/
 https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
 """
@@ -22,7 +23,7 @@ except ImportError:
     # not needed for typical builds, fails to install on non-Windows Python
     pass
 
-from coverlovin2.coverlovin2 import (
+from coverlovin2 import (
     __version__,
     __author__,
     __url__,
@@ -44,18 +45,36 @@ setup(
     long_description_content_type="text/markdown",
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
-        # XXX: this should match file Pipefile
-        "attrs ~= 21.2",
-        "discogs-client ~=2.3",
-        "musicbrainzngs ~= 0.7",
-        "mutagen ~= 1.45",
-        "Pillow ~= 8.2",
+        # this should match `Pipfile [packages]`
+        "attrs == 21.4",
+        #"discogs-client == 2.3.0",
+        "requests == 2.27",
+        "musicbrainzngs == 0.7.1",
+        "mutagen == 1.45.1",
+        "Pillow == 8.4",
         "tabulate == 0.8.9",
     ],
     setup_requires=["wheel"],
+    extras_require={
+        # this should match `Pipfile [dev-packages]`
+        "dev": [
+            "attrs",
+            "codecov",
+            "coveralls",
+            "mypy",
+            "pipenv",
+            "pytest",
+            "pytest-cov",
+            "pytest-dependency",
+            "pyyaml>=4.2b1"
+            "setuptools",
+            "wheel",
+            "yamllint",
+        ]
+    },
     # see https://pypi.org/classifiers/
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 3 - Alpha",
         "Environment :: Console",
         "Operating System :: OS Independent",
         "Natural Language :: English",
@@ -72,28 +91,35 @@ setup(
     ],
     keywords="audio image music",
     python_requires=">=3.7",
-    packages=["coverlovin2"],
-    scripts=["coverlovin2/coverlovin2.py"],
-    py_modules=["coverlovin2.__main__"],  # enables `python -m coverlovin2`
+    # XXX: should Pipfile* also be distributed???
+    packages=find_packages(
+        exclude=("coverlovin2.test",),
+        include=("coverlovin2",)
+    ),
+    #scripts=["coverlovin2/app.py"],
+    py_modules=("coverlovin2.__main__",),  # enables `python -m coverlovin2`
     entry_points={
+        # see
+        # https://setuptools.pypa.io/en/latest/userguide/entry_point.html#console-scripts
+        # https://packaging.python.org/en/latest/specifications/entry-points/#use-for-scripts
         "console_scripts": [
-            "coverlovin2=coverlovin2:main",
+            "coverlovin2=coverlovin2.app:main",
         ],
     },
     project_urls={  # Optional
         "Source": __url__,
         "Bug Reports": "https://github.com/jtmoon79/coverlovin2/issues",
     },
+    # for py2exe
+    # see https://www.py2exe.org/index.cgi/Tutorial
     options={
-        # py2exe
         # build this option with command:
         #    python setup.py py2exe
-        'py2exe': {
-            'compressed': True,
-            'optimize': 2,
-            'bundle_files': 3,
+        "py2exe": {
+            "compressed": True,
+            "optimize": 2,
+            "bundle_files": 3,
         },
     },
-    # py2exe
-    console=["coverlovin2/coverlovin2.py"],
+    console=["coverlovin2/app.py"],
 )

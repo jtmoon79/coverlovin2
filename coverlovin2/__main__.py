@@ -1,5 +1,6 @@
-from .coverlovin2 import main as coverlovin2_main
+# __main__.py
 
+from . import app
 
 if __name__ == "__main__":
-    coverlovin2_main()
+    app.main()

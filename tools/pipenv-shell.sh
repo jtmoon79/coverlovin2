@@ -22,10 +22,11 @@ elif which python3 &>/dev/null; then
     python=$(which python3)
 fi
 
-echo "${python}"
-"${python}" --version
-echo "${pipenv}"
-"${pipenv}" --version
+(
+    set -x
+    "${python}" --version
+    "${pipenv}" --version
+)
 
 pyver=$("${python}" --version)
 venv=$("${pipenv}" --venv)
