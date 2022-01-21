@@ -10,4 +10,4 @@ exec \
   python -m mypy \
     --config-file ./tools/mypy.ini \
     "${@}" \
-    ./coverlovin2/coverlovin2.py
+    ./coverlovin2/app.py

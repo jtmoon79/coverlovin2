@@ -30,7 +30,7 @@ before_script:
   - chmod -vR +x,-w -- ./tools/
 script:
   # sanity check coverlovin2.py can start
-  - python ./coverlovin2/coverlovin2.py --version
+  - python ./coverlovin2/app.py --version
   - ./tools/yamllint.sh
   - ./tools/pytest-run.sh
     --cov=./coverlovin2/ --cov-config=./.coveragerc --cov-report=xml

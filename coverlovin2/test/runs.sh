@@ -9,7 +9,7 @@ set -e
 set -u
 set -o pipefail
 
-coverlovin="$(dirname -- "${0}")/../coverlovin2.py"
+coverlovin="$(dirname -- "${0}")/../app.py"
 
 which python
 python --version

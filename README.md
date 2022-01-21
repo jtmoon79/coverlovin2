@@ -354,10 +354,10 @@ coverlovin2 runs in a few phases:
 
 1. recursively search passed directory paths for "album" directories. An "album"
 directory merely holds audio files of type `.mp3`, `.m4a`, `.mp4`, `.flac`,
-`.ogg`, `.wma`, or `.asf`. (see [`coverlovin2/coverlovin2.py::AUDIO_TYPES`](./coverlovin2/coverlovin2.py)).
+`.ogg`, `.wma`, or `.asf`. (see [`coverlovin2/app.py::AUDIO_TYPES`](./coverlovin2/app.py)).
 2. employ a few techniques for determining the artist and album for that
 directory.  The most reliable technique is to read available embedded audio tags
-within the directory. (see [`coverlovin2/coverlovin2.py::process_dir`](./coverlovin2/coverlovin2.py))
+within the directory. (see [`coverlovin2/app.py::process_dir`](./coverlovin2/app.py))
 3. using user-passed search options, search for the album cover art image file.
 4. if album cover art is found, create that image file into the "album"
 directory. The name and type of image (`.jpg`, `.png`, `.gif`) is based on
