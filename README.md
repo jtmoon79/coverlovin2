@@ -22,6 +22,7 @@ ripped Compact Disc albums.
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
     - [Quickstart](#quickstart)
+    - [Execution Modes](#execution-modes)
     - [Recommended use](#recommended-use)
     - [`--help`](#--help)
     - [Common Media Player expectations](#common-media-player-expectations)
@@ -51,6 +52,32 @@ To see what it will do without changing any files
 
     coverlovin2 -s- --test /path/to/music/library
 
+### Execution Modes
+
+There are few ways to run coverlovin2.
+
+As a module
+
+    python -m pip install coverlovin2
+    python -m coverlovin2 --version
+
+As a standalone program
+
+    python -m pip install coverlovin2
+    coverlovin2 --version
+
+As a [`pip-run`](https://pypi.org/project/pip-run/) program
+
+    pip-run --use-pep517 --quiet \
+      "git+https://github.com/jtmoon79/coverlovin2" \
+      -- -m coverlovin2 --version
+
+As a [`pipx`](https://pypi.org/project/pipx/) program
+
+    pipx run coverlovin2
+
+See script [execution-modes](./tools/execution-modes.sh).
+
 ### Recommended use
 
 1. Get your own [Discogs Personal Access Token](https://www.discogs.com/settings/developers).
@@ -62,13 +89,13 @@ To see what it will do without changing any files
 
        coverlovin2 -d -sl -se -sm \
            -sd -dt "DISCOGS PERSONAL ACCESS TOKEN" \
-           /mnt/music/
+           /path/to/music/library
 
    The prior will write `cover.jpg` files to each found Artist-Album directory.
 
 4. Run again to copy the previously downloaded `cover.jpg` to `folder.jpg`.
 
-       coverlovin2 -d -n "folder" -sl /mnt/music/
+       coverlovin2 -d -n "folder" -sl /path/to/music/library
 
 ### `--help`
 
