@@ -69,13 +69,14 @@ setup(
             "pytest-dependency",
             "pyyaml>=4.2b1"
             "setuptools",
+            "twine",
             "wheel",
             "yamllint",
         ]
     },
-    # see https://pypi.org/classifiers/
+    # see https://pypi.org/classifiers/ (https://archive.ph/70Qce)
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Operating System :: OS Independent",
         "Natural Language :: English",
@@ -87,6 +88,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Multimedia :: Sound/Audio"
     ],
