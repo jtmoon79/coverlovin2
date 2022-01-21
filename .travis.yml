@@ -1,7 +1,10 @@
 # Travis CI configuration file for coverlovin2
 #
-# docs https://docs.travis-ci.com/user/languages/python/ (https://archive.vn/w3tp5)
-# schema https://raw.githubusercontent.com/travis-ci/travis-yml/ddfadc679cc80478b84f7b3cffde7cef991eace6/schema.json
+# docs:
+#   https://docs.travis-ci.com/user/languages/python/ (https://archive.vn/w3tp5)
+#   https://docs.travis-ci.com/user/reference/linux
+# schema:
+#   https://raw.githubusercontent.com/travis-ci/travis-yml/ddfadc679cc80478b84f7b3cffde7cef991eace6/schema.json
 ---
 language: python
 os: linux
