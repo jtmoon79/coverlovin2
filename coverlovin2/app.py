@@ -63,8 +63,6 @@ if "__file__" not in globals():
 # stdlib imports
 #
 
-import sys
-
 # XXX: PEP8 complains about non-import statements before imports are done. But
 #      do this check sooner so the user does not install non-standard libraries
 #      (due to import failures) only to find out they used the wrong version of
@@ -586,7 +584,7 @@ def split_parameters(
         raise ValueError("Bad parameter string; has no field separator '%s'" % (FS,))
     parameters = parm_str.split(FS, maxsplit=maxsplit)
     # create dict of parameter keys values
-    kv = dict()  # type: typing.Dict[str, str]
+    kv = dict()  # type: Dict[str, str]
     for p_ in parameters:
         if p_.count(EQ) == 0:
             raise ValueError("Bad parameter field '%s'; has no equal '%s'" % (p_, EQ))
@@ -1728,7 +1726,7 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return False
 
         # try several sources for the image
-        image_list: typing.Dict = dict()
+        image_list: Dict = dict()
         try:
             self._log.debug('· mb.get_image_list("%s")', album_id)
             image_list = mb.get_image_list(album_id)
