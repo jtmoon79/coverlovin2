@@ -122,6 +122,7 @@ import mutagen
 
 # https://pypi.org/project/Pillow/
 try:
+    import PIL
     from PIL import Image
 except ImportError as ie:
     # XXX: on some Linux, `pip install Pillow` does not install required OS library, results in
@@ -920,15 +921,15 @@ class ImageSearcher(abc.ABC):
         :param opts.loglevel: logging level
         :param opts.test: if test do not actually write anything
         """
-        self.artalb = artalb
-        self.image_type = image_type
-        self.wropts = wropts
-        self.loglevel = loglevel
+        self.artalb = artalb  # type: ArtAlb
+        self.image_type = image_type  # type: ImageType
+        self.wropts = wropts  # type: WrOpts
+        self.loglevel = loglevel  # type: int
         #
-        self._image_bytes = bytes()
+        self._image_bytes = bytes()  # type: bytes
         # setup new logger for this class instance
-        self._logname = self.NAME + "(0x%08x)" % id(self)
-        self._log = log_new(LOGFORMAT, loglevel, self._logname)
+        self._logname = self.NAME + "(0x%08x)" % id(self)  # type: str
+        self._log = log_new(LOGFORMAT, loglevel, self._logname)  # type: logging.Logger
         super().__init__()
 
     # TODO: XXX: abstractproperty has been deprecated since Python 3.3
@@ -959,7 +960,7 @@ class ImageSearcher(abc.ABC):
             raise ValueError('bad URL "%s"', url)
 
         try:
-            log_.debug('image download urllib.request.urlopen("%s")', url)
+            log_.info('image download urllib.request.urlopen("%s")', url)
             response = urllib.request.urlopen(url, None, 10)
         except Exception as err:
             log_.exception(err, exc_info=True)
@@ -991,6 +992,7 @@ class ImageSearcher(abc.ABC):
         if not self.wropts.test:
             with open(str(image_path), "wb+") as fh:
                 fh.write(self._image_bytes)
+                self._log.info('Wrote %s bytes to "%s"', len(self._image_bytes), image_path)
 
         result = Result.Downloaded(
             self.artalb, self.__class__, len(self._image_bytes), image_path, self.wropts
@@ -1039,8 +1041,8 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     def __init__(
         self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
-        self.copy_src = None
-        self.copy_dst = image_path
+        self.copy_src = None  # type: Optional[Path]
+        self.copy_dst = image_path  # type: Path
         super().__init__(artalb, image_type, wropts, loglevel)
 
     def _match_likely_name(self, files: typing.Sequence[Path]) -> Optional[Path]:
@@ -1304,6 +1306,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
         size = self.copy_src.stat().st_size
         if not self.wropts.test:
             shutil.copy2(str(self.copy_src), str(self.copy_dst))
+            self._log.info('Copied "%s" to "%s"', self.copy_src, self.copy_dst)
 
         result = Result.Copied(
             self.artalb, self.__class__, size, self.copy_src, self.copy_dst, self.wropts
@@ -1323,9 +1326,9 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
         self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
         self.copy_dst = image_path
-        self.image_type_PIL = None
-        self._image = None
-        self._image_src = None
+        self.image_type_PIL = None  # type: Optional[ImageType]
+        self._image = None  # type: Optional[PIL.Image.Image]
+        self._image_src = None  # type: Optional[Path]
         super().__init__(artalb, image_type, wropts, loglevel)
 
     @overrides(ImageSearcher)
@@ -1369,7 +1372,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             apic = media.get(key_apic)
             image_data = apic.data
             try:
-                image = Image.open(io.BytesIO(image_data))
+                image = Image.open(io.BytesIO(image_data))  # type: PIL.Image
             except:
                 continue
             # the PIL.Image will later be PIL.Image.save to the
@@ -1380,7 +1383,7 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
                 continue
             self._image = image
             self._image.size_pixels = image.height * image.width
-            self._image_src = fp
+            self._image_src = fp  # type: Path
             return True
 
         return False
@@ -1414,6 +1417,9 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             format_ = self.image_type.pil_format
             try:
                 self._image.save(self.copy_dst, format=format_)
+                self._log.info('Extracted %sx%s pixels %s bytes to "%s"',
+                               self._image.width, self._image.height,
+                               self._image.size_pixels, self.copy_dst)
             except PermissionError as pe:
                 log.error(str(pe))
                 return Result.Error(self.artalb, self.__class__, self.copy_dst, str(pe))
@@ -1512,7 +1518,7 @@ class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
 
         # make request from the provided url
         try:
-            self._log.debug('Google CSE urllib.request.urlopen("%s")', request.full_url)
+            self._log.info('Google CSE urllib.request.urlopen("%s")', request.full_url)
             response = self._search_response_json(request, data=None, timeout=5)
         except urllib.error.HTTPError:
             return False
@@ -2661,8 +2667,8 @@ def process_dir(
     image_path = dirp.joinpath(image_nt)
     if image_path.exists():
         if not overwrite:
-            log.debug(
-                'cover file "%s" exists and no overwrite,' ' skip directory "%s"', image_nt, dirp
+            log.info(
+                'cover file "%s" exists and no overwrite, skip directory "%s"', image_nt, dirp
             )
             r_ = Result.SkipDueToNoOverwrite(
                 artalb=None,
@@ -3269,6 +3275,8 @@ increases the time to search for candidate album cover images.
 Shortcomings:
 
 - Does not handle Various Artist albums.
+
+- --search-discogs can only retrieve jpg file no matter the --image-type passed.
 
 - Multi-threading is only a rudimentary implementation. Does not efficiently queue
   non-overlapping tasks, i.e. the artist-album directory search phase must entirely
