@@ -21,7 +21,9 @@ ripped Compact Disc albums.
 <!-- TOC auto-updated by VS Code -->
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
+    - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
+    - [Invocation](#invocation)
   - [Development](#development)
     - [First development session](#first-development-session)
       - [Using `pipenv`](#using-pipenv)
@@ -267,7 +269,7 @@ Update `Pipfile.lock` with the latest libraries
 
     pipenv update
     git add Pipfile.lock Pipfile
-    git commit -v
+    git commit -v -m "pipenv update"
 
 #### Using `pip`
 
