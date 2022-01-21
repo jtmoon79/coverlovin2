@@ -35,6 +35,7 @@ ripped Compact Disc albums.
       - [Using `pip`](#using-pip-1)
       - [pytest](#pytest)
       - [build](#build)
+      - [new release](#new-release)
   - [Other Miscellaneous Notes](#other-miscellaneous-notes)
     - [Issues‼  🐛 🐵](#issues---)
     - [Run Phases](#run-phases)
@@ -296,6 +297,10 @@ or (Powershell)
 or use the helper script
 
     ./tools/build-install-test.sh
+
+#### new release
+
+See [Create A New Release](https://github.com/jtmoon79/goto_http_redirect_server/blob/master/tools/build-install-steps.md).
 
 ## Other Miscellaneous Notes
 
