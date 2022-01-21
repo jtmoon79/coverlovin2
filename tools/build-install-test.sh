@@ -25,7 +25,8 @@ fi
     cd ..
     set -x
     python -m pip uninstall \
-        --verbose --debug --disable-pip-version-check --yes coverlovin2
+        --verbose --disable-pip-version-check --no-python-version-warning \
+        --yes coverlovin2
 )
 # remove previous build artifacts
 rm -rfv ./dist/ ./CoverLovin2.egg-info/
