@@ -3469,6 +3469,11 @@ def main() -> int:
         sAA = ""
         if r_.artalb:
             sAA = str_ArtAlb(r_.artalb)
+        # TODO: the Results class should be an Enum or contain an Enum
+        #       that would allow a more informative summary table ending.
+        #       currently, summary table does not distinguish between
+        #       new files, copied files, extracted files, already found files
+        #       or errors, no suitable image.
         if not r_:
             results_table.append(("✗", sAA, r_.message, r_.image_path.parent))
         else:
