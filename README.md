@@ -358,6 +358,7 @@ Some things the author explored:
   - package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
 - [pytests](./coverlovin2/test)!
   - pytest [code coverage](https://pypi.org/project/pytest-cov/)!
+- Rudimentary OAuth 1.0a authentication.
 - type-hinting‼<br/>
 coverlovin2 is very type-hinted code and could be even more so. The author
 thinks type-hinting is a good idea but it still needs improvement. In it's
