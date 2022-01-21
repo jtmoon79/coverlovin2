@@ -20,10 +20,13 @@ matrix:
       dist: xenial
     - name: "3.8 pytest"
       python: 3.8
+      dist: xenial
     - name: "3.9 pytest"
       python: 3.9
+      dist: focal
     - name: "3.10 pytest"
       python: 3.10
+      dist: focal
 install:
   - pip install pipenv
   - pipenv install --dev
