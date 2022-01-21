@@ -22,12 +22,11 @@ ripped Compact Disc albums.
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
     - [Quickstart](#quickstart)
-    - [Execution Modes](#execution-modes)
     - [Recommended use](#recommended-use)
     - [`--help`](#--help)
     - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
-    - [Invocation](#invocation)
+  - [Invocation](#invocation)
   - [Development](#development)
     - [First development session](#first-development-session)
       - [Using `pipenv`](#using-pipenv)
@@ -51,36 +50,6 @@ ripped Compact Disc albums.
 To see what it will do without changing any files
 
     coverlovin2 -s- --test /path/to/music/library
-
-### Execution Modes
-
-There are few ways to run coverlovin2.
-
-As a module
-
-    python -m pip install coverlovin2
-    python -m coverlovin2 --version
-
-As a standalone program
-
-    python -m pip install coverlovin2
-    coverlovin2 --version
-
-As a [`pip-run`](https://pypi.org/project/pip-run/) program
-
-    pip-run coverlovin2 -- -m coverlovin2 --version
-
-or
-
-    pip-run --use-pep517 --quiet \
-      "git+https://github.com/jtmoon79/coverlovin2" \
-      -- -m coverlovin2 --version
-
-As a [`pipx`](https://pypi.org/project/pipx/) program
-
-    pipx run coverlovin2
-
-See script [execution-modes](./tools/execution-modes.sh).
 
 ### Recommended use
 
@@ -254,26 +223,35 @@ _Winamp_ will use file `cover.png` or `cover.jpg` if media-embedded images are n
 
 - Using `pip` from source:
 
-      python -m pip install mutagen musicbrainzngs Pillow tabulate discogs-client attrs
-      python -m pip install https://github.com/jtmoon79/coverlovin2/archive/master.zip
+      python -m pip install -e "git+https://github.com/jtmoon79/coverlovin2.git@master#egg=CoverLovin2"
 
-### Invocation
+## Invocation
 
-As a program:
+There are few ways to run coverlovin2.
 
-    coverlovin2 --version
-
-As a module:
+As a module
 
     python -m coverlovin2 --version
 
-Using `pip-run`:
+As a standalone program
 
-    pip-run --use-pep517 --quiet git+https://github.com/jtmoon79/coverlovin2@feature/runpy-invoke -- -m coverlovin2 --version
+    coverlovin2 --version
 
-<br />
-*coverlovin2* depends on non-standard libraries [mutagen](https://pypi.org/project/mutagen/),
-[musicbrainzngs](https://pypi.org/project/musicbrainzngs/), [Pillow](https://pypi.org/project/Pillow/), [Tabulate](https://pypi.org/project/tabulate/), and [attrs](https://pypi.org/project/attrs/).
+As a [`pip-run`](https://pypi.org/project/pip-run/) program
+
+    pip-run coverlovin2 -- -m coverlovin2 --version
+
+or
+
+    pip-run --use-pep517 --quiet \
+      "git+https://github.com/jtmoon79/coverlovin2" \
+      -- -m coverlovin2 --version
+
+As a [`pipx`](https://pypi.org/project/pipx/) program
+
+    pipx run coverlovin2
+
+See script [execution-modes](./tools/execution-modes.sh).
 
 ## Development
 
@@ -293,7 +271,7 @@ Start the Python virtual environment and install the dependencies:
     pipenv --python 3.9 shell
     pipenv install --dev
 
-This will install more non-standard libraries. See the [Pipfile](./Pipfile).
+See the [Pipfile](./Pipfile).
 
 #### Using `pip`
 
@@ -307,7 +285,7 @@ Create a virtual environment and install the dependencies:
     python -m pip install --upgrade pip wheel setuptools
     python -m pip install -e ".[dev]"
 
-This will install more non-standard libraries. See the [setup.py](./setup.py).
+See the [setup.py](./setup.py).
 
 ### Subsequent development sessions
 
