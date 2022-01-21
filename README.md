@@ -21,6 +21,9 @@ ripped Compact Disc albums.
 <!-- TOC auto-updated by VS Code -->
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
+    - [Quickstart](#quickstart)
+    - [Recommended use](#recommended-use)
+    - [`--help`](#--help)
     - [Common Media Player expectations](#common-media-player-expectations)
   - [Installation](#installation)
     - [Invocation](#invocation)
@@ -42,9 +45,32 @@ ripped Compact Disc albums.
 
 ## Script Usage
 
+### Quickstart
+
 To see what it will do without changing any files
 
     coverlovin2 -s- --test /path/to/music/library
+
+### Recommended use
+
+1. Get your own [Discogs Personal Access Token](https://www.discogs.com/settings/developers).
+2. Install coverlovin2
+
+       python -m pip install coverlovin2
+
+3. Run once with the better searches (skip Google CSE; too complicated)
+
+       coverlovin2 -d -sl -se -sm \
+           -sd -dt "DISCOGS PERSONAL ACCESS TOKEN" \
+           /mnt/music/
+
+   The prior will write `cover.jpg` files to each found Artist-Album directory.
+
+4. Run again to copy the previously downloaded `cover.jpg` to `folder.jpg`.
+
+       coverlovin2 -d -n "folder" -sl /mnt/music/
+
+### `--help`
 
 The verbose `--help` message
 
