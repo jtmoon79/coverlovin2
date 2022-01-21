@@ -266,12 +266,12 @@ Start the `pipenv` shell (bash)
 Update `Pipfile.lock` with the latest libraries
 
     pipenv update
-    git add Pipefile.lock
-    git commit
+    git add Pipfile.lock Pipfile
+    git commit -v
 
 #### Using `pip`
 
-    python -m pip install --upgrade -e .[dev]
+    python -m pip install --upgrade -e ".[dev]"
 
 #### pytest
 
