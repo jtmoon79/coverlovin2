@@ -15,6 +15,7 @@ coverlovin2/__pycache__/
 build/
 dist/
 CoverLovin2.egg-info/
+.eggs/
 
 # codecov reports and artifacts
 htmlcov/
