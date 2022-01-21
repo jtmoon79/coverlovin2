@@ -163,6 +163,8 @@ Shortcomings:
 
 - Does not handle Various Artist albums.
 
+- --search-discogs can only retrieve jpg file no matter the --image-type passed.
+
 - Multi-threading is only a rudimentary implementation. Does not efficiently queue
   non-overlapping tasks, i.e. the artist-album directory search phase must entirely
   finish before the album cover search phase begins, e.g. will not do HTTP searches
