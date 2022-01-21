@@ -68,6 +68,10 @@ As a standalone program
 
 As a [`pip-run`](https://pypi.org/project/pip-run/) program
 
+    pip-run coverlovin2 -- -m coverlovin2 --version
+
+or
+
     pip-run --use-pep517 --quiet \
       "git+https://github.com/jtmoon79/coverlovin2" \
       -- -m coverlovin2 --version
