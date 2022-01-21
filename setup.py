@@ -62,6 +62,7 @@ setup(
             "codecov",
             "coveralls",
             "mypy",
+            "pip-run",
             "pipenv",
             "pytest",
             "pytest-cov",
