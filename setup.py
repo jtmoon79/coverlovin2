@@ -51,7 +51,7 @@ setup(
         "requests == 2.27",
         "musicbrainzngs == 0.7.1",
         "mutagen == 1.45.1",
-        "Pillow == 8.4",
+        "Pillow == 9.0",
         "tabulate == 0.8.9",
     ],
     setup_requires=["wheel"],
