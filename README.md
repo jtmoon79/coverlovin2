@@ -1,6 +1,6 @@
 # CoverLovin2
 
-[![Build Status](https://travis-ci.com/jtmoon79/coverlovin2.svg?branch=master)](https://travis-ci.com/jtmoon79/coverlovin2)
+[![Build Status](https://travis-ci.com/jtmoon79/coverlovin2.svg?branch=master)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
 [![CircleCI](https://circleci.com/gh/jtmoon79/coverlovin2.svg?style=svg)](https://circleci.com/gh/jtmoon79/coverlovin2)
 [![codecov](https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graph/badge.svg)](https://codecov.io/gh/jtmoon79/coverlovin2)
 [![Coveralls Coverage Status](https://coveralls.io/repos/github/jtmoon79/coverlovin2/badge.svg?branch=master)](https://coveralls.io/github/jtmoon79/coverlovin2?branch=master)
