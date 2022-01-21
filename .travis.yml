@@ -22,6 +22,8 @@ matrix:
       python: 3.8
     - name: "3.9 pytest"
       python: 3.9
+    - name: "3.10 pytest"
+      python: 3.10
 install:
   - pip install pipenv
   - pipenv install --dev
