@@ -26,7 +26,7 @@ attrs = "==21.4"
 requests = "==2.27"
 musicbrainzngs = "==0.7.1"
 mutagen = "==1.45"
-Pillow = "==9.0"
+Pillow = "==9.0.1"
 tabulate = "==0.8.9"
 
 [dev-packages]
