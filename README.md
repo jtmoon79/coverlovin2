@@ -215,6 +215,8 @@ _MusicBee_ will use file `cover.png` or `cover.jpg` within the _MUSIC_ library v
 
 _Winamp_ will use file `cover.png` or `cover.jpg` if media-embedded images are not available.
 
+_One Commander_ will use file `cover.jpg`, `folder.jpg`, `front.jpg`, or `background.jpg`.
+
 ## Installation
 
 - Using `pip` from pypi:
