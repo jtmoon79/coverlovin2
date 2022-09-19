@@ -1,14 +1,14 @@
 # CoverLovin2
 
-[![Build Status](https://travis-ci.com/jtmoon79/coverlovin2.svg?branch=master)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
-[![CircleCI](https://circleci.com/gh/jtmoon79/coverlovin2.svg?style=svg)](https://circleci.com/gh/jtmoon79/coverlovin2)
-[![codecov](https://codecov.io/gh/jtmoon79/coverlovin2/branch/master/graph/badge.svg)](https://codecov.io/gh/jtmoon79/coverlovin2)
-[![Coveralls Coverage Status](https://coveralls.io/repos/github/jtmoon79/coverlovin2/badge.svg?branch=master)](https://coveralls.io/github/jtmoon79/coverlovin2?branch=master)
-[![PyPI version](https://badge.fury.io/py/CoverLovin2.svg)](https://badge.fury.io/py/CoverLovin2)
-[![Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True)](https://pypi.org/pypi/coverlovin2/)
-[![Commits since](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)
+[![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
+[![CircleCI](https://img.shields.io/circleci/build/gh/jtmoon79/coverlovin2.svg?logo=circleci&style=flat-square)](https://circleci.com/gh/jtmoon79/coverlovin2)
+[![codecov.io code coverage](https://img.shields.io/codecov/c/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=codecov)](https://codecov.io/gh/jtmoon79/coverlovin2)
+[![coveralls code coverage](https://img.shields.io/coveralls/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=coveralls)](https://coveralls.io/github/jtmoon79/coverlovin2)
+[![PyPi version](https://img.shields.io/pypi/v/coverlovin2.svg?longCache=True&logo=pypi&color=blue&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
+[![PyPi Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True&logo=pypi&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
+[![Commits since](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg?color=yellow&style=flat-square)](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)
 [![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/pypi/l/coverlovin2?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 
 *CoverLovin2* (Cover Loving, too!), Python name *coverlovin2*, is a Python
 script for downloading album cover art images, either via local searching and
@@ -74,7 +74,7 @@ To see what it will do without changing any files
 
 The verbose `--help` message
 
-```Text
+```lang-text
 usage: app.py [-h] [-n IMAGE_NAME] [-i {jpg,png,gif}]
               [-o] [-s*] [-s-] [-sl] [-se] [-sm]
               [-sg] [-sgz {small,medium,large}] [--sgid GID] [--sgkey GKEY]
@@ -352,13 +352,13 @@ Some things the author explored:
 - project badges (are fun _and useful_)!
 - online services
   - CI Services
-    - [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
-    - [Circle CI](https://circleci.com/gh/jtmoon79/coverlovin2)
-    - [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
+    - <img height="10" width="10" src="https://api.iconify.design/simple-icons/travisci.svg?color=yellow"/> [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
+    - <img height="10" width="10" src="https://api.iconify.design/simple-icons/circleci.svg?color=white"/> [Circle CI](https://circleci.com/gh/jtmoon79/coverlovin2)
+    - <img height="10" width="10" src="https://api.iconify.design/simple-icons/codecov.svg?color=red"/> [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
     - [Requires.io](https://requires.io/github/jtmoon79/coverlovin2)
     - ☹ landscape.io ([had too many problems](https://github.com/landscapeio/landscape-issues/issues))
-  - package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
-- [pytests](./coverlovin2/test)!
+  - <img height="10" width="10" src="https://api.iconify.design/simple-icons/pypi.svg?color=yellow"/> package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
+- <img height="10" width="10" src="https://api.iconify.design/simple-icons/pytest.svg?color=yellow"/> [pytests](./coverlovin2/test)!
   - pytest [code coverage](https://pypi.org/project/pytest-cov/)!
 - Rudimentary OAuth 1.0a authentication.
 - type-hinting‼<br/>
