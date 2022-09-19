@@ -18,7 +18,7 @@ ripped Compact Disc albums.
 
 ----
 
-<!-- TOC auto-updated by VS Code -->
+<!-- TOC updated by VS Code extention Markdown All In One -->
 - [CoverLovin2](#coverlovin2)
   - [Script Usage](#script-usage)
     - [Quickstart](#quickstart)
@@ -414,4 +414,4 @@ user-passed options for the `IMAGE_NAME` and `IMAGE_TYPE`.
 
 ----
 
-<a href="https://stackexchange.com/users/216253/jamesthomasmoon1979"><img src="https://stackexchange.com/users/flair/216253.png" width="208" height="58" alt="profile for JamesThomasMoon1979 on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for JamesThomasMoon1979 on Stack Exchange, a network of free, community-driven Q&amp;A sites" /></a>
+<a href="https://stackexchange.com/users/216253/"><img src="https://stackexchange.com/users/flair/216253.png" width="208" height="58" alt="profile for @JamesThomasMoon on Stack Exchange, a network of free, community-driven Q&amp;A sites" title="profile for @JamesThomasMoon on Stack Exchange, a network of free, community-driven Q&amp;A sites" /></a>
