@@ -85,10 +85,10 @@ setup(
         #      However the listed classifier string is not listed at
         #      https://pypi.org/classifiers/
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Multimedia :: Sound/Audio"
     ],
