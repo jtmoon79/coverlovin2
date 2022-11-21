@@ -103,7 +103,17 @@ from pathlib import Path
 import collections  # namedtuple
 import enum  # Enum
 import typing
-from typing import Dict, List, Optional, Tuple, Union
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 # logging and printing
 import logging
@@ -151,9 +161,9 @@ HTTP_POST = "POST"
 
 Artist = typing.NewType("Artist", str)
 Album = typing.NewType("Album", str)
-ArtAlb = typing.NewType("ArtAlb", typing.Tuple[Artist, Album])
+ArtAlb = typing.NewType("ArtAlb", Tuple[Artist, Album])
 
-Headers = typing.NewType("Headers", typing.Dict[str, str])
+Headers = typing.NewType("Headers", Dict[str, str])
 
 
 # add this method to act as __bool__
@@ -174,9 +184,9 @@ def ArtAlb_new(artist: Union[str, Artist], album: Union[str, Album]) -> ArtAlb:
 
 ArtAlb_empty = ArtAlb_new("", "")
 # ('Dir'ectory, 'Art'ist, 'Alb'um)
-DirArtAlb = typing.NewType("DirArtAlb", typing.Tuple[Path, ArtAlb])
-DirArtAlb_List = typing.List[DirArtAlb]
-Path_List = typing.List[Path]
+DirArtAlb = typing.NewType("DirArtAlb", Tuple[Path, ArtAlb])
+DirArtAlb_List = List[DirArtAlb]
+Path_List = List[Path]
 
 
 @attr.s(slots=True, frozen=True)
@@ -226,7 +236,7 @@ class SearcherMedium(enum.Enum):
     NETWORK = "network"
 
     @classmethod
-    def list(cls) -> typing.List[str]:
+    def list(cls) -> List[str]:
         return [sm_.value for sm_ in SearcherMedium]
 
 
@@ -246,7 +256,7 @@ class ImageSize(enum.Enum):
     LRG = "large"
 
     @classmethod
-    def list(cls) -> typing.List[str]:
+    def list(cls) -> List[str]:
         return [is_.value for is_ in ImageSize]
 
 
@@ -299,7 +309,7 @@ class ImageType(enum.Enum):
         return re.escape(self.suffix)
 
     @staticmethod
-    def list() -> typing.List:
+    def list() -> List:
         return [it.value for it in ImageType]
 
     @staticmethod
@@ -330,7 +340,7 @@ class ImageType(enum.Enum):
         return self.value.upper()
 
 
-class Result(typing.NamedTuple):
+class Result(NamedTuple):
     """
     Save the results of ImageSearcher work in a formalized manner. Intended for
     later printing in a meaningful way.
@@ -343,7 +353,7 @@ class Result(typing.NamedTuple):
     """
 
     artalb: Optional[ArtAlb]
-    imagesearcher_type: typing.Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
+    imagesearcher_type: Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
     image_type: Optional[ImageType]
     image_path: Path
     result_written: bool  # bytes that comprise an image were written to `image_path`
@@ -374,7 +384,7 @@ class Result(typing.NamedTuple):
 
     @classmethod
     def SkipDueToNoOverwrite(
-        cls, artalb: Optional[ArtAlb], imagesearcher: typing.Any, image_path: Path, wropts: WrOpts
+        cls, artalb: Optional[ArtAlb], imagesearcher: Any, image_path: Path, wropts: WrOpts
     ):
         if not image_path.exists():
             raise RuntimeError('expected a file that exists, does not "%s"', image_path)
@@ -390,7 +400,7 @@ class Result(typing.NamedTuple):
 
     @classmethod
     def Downloaded(
-        cls, artalb: ArtAlb, imagesearcher: typing.Any, size: int, image_path: Path, wropts: WrOpts
+        cls, artalb: ArtAlb, imagesearcher: Any, size: int, image_path: Path, wropts: WrOpts
     ):
         message = "%sFound %s and downloaded %d bytes from %s" % (
             cls.strt(wropts.test),
@@ -406,7 +416,7 @@ class Result(typing.NamedTuple):
     def Copied(
         cls,
         artalb: ArtAlb,
-        imagesearcher: typing.Any,
+        imagesearcher: Any,
         size: int,
         copy_src: Path,
         copy_dst: Path,
@@ -426,7 +436,7 @@ class Result(typing.NamedTuple):
     def Extracted(
         cls,
         artalb: ArtAlb,
-        imagesearcher: typing.Any,
+        imagesearcher: Any,
         size: int,
         copy_src: Path,
         copy_dst: Path,
@@ -451,7 +461,7 @@ class Result(typing.NamedTuple):
         )
 
     @classmethod
-    def Error(cls, artalb: ArtAlb, imagesearcher: typing.Any, copy_dst: Path, err_msg: str):
+    def Error(cls, artalb: ArtAlb, imagesearcher: Any, copy_dst: Path, err_msg: str):
         message = "An error occurred for %s %s" % (str_ArtAlb(artalb), err_msg)
         return Result(
             artalb,
@@ -571,8 +581,8 @@ def func_name(foffset: int = 0) -> str:
 
 
 def split_parameters(
-    parm_str: str, keys_ret: typing.Sequence[str], maxsplit: int = -1
-) -> typing.Tuple[str, ...]:
+    parm_str: str, keys_ret: Sequence[str], maxsplit: int = -1
+) -> Tuple[str, ...]:
     """
     given a `parm_str` like "a=1&bb=22&ccc=333", return the values of `keys_ret`
     helper to do some more pro-active checking as it goes
@@ -607,7 +617,7 @@ def split_parameters(
     return tuple(ret)
 
 
-def preferences_file() -> (Path, typing.Any):
+def preferences_file() -> Tuple[Path, Any]:
     """
     find the most suitable `pypref` Preferences path
     """
@@ -1045,7 +1055,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
         self.copy_dst = image_path  # type: Path
         super().__init__(artalb, image_type, wropts, loglevel)
 
-    def _match_likely_name(self, files: typing.Sequence[Path]) -> Optional[Path]:
+    def _match_likely_name(self, files: Sequence[Path]) -> Optional[Path]:
         """
         Given a sequence of image files (Paths), find the most likely album cover
         match by analyzing the image file name.
@@ -1066,7 +1076,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
 
         # file path candidates keyed by integer preference (lower key value is
         # better)
-        candidates_by_pref: typing.DefaultDict[int, typing.List[Path]] = collections.defaultdict(
+        candidates_by_pref: DefaultDict[int, List[Path]] = collections.defaultdict(
             list
         )
 
@@ -2105,7 +2115,7 @@ class Discogs_Downloader_PAT(Discogs_Downloader):
 
     NAME = __qualname__
 
-    def __init__(self, discogs_token: str, *args: Tuple[typing.Any]):
+    def __init__(self, discogs_token: str, *args: Tuple[Any]):
         self.pat_token = discogs_token
         super().__init__(*args)
 
@@ -2179,7 +2189,7 @@ class Discogs_Downloader_OAuth(Discogs_Downloader):
     DISCOGS_CONSUMER_KEY = "Erroneous Consumer Key"
     DISCOGS_CONSUMER_SECRET = "Erroneous Consumer Secret"
 
-    def __init__(self, *args: Tuple[typing.Any]):
+    def __init__(self, *args: Tuple[Any]):
         super().__init__(*args)
         self._oauth = dict()
         self._oauth.update(
@@ -2803,7 +2813,7 @@ def process_dir(
 
 
 def process_dirs(
-    dirs: typing.List[Path],
+    dirs: List[Path],
     image_name: str,
     image_type: ImageType,
     overwrite: bool,
@@ -2998,23 +3008,23 @@ def process_tasks(task_queue: queue.Queue, result_queue: queue.SimpleQueue) -> N
 
 def parse_args_opts(
     args=None,
-) -> (
+) -> Tuple[
     List[Path],
     ImageType,
     str,
-    (
+    Tuple[
         bool,
         bool,
         bool,
         bool,
         bool,
-    ),
+    ],
     GoogleCSE_Opts,
     Discogs_Args,
     str,
     WrOpts,
     int,
-):
+]:
     """parse command line arguments and options"""
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -3449,7 +3459,7 @@ def main() -> int:
     # done with all the hard work
 
     # pop all result from the queue into a list
-    results: typing.List[Result] = []
+    results: List[Result] = []
     try:
         while True:
             result = result_queue.get_nowait()
