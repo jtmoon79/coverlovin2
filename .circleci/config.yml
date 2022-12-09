@@ -9,7 +9,7 @@ jobs:
   prep_workspace_cache:
     docker:
       # see https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - checkout
       - run:
@@ -76,7 +76,7 @@ jobs:
             - project
   test_python36:
     docker:
-      - image: circleci/python:3.6
+      - image: cimg/python:3.6
     steps:
       - attach_workspace:
           at: ~/
@@ -102,7 +102,7 @@ jobs:
             exit 1
   test_pytest:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - attach_workspace:
           at: ~/
@@ -118,7 +118,7 @@ jobs:
             "${PIPENV}" run pytest -vv coverlovin2/test
   build_pypi:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - attach_workspace:
           at: ~/
