@@ -136,7 +136,12 @@ workflows:
   version: 2
   workflow_prep_test_build:
     jobs:
-      - prep_workspace_cache
+      - prep_workspace_cache:
+          filters:
+            branches:
+              only:
+                - master
+                - circleci
       - test_python36:
           requires:
             - prep_workspace_cache
