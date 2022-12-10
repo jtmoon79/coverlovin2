@@ -9,13 +9,15 @@ set -e
 set -u
 set -o pipefail
 
-coverlovin="$(dirname -- "${0}")/../app.py"
+coverlovin="./coverlovin2/app.py"
+runs_input=${1:-$(realpath -- "$(dirname -- "${0}")")/runs.local.example}
 
-which python
+(set -x
 python --version
+)
 sleep 0.5
 
-runs_input=${1:-$(dirname -- "${0}")/runs.local.example}
+cd "$(dirname -- "${0}")/.."
 
 while read line; do
     if [[ -z "${line}" ]] || [[ '#' = "${line:0:1}" ]]; then
