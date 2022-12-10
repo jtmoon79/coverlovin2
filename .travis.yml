@@ -32,7 +32,7 @@ matrix:
       dist: jammy
 install:
   - pip install --disable-pip-version-check pipenv
-  - pipenv install --dev
+  - pipenv install --dev --verbose
   # Issue #23
   - pip list -vvv
   - pip install --disable-pip-version-check pipdeptree
