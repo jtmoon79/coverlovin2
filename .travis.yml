@@ -33,7 +33,10 @@ matrix:
 install:
   - pip install --disable-pip-version-check pipenv
   - pipenv install --dev
+  # Issue #23
   - pip list -vvv
+  - pip install --disable-pip-version-check pipdeptree
+  - pipdeptree
 before_script:
   # the executable bit is not set on scripts under `tools/`, so force it
   - chmod -vR +x,-w -- ./tools/
