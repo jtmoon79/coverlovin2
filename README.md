@@ -1,6 +1,6 @@
 # CoverLovin2 <!-- omit in toc -->
 
-[![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
+[![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?branch=master&style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
 [![CircleCI](https://img.shields.io/circleci/build/gh/jtmoon79/coverlovin2.svg?logo=circleci&style=flat-square)](https://circleci.com/gh/jtmoon79/coverlovin2)
 [![codecov.io code coverage](https://img.shields.io/codecov/c/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=codecov)](https://codecov.io/gh/jtmoon79/coverlovin2)
 [![coveralls code coverage](https://img.shields.io/coveralls/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=coveralls)](https://coveralls.io/github/jtmoon79/coverlovin2)
