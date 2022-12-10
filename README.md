@@ -1,4 +1,4 @@
-# CoverLovin2
+# CoverLovin2 <!-- omit in toc -->
 
 [![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
 [![CircleCI](https://img.shields.io/circleci/build/gh/jtmoon79/coverlovin2.svg?logo=circleci&style=flat-square)](https://circleci.com/gh/jtmoon79/coverlovin2)
@@ -19,29 +19,28 @@ ripped Compact Disc albums.
 ----
 
 <!-- TOC updated by VS Code extention Markdown All In One -->
-- [CoverLovin2](#coverlovin2)
-  - [Script Usage](#script-usage)
-    - [Quickstart](#quickstart)
-    - [Recommended use](#recommended-use)
-    - [`--help`](#--help)
-    - [Common Media Player expectations](#common-media-player-expectations)
-  - [Installation](#installation)
-  - [Invocation](#invocation)
-  - [Development](#development)
-    - [First development session](#first-development-session)
-      - [Using `pipenv`](#using-pipenv)
-      - [Using `pip`](#using-pip)
-    - [Subsequent development sessions](#subsequent-development-sessions)
-      - [Using `pipenv`](#using-pipenv-1)
-        - [pipenv](#pipenv)
-        - [pipenv update](#pipenv-update)
-      - [Using `pip`](#using-pip-1)
-      - [pytest](#pytest)
-      - [build](#build)
-      - [new release](#new-release)
-  - [Other Miscellaneous Notes](#other-miscellaneous-notes)
-    - [Issues‼  🐛 🐵](#issues---)
-    - [Run Phases](#run-phases)
+- [Script Usage](#script-usage)
+  - [Quickstart](#quickstart)
+  - [Recommended use](#recommended-use)
+  - [`--help`](#--help)
+  - [Common Media Player expectations](#common-media-player-expectations)
+- [Installation](#installation)
+- [Invocation](#invocation)
+- [Development](#development)
+  - [First development session](#first-development-session)
+    - [Using `pipenv`](#using-pipenv)
+    - [Using `pip`](#using-pip)
+  - [Subsequent development sessions](#subsequent-development-sessions)
+    - [Using `pipenv`](#using-pipenv-1)
+      - [pipenv](#pipenv)
+      - [pipenv update](#pipenv-update)
+    - [Using `pip`](#using-pip-1)
+    - [pytest](#pytest)
+    - [build](#build)
+    - [new release](#new-release)
+- [Other Miscellaneous Notes](#other-miscellaneous-notes)
+  - [Issues‼  🐛 🐵](#issues---)
+  - [Run Phases](#run-phases)
 
 ## Script Usage
 
