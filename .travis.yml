@@ -31,8 +31,9 @@ matrix:
       python: 3.11
       dist: jammy
 install:
-  - pip install pipenv
+  - pip install --disable-pip-version-check pipenv
   - pipenv install --dev
+  - pip list -vvv
 before_script:
   # the executable bit is not set on scripts under `tools/`, so force it
   - chmod -vR +x,-w -- ./tools/
