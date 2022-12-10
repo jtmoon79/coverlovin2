@@ -310,6 +310,8 @@ Update `Pipfile.lock` with the latest libraries
     git add Pipfile.lock Pipfile
     git commit -v -m "pipenv update"
 
+`pipenv update` succeeds more often when run under Windows.
+
 #### Using `pip`
 
     python -m pip install --upgrade -e ".[dev]"
