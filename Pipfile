@@ -40,7 +40,8 @@ yamllint = "*"
 
 [win-packages]
 # $ pipenv install --win
-py2exe = "*"
+# XXX: commented the next line due to https://github.com/pypa/pipenv/issues/6005
+# py2exe = "*"
 
 [pipenv]
 allow_prereleases = false
