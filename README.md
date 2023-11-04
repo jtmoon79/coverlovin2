@@ -306,9 +306,37 @@ Start the `pipenv` shell (bash)
 
 Update `Pipfile.lock` with the latest libraries
 
-    pipenv update
-    git add Pipfile.lock Pipfile
-    git commit -v -m "pipenv update"
+1. force upgrade within pip virtual environment
+
+       python -m pip install --upgrade \
+         attrs \
+         discogs-client \
+         musicbrainzngs \
+         mutagen \
+         Pillow \
+         tabulate
+
+   The listing of packages should follow those found in `Pipfile`.
+
+2. run pytests (they must pass)
+
+       python -m pip install pytest pytest-dependency
+       python -m pytest ./coverlovin2
+
+3. manually note versions installed
+
+       python -m pip list -v
+
+4. tweak versions in `Pipfile` and `setup.py` the with `pip list` versions
+
+5. update `Pipfile.lock`
+
+       python -m pipenv update
+
+6. commit changes
+
+       git add Pipfile.lock Pipfile setup.py
+       git commit -v -m "pipenv update"
 
 `pipenv update` succeeds more often when run under Windows.
 

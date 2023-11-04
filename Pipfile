@@ -4,20 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-# $ pipenv install
-# this should match `setup.py:setup.install_requires`
+# See README.md section `pipenv update` for help updating.
 #
-# To update:
-# 1. force upgrade within pip virtual environment
-#      python -m pip install --upgrade attrs discogs-client musicbrainzngs mutagen Pillow tabulate
-# 2. run pytests (they must pass)
-# 3. manually note versions installed
-#      python -m pip list -v
-# 4. tweak below versions with `pip list` versions
-# 5. update Pipfile.lock
-#      python -m pipenv update
-# 6. commit changes
-#      git add Pipfile Pipfile.lock setup.py
+# These versions should match `setup.py:setup.install_requires`
 #
 # XXX: these versions should match those in file setup.py
 #
