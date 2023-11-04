@@ -46,12 +46,12 @@ setup(
     license="Apache License 2.0 (Apache-2.0)",
     install_requires=[
         # this should match `Pipfile [packages]`
-        "attrs == 22.1.0",
+        "attrs == 23.1.0",
         #"discogs-client == 2.3.0",
-        "requests == 2.28.1",
+        "requests == 2.31.0",
         "musicbrainzngs == 0.7.1",
-        "mutagen == 1.46.0",
-        "Pillow == 9.3.0",
+        "mutagen == 1.47.0",
+        "Pillow == 10.1.0",
         "tabulate == 0.9.0",
     ],
     setup_requires=["wheel"],
