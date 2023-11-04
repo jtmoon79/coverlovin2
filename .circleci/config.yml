@@ -74,29 +74,6 @@ jobs:
           root: ~/
           paths:
             - project
-  test_python36:
-    docker:
-      - image: cimg/python:3.6
-    steps:
-      - attach_workspace:
-          at: ~/
-      - restore_cache:
-          key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          name: test coverlovin2 refuses to run under python 3.6
-          command: |
-            set -euxo pipefail
-            if ! python --version | grep -qFe ' 3.6'; then
-                echo 'ERROR: wrong python version' "$(python --version)" >&2
-                exit 1
-            fi
-            [ -f coverlovin2/app.py ]
-            # this should fail to run
-            if ! python coverlovin2/app.py --version &>/dev/null; then
-              exit 0
-            fi
-            echo 'ERROR: python version' "$(python --version)" 'should not have run successfully' >&2
-            exit 1
   test_pytest:
     docker:
       - image: cimg/python:3.7
