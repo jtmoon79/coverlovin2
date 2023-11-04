@@ -15,7 +15,7 @@ jobs:
       - run:
           name: prepare a Circle CI workspace, prepare a Circle CI cache, save environment variables for pipenv in the workspace
           command: |
-            set -x
+            set -eux
 
             echo -e "\n\n### record information about the shell context\n\n"
             pwd
@@ -85,10 +85,7 @@ jobs:
       - run:
           name: test coverlovin2 refuses to run under python 3.6
           command: |
-            set -e
-            set -u
-            set -o pipefail
-            set -x
+            set -euxo pipefail
             if ! python --version | grep -qFe ' 3.6'; then
                 echo 'ERROR: wrong python version' "$(python --version)" >&2
                 exit 1
@@ -111,7 +108,7 @@ jobs:
       - run:
           name: test coverlovin2 pytests
           command: |
-            set -x
+            set -eux
             pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
@@ -127,7 +124,7 @@ jobs:
       - run:
           name: create a wheels build that is suitable for pypi, test it can install and run
           command: |
-            set -x
+            set -eux
             pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
