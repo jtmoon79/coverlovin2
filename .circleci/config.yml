@@ -112,7 +112,7 @@ jobs:
             pwd
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
-            "${PIPENV}" run pytest -vv coverlovin2/test
+            python -m pytest -v ./coverlovin2/test
   build_pypi:
     docker:
       - image: cimg/python:3.7
