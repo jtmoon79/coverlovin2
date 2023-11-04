@@ -64,6 +64,7 @@ jobs:
             pipenv run pip install --upgrade setuptools wheel
             # log contents of shell environment file
             cat -- "${SHELL_ENV}"
+            pipenv run pip list -v
       - save_cache:
           name: cache of pipenv installs
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
