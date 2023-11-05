@@ -67,7 +67,7 @@ setup(
             "pytest",
             "pytest-cov",
             "pytest-dependency",
-            "pyyaml>=4.2b1"
+            "pyyaml>=4.2b1",
             "setuptools",
             "twine",
             "wheel",

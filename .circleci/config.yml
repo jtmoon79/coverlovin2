@@ -66,6 +66,9 @@ jobs:
             # log contents of shell environment file
             cat -- "${SHELL_ENV}"
             pipenv run pip list -v
+            # force installs using `setup.py`, workaround for Issue #29
+            pipenv run pip install '.[extras]'
+            pipenv run pip list -v
       - save_cache:
           name: cache of pipenv installs
           key: cache-{{ .Environment.CACHE_VERSION }}-{{ .Branch }}-{{ arch }}-{{ checksum "Pipfile.lock" }}
