@@ -55,6 +55,7 @@ jobs:
             echo -e 'export PIPENV_VIRTUALENV="'"${PIPENV_VIRTUALENV}"'"' >> "${SHELL_ENV}"
             echo -e 'export WORKON_HOME="'"${WORKON_HOME}"'"' >> "${SHELL_ENV}"
             # install all dependencies (which should include pipenv)
+            cat -- Pipfile
             pipenv install --dev
             # upgrade pipenv to latest within the virtualenv
             pipenv run pip install --upgrade pipenv
