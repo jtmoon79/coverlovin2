@@ -3,13 +3,15 @@
 # environment variable CACHE_VERSION value is set at
 # https://circleci.com/gh/jtmoon79/coverlovin2/edit#env-vars
 #
+# CircleCI image list at
+# # see https://circleci.com/docs/2.0/circleci-images/
+#
 ---
 version: 2.1
 jobs:
   prep_workspace_cache:
     docker:
-      # see https://circleci.com/docs/2.0/circleci-images/
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -81,7 +83,7 @@ jobs:
             - project
   test_pytest:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - attach_workspace:
           at: ~/
@@ -98,7 +100,7 @@ jobs:
             "${PIPENV}" run pytest -v ./coverlovin2/test
   build_pypi:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - attach_workspace:
           at: ~/
