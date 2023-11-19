@@ -87,6 +87,7 @@ import io  # BytesIO
 import json
 import os
 import time
+from typing_extensions import Self
 import re
 import shutil  # copy2
 import tempfile
@@ -311,11 +312,11 @@ class ImageType(enum.Enum):
         return re.escape(self.suffix)
 
     @staticmethod
-    def list() -> List:
+    def list() -> List[str]:
         return [it.value for it in ImageType]
 
     @staticmethod
-    def ImageFromFormat(fmt: str):
+    def ImageFromFormat(fmt: str) -> Optional[Self]:
         """
         from PIL.Image.format string to corresponding ImageType instance
         return None if none found
@@ -387,7 +388,7 @@ class Result(NamedTuple):
     @classmethod
     def SkipDueToNoOverwrite(
         cls, artalb: Optional[ArtAlb], imagesearcher: Any, image_path: Path, wropts: WrOpts
-    ):
+    ) -> Self:
         if not image_path.exists():
             raise RuntimeError('expected a file that exists, does not "%s"', image_path)
         if wropts.overwrite:
@@ -403,7 +404,7 @@ class Result(NamedTuple):
     @classmethod
     def Downloaded(
         cls, artalb: ArtAlb, imagesearcher: Any, size: int, image_path: Path, wropts: WrOpts
-    ):
+    ) -> Self:
         message = "%sFound %s and downloaded %d bytes from %s" % (
             cls.strt(wropts.test),
             str_ArtAlb(artalb),
@@ -423,7 +424,7 @@ class Result(NamedTuple):
         copy_src: Path,
         copy_dst: Path,
         wropts: WrOpts,
-    ):
+    ) -> Self:
         source = "?"
         if imagesearcher is ImageSearcher_EmbeddedMedia:
             source = 'embedded image in "%s"' % copy_src.name
@@ -443,7 +444,7 @@ class Result(NamedTuple):
         copy_src: Path,
         copy_dst: Path,
         wropts: WrOpts,
-    ):
+    ) -> Self:
         message = '%sExtracted %d pixels from embedded media "%s"' % (
             cls.strt(wropts.test),
             size,
@@ -463,7 +464,7 @@ class Result(NamedTuple):
         )
 
     @classmethod
-    def Error(cls, artalb: ArtAlb, imagesearcher: Any, copy_dst: Path, err_msg: str):
+    def Error(cls, artalb: ArtAlb, imagesearcher: Any, copy_dst: Path, err_msg: str) -> Self:
         message = "An error occurred for %s %s" % (str_ArtAlb(artalb), err_msg)
         return Result(
             artalb,
@@ -524,7 +525,7 @@ def str_ArtAlb(artalb: ArtAlb) -> str:
     return str_AA(artalb[0], artalb[1])
 
 
-def log_new(logformat: str, level: int, logname: str = None) -> logging.Logger:
+def log_new(logformat: str, level: int, logname: Optional[str] = None) -> logging.Logger:
     """
     Create a new logger instance or return the prior-created logger instance
     that has the same logname.
@@ -641,7 +642,7 @@ def preferences_file() -> Tuple[Path, Any]:
         home,
         tmpd,
     ):
-        if not configd:
+        if configd is None:
             continue
         if configd.is_dir() and os.access(configd, os.W_OK):
             break
@@ -978,7 +979,8 @@ class ImageSearcher(abc.ABC):
             log_.exception(err, exc_info=True)
             return bytes()
 
-        return response.read()
+        data: bytes = response.read()
+        return data
 
     def write_album_image(self, image_path: Path) -> Result:
         """
