@@ -59,19 +59,22 @@ setup(
     extras_require={
         # this should match `Pipfile [dev-packages]`
         "dev": [
-            "attrs",
             "codecov",
             "coveralls",
+            "exceptiongroup",
             "mypy",
             "pip-run",
             "pipenv",
+            "pluggy",
             "pytest",
             "pytest-cov",
             "pytest-dependency",
             "pyyaml>=4.2b1",
             "setuptools",
-            "types-setuptools",
             "twine",
+            "types-requests == 2.31.0.10",
+            "types-setuptools",
+            "types-tabulate == 0.9.0.3",
             "wheel",
             "yamllint",
         ]
@@ -93,17 +96,17 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
-        "Topic :: Multimedia :: Sound/Audio"
+        "Topic :: Multimedia :: Sound/Audio",
     ],
     keywords="audio image music",
     python_requires=">=3.7",
     # XXX: should Pipfile* also be distributed???
     packages=find_packages(
         exclude=("coverlovin2.test",),
-        include=("coverlovin2",)
+        include=("coverlovin2",),
     ),
     #scripts=["coverlovin2/app.py"],
-    py_modules=("coverlovin2.__main__",),  # enables `python -m coverlovin2`
+    py_modules=["coverlovin2.__main__"],  # enables `python -m coverlovin2`
     entry_points={
         # see
         # https://setuptools.pypa.io/en/latest/userguide/entry_point.html#console-scripts
