@@ -69,6 +69,7 @@ setup(
             "pytest-dependency",
             "pyyaml>=4.2b1",
             "setuptools",
+            "types-setuptools",
             "twine",
             "wheel",
             "yamllint",
