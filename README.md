@@ -27,6 +27,7 @@ ripped Compact Disc albums.
   - [Common Media Player expectations](#common-media-player-expectations)
 - [Installation](#installation)
 - [Invocation](#invocation)
+  - [Run Phases](#run-phases)
 - [Development](#development)
   - [First development session](#first-development-session)
     - [Using `pipenv`](#using-pipenv)
@@ -41,7 +42,6 @@ ripped Compact Disc albums.
     - [new release](#new-release)
 - [Other Miscellaneous Notes](#other-miscellaneous-notes)
   - [Issues‼  🐛 🐵](#issues---)
-  - [Run Phases](#run-phases)
 
 ## Script Usage
 
@@ -255,6 +255,21 @@ As a [`pipx`](https://pypi.org/project/pipx/) program
 
 See script [execution-modes](./tools/execution-modes.sh).
 
+### Run Phases
+
+coverlovin2 runs in a few phases:
+
+1. recursively search passed directory paths for "album" directories. An "album"
+directory merely holds audio files of type `.mp3`, `.m4a`, `.mp4`, `.flac`,
+`.ogg`, `.wma`, or `.asf`. (see [`coverlovin2/app.py::AUDIO_TYPES`](./coverlovin2/app.py)).
+2. employ a few techniques for determining the artist and album for that
+directory.  The most reliable technique is to read available embedded audio tags
+within the directory. (see [`coverlovin2/app.py::process_dir`](./coverlovin2/app.py))
+3. using user-passed search options, search for the album cover art image file.
+4. if album cover art is found, create that image file into the "album"
+directory. The name and type of image (`.jpg`, `.png`, `.gif`) is based on
+user-passed options for the `IMAGE_NAME` and `IMAGE_TYPE`.
+
 ## Development
 
 ### First development session
@@ -424,23 +439,6 @@ course of writing this application:
 🐛 [python/mypy #6473](https://github.com/python/mypy/issues/6473)
 
 🐛 [ant-druha/PowerShell #16](https://github.com/ant-druha/PowerShell/issues/16)
-
-### Run Phases
-
-coverlovin2 runs in a few phases:
-
-1. recursively search passed directory paths for "album" directories. An "album"
-directory merely holds audio files of type `.mp3`, `.m4a`, `.mp4`, `.flac`,
-`.ogg`, `.wma`, or `.asf`. (see [`coverlovin2/app.py::AUDIO_TYPES`](./coverlovin2/app.py)).
-2. employ a few techniques for determining the artist and album for that
-directory.  The most reliable technique is to read available embedded audio tags
-within the directory. (see [`coverlovin2/app.py::process_dir`](./coverlovin2/app.py))
-3. using user-passed search options, search for the album cover art image file.
-4. if album cover art is found, create that image file into the "album"
-directory. The name and type of image (`.jpg`, `.png`, `.gif`) is based on
-user-passed options for the `IMAGE_NAME` and `IMAGE_TYPE`.
-
-<br/>
 
 ----
 
