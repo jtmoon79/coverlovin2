@@ -40,7 +40,7 @@ __frame_dirpath__ = os.path.dirname(os.path.relpath(__frame_filename__))
 sys.path.insert(0, __frame_dirpath__)
 
 # do relative import
-from .__init__ import (
+from __init__ import (
     NAME,
     __url__,
     __url_source__,
