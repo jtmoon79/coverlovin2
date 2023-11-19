@@ -16,16 +16,11 @@ try {
         }
     }
     if (-not (Get-Variable 'Python' -Scope 'Global' -ErrorAction 'Ignore')) {
-        $pyver = "3.9"
-        Write-Debug ('$env:Python not set, searching for Python install' + " $pyver")
-        $py = "C:\Windows\py.exe"
-        Get-ChildItem -Path $py | Out-Null  # test path exists
-        $Python = & py "-$pyver" -c "import sys;print(sys.executable)"
-        #$pipenv = & py "-$pyver" -c "import sys;import os;print(os.path.join(os.path.dirname(sys.executable), 'Scripts', 'pipenv'));"
+        $Python = Get-Command -Name "python.exe"
     }
 
     # update the shell window title with information about the virtual environment
-    $py_ver = & $Python --version
+    & $Python --version
     if (-not $?) {
         throw "ERROR: command failed: $Python --version"
     }
