@@ -340,20 +340,17 @@ class Test_ImageSearcher(object):
     def test_net_access_ping(self):
         """check Internet access. ping of known stable IP."""
         # TODO: complete this!
-        pass
 
     @pytest.mark.dependency(name="net_access_dns",
                             depends=["net_access_ping"])
     def test_net_access_dns(self):
         """check Internet access. attempt DNS lookup."""
         # TODO: complete this!
-        pass
 
     @pytest.mark.dependency(name="net_access", depends=["net_access_ping",
                                                         "net_access_dns"])
     def test_net_access(self):
         """Wrapper of two net access dependency for simpler `depends` params"""
-        pass
 
     @pytest.mark.dependency(name="init_is")
     def test_init(self):
