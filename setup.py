@@ -14,6 +14,7 @@ https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-cre
 Run this `setup.py` with:
 
     python -m pip install --editable .
+    python -m pip install --editable ".[dev]"
 
 """
 
