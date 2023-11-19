@@ -2,9 +2,9 @@
 
 # CoverLovin2 <!-- omit in toc -->
 
-[![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?branch=master&style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
-[![CircleCI](https://img.shields.io/circleci/build/gh/jtmoon79/coverlovin2.svg?logo=circleci&style=flat-square)](https://circleci.com/gh/jtmoon79/coverlovin2)
-[![codecov.io code coverage](https://img.shields.io/codecov/c/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=codecov)](https://codecov.io/gh/jtmoon79/coverlovin2)
+<!--[![Travis build](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?branch=master&style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)-->
+[![CircleCI build](https://img.shields.io/circleci/build/gh/jtmoon79/coverlovin2.svg?logo=circleci&style=flat-square)](https://circleci.com/gh/jtmoon79/coverlovin2)
+<!--[![codecov.io code coverage](https://img.shields.io/codecov/c/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=codecov)](https://codecov.io/gh/jtmoon79/coverlovin2)-->
 [![coveralls code coverage](https://img.shields.io/coveralls/github/jtmoon79/coverlovin2/branch?main&token=Q2OXTL7U02&style=flat-square&logo=coveralls)](https://coveralls.io/github/jtmoon79/coverlovin2)
 [![PyPi version](https://img.shields.io/pypi/v/coverlovin2.svg?longCache=True&logo=pypi&color=blue&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
 [![PyPi Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True&logo=pypi&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
@@ -394,14 +394,17 @@ coverlovin2 is a practice project for sake of the author catching up to changes
 in the Python Universe and the github Universe.<br/>
 Some things the author explored:
 
+
+
 - project badges (are fun _and useful_)!
 - online services
   - CI Services
-    - <img height="10" width="10" src="https://api.iconify.design/simple-icons/travisci.svg?color=yellow"/> [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
+    - ☹ _disabled as of November 2020_ <img height="10" width="10" src="https://api.iconify.design/simple-icons/travisci.svg?color=yellow"/> [Travis CI](https://travis-ci.com/jtmoon79/coverlovin2)
     - <img height="10" width="10" src="https://api.iconify.design/simple-icons/circleci.svg?color=white"/> [Circle CI](https://circleci.com/gh/jtmoon79/coverlovin2)
-    - <img height="10" width="10" src="https://api.iconify.design/simple-icons/codecov.svg?color=red"/> [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
-    - [Requires.io](https://requires.io/github/jtmoon79/coverlovin2)
-    - ☹ landscape.io ([had too many problems](https://github.com/landscapeio/landscape-issues/issues))
+    - ☹ _disabled as of November 2023_ <img height="10" width="10" src="https://api.iconify.design/simple-icons/codecov.svg?color=red"/> [codecov.io](https://codecov.io/gh/jtmoon79/coverlovin2)
+    - <svg fill="#3F5767" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" height="10" width="10"><title>Coveralls</title><path d="M0 12v12h24V0H0zm13.195-6.187l1.167 3.515 2.255.005c1.238.005 2.916.019 3.727.037l1.472.028-2.968 2.152c-1.63 1.181-2.976 2.18-2.99 2.212-.01.033.487 1.627 1.106 3.54.619 1.917 1.12 3.487 1.116 3.492-.005.01-1.35-.947-2.986-2.119-1.636-1.177-3-2.147-3.033-2.161-.028-.01-1.411.947-3.07 2.138-1.655 1.185-3.02 2.151-3.024 2.142-.004-.005.497-1.575 1.116-3.492.619-1.913 1.115-3.507 1.106-3.54-.014-.032-1.36-1.03-2.99-2.212L2.23 9.398l1.472-.028c.811-.018 2.49-.032 3.727-.037l2.254-.005 1.168-3.515a512.54 512.54 0 011.171-3.516c.005 0 .53 1.58 1.172 3.516z"/></svg> [coveralls.io](https://coveralls.io/github/jtmoon79/coverlovin2)
+    - ☹ _service was shutdown_ [Requires.io](https://requires.io/github/jtmoon79/coverlovin2)
+    - ☹ _too buggy_ [landscape.io](https://github.com/landscapeio/landscape-issues/issues)
   - <img height="10" width="10" src="https://api.iconify.design/simple-icons/pypi.svg?color=yellow"/> package distribution service [pypi](https://pypi.org/project/CoverLovin2/)
 - <img height="10" width="10" src="https://api.iconify.design/simple-icons/pytest.svg?color=yellow"/> [pytests](./coverlovin2/test)!
   - pytest [code coverage](https://pypi.org/project/pytest-cov/)!
