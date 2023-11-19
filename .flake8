@@ -10,3 +10,7 @@ exclude =
     dist
 max-complexity = 10
 max-line-length = 100
+
+per-file-ignores =
+    app.py: C0413  # wrong-import-position
+    app.py: E402  # module level import not at top of file
