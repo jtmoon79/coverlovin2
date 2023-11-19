@@ -383,7 +383,13 @@ class Test_ImageSearcher_LikelyCover(object):
     def _new_imagesearcher_likelycover(image_type: ImageType = jpg) ->\
             ImageSearcher_LikelyCover:
         """return a new bland instance of ImageSearcher_LikelyCover"""
-        return ImageSearcher_LikelyCover(ArtAlb_empty, image_type, Path(''), WrOpts(False, False), True)
+        return ImageSearcher_LikelyCover(
+            ArtAlb_empty,
+            image_type,
+            Path(""),
+            WrOpts(False, False),
+            True,
+        )
 
     @pytest.mark.dependency(name='init_likelyc')
     def test_init(self):
