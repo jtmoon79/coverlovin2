@@ -39,8 +39,7 @@ __frame_filename__ = inspect.getframeinfo(inspect.currentframe()).filename
 __frame_dirpath__ = os.path.dirname(os.path.relpath(__frame_filename__))
 sys.path.insert(0, __frame_dirpath__)
 
-# do relative import
-from .__init__ import (
+from . import (
     NAME,
     __url__,
     __url_source__,
