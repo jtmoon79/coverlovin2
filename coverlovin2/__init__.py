@@ -7,7 +7,7 @@ __url__ = "https://github.com/jtmoon79/coverlovin2"
 __url_source__ = __url__
 __url_project__ = "https://pypi.org/project/CoverLovin2/"
 __app_name__ = "CoverLovin2"
-__version__ = "0.7.4"
+__version__ = "0.7.5"
 __product_token__ = __app_name__ + "/" + __version__
 """
 Product Token should follow RFC #1945, used for Discogs requests
