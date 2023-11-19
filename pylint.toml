@@ -1,0 +1,29 @@
+# pylint.toml
+
+[tool.pylint.main]
+ignore-patterns = ["^\\.#"]
+
+py-version = "3.8"
+
+[tool.pylint.basic]
+no-docstring-rgx = "^_"
+
+[tool.pylint."messages control"]
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "invalid-name",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "use-implicit-booleaness-not-comparison-to-string",
+    "use-implicit-booleaness-not-comparison-to-zero",
+    "wrong-import-position",
+    "wrong-import-order"
+]
+
+[tool.pylint.variables]
+ignored-argument-names = "_.*|^ignored_|^unused_"
