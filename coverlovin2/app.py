@@ -34,9 +34,15 @@ accomplish what is needed for the user.
 import os.path
 import sys
 
-__frame_dirpath__ = os.path.realpath(os.path.dirname(__file__))
-sys.path.insert(0, __frame_dirpath__)
-print("sys.path.insert(%r)" % __frame_dirpath__)
+
+# HACK: if built with py2exe and run as an .exe then exception
+#           NameError: name '__file__' is not defined
+#       force __file__ to be defined
+if "__file__" not in globals():
+    __file__ = ".\\app.py"
+
+__path_here__ = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, __path_here__)
 
 from coverlovin2 import (
     NAME,
@@ -50,12 +56,6 @@ from coverlovin2 import (
 sys.path.pop(0)
 
 # HACK: End workaround for Python's exasperating package+import system.
-
-# HACK: if built with py2exe and run as an .exe then exception
-#           NameError: name '__file__' is not defined
-#       force __file__ to be defined
-if "__file__" not in globals():
-    __file__ = "app.py"
 
 #
 # stdlib imports
