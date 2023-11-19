@@ -8,8 +8,8 @@ set -o pipefail
 
 cd "$(dirname -- "${0}")/.."
 
-# get path to pipenv installed with local python 3.7 installation
-ver='3.7'
+# get path to pipenv installed with local python 3.8 installation
+ver='3.8'
 python='python'
 pipenv='pipenv'
 

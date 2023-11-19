@@ -1,5 +1,6 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# test_coverlovin2.py
 
 """
 Test the coverlovin2 project using pytest.

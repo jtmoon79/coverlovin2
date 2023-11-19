@@ -52,7 +52,7 @@ version=$(python -B -c 'from coverlovin2 import app as ca;print(ca.__version__, 
 # (usually, `basename $PWD` is 'coverlovin2' but on circleci it's 'project')
 cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3-none-any.whl")
 if ! [[ -f "${cv_whl}" ]]; then
-    cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3.7-none-any.whl")
+    cv_whl=$(readlink -f -- "./dist/CoverLovin2-${version}-py3.8-none-any.whl")
 fi
 
 # install the wheel (must be done outside the project directory)

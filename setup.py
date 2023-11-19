@@ -105,7 +105,7 @@ setup(
         "Topic :: Multimedia :: Sound/Audio",
     ],
     keywords="audio image music",
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     # XXX: should Pipfile* also be distributed???
     packages=find_packages(
         exclude=("coverlovin2.test",),

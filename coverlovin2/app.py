@@ -67,12 +67,12 @@ if "__file__" not in globals():
 #      do this check sooner so the user does not install non-standard libraries
 #      (due to import failures) only to find out they used the wrong version of
 #      Python 3
-if sys.version_info < (3, 7):
+if sys.version_info < (3, 8):
     raise RuntimeError(
-        "This script is meant for python 3.7 or newer. It will"
+        "This script is meant for python 3.8 or newer. It will"
         " fail using this python version %s" % sys.version
     )
-_: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.7 (most likely pip)
+_: bool = True  # SyntaxError here means file is parsed (but not run) by interpreter <3.8 (most likely pip)
 
 # XXX: workaround for https://github.com/pytest-dev/pytest/issues/4843
 if "pytest" not in sys.modules:
