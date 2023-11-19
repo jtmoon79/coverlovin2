@@ -10,6 +10,11 @@ and instructions at
 https://setuptools.pypa.io/en/latest/userguide/keywords.html
 https://packaging.python.org/guides/distributing-packages-using-setuptools/
 https://setuptools.readthedocs.io/en/latest/setuptools.html#automatic-script-creation
+
+Run this `setup.py` with:
+
+    python -m pip install --editable .
+
 """
 
 import os
