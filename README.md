@@ -9,7 +9,6 @@
 [![PyPi version](https://img.shields.io/pypi/v/coverlovin2.svg?longCache=True&logo=pypi&color=blue&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
 [![PyPi Python versions](https://img.shields.io/pypi/pyversions/coverlovin2.svg?longCache=True&logo=pypi&style=flat-square)](https://pypi.org/pypi/coverlovin2/)
 [![Commits since](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg?color=yellow&style=flat-square)](https://img.shields.io/github/commits-since/jtmoon79/coverlovin2/latest.svg)
-[![Requirements Status](https://requires.io/github/jtmoon79/coverlovin2/requirements.svg?branch=master)](https://requires.io/github/jtmoon79/coverlovin2/requirements/?branch=master)
 [![License](https://img.shields.io/pypi/l/coverlovin2?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 
 *CoverLovin2* (Cover Loving, too!), Python name *coverlovin2*, is a Python
