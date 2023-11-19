@@ -1,3 +1,5 @@
+# .coveragerc
+
 [run]
 branch = True
 source = coverlovin2

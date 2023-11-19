@@ -1,3 +1,5 @@
+<!-- README.md -->
+
 # CoverLovin2 <!-- omit in toc -->
 
 [![Build Status](https://img.shields.io/travis/com/jtmoon79/coverlovin2.svg?branch=master&style=flat-square&logo=travis)](https://app.travis-ci.com/github/jtmoon79/coverlovin2/)
