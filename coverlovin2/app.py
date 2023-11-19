@@ -40,8 +40,8 @@ __frame_dirpath__ = os.path.dirname(os.path.relpath(__frame_filename__))
 sys.path.insert(0, __frame_dirpath__)
 
 # do relative import
-from __init__ import (
-    name,
+from .__init__ import (
+    NAME,
     __url__,
     __url_source__,
     __url_project__,
@@ -81,56 +81,57 @@ if "pytest" not in sys.modules:
 
 import abc  # ABC, abstractmethod
 import argparse  # ArgumentParser
+import collections  # namedtuple
 import datetime
 import difflib  # SequenceMatcher
+import enum  # Enum
 import io  # BytesIO
 import json
+import logging
 import os
-import time
-from typing_extensions import Self
+from pathlib import Path
+from pprint import pformat
+import queue  # Queue, SimpleQueue Empty
 import re
 import shutil  # copy2
 import tempfile
-import urllib.request
-import urllib.error
-import urllib.parse
-
-# threading stuff
 import threading
-import queue  # Queue, SimpleQueue Empty
-
-# type hints and type precision
-from pathlib import Path
-import collections  # namedtuple
-import enum  # Enum
-import typing
+import time
 from typing import (
     Any,
     DefaultDict,
     Dict,
     List,
     NamedTuple,
+    NewType,
     Optional,
     Sequence,
     Tuple,
     Union,
 )
-
-# logging and printing
-import logging
-from pprint import pformat
-from pprint import pprint as pp  # convenience during live-debugging
+from typing_extensions import Self
+import urllib.request
+import urllib.error
+import urllib.parse
 
 #
 # vendor/3rd party imports
 #
 
-# https://pypi.org/project/attrs/
-import attr
-
+import attr  # https://pypi.org/project/attrs/
 # https://pypi.org/project/mutagen/
-import mutagen
-
+from mutagen.asf import ASF
+from mutagen.asf._util import ASFHeaderError
+from mutagen.easyid3 import EasyID3
+from mutagen.easymp4 import EasyMP4
+from mutagen.flac import FLAC
+from mutagen.flac import FLACVorbisError
+from mutagen.flac import FLACNoHeaderError
+from mutagen.id3 import ID3
+from mutagen.id3 import ID3NoHeaderError
+from mutagen.id3 import ID3TagError
+from mutagen.oggvorbis import OggVorbis
+from mutagen.oggvorbis import OggError
 # https://pypi.org/project/Pillow/
 try:
     import PIL
@@ -147,13 +148,11 @@ except ImportError as ie:
         )
         raise
 
-# https://pypi.org/project/tabulate/
-from tabulate import tabulate
+import requests  # https://pypi.org/project/requests/
+from tabulate import tabulate  # https://pypi.org/project/tabulate/
 
-# https://pypi.org/project/requests/
-import requests
 
-PREFERENCE_FILE_NAME = name + ".prefs.py"
+PREFERENCE_FILE_NAME = NAME + ".prefs.py"
 
 HTTP_GET = "GET"
 HTTP_POST = "POST"
@@ -162,15 +161,15 @@ HTTP_POST = "POST"
 # Using a few different methods for typing things.
 #
 
-Artist = typing.NewType("Artist", str)
-Album = typing.NewType("Album", str)
-ArtAlb = typing.NewType("ArtAlb", Tuple[Artist, Album])
+Artist = NewType("Artist", str)
+Album = NewType("Album", str)
+ArtAlb = NewType("ArtAlb", Tuple[Artist, Album])
 
-Headers = typing.NewType("Headers", Dict[str, str])
+Headers = NewType("Headers", Dict[str, str])
 
 
 # add this method to act as __bool__
-# TODO: XXX: how to override __bool__ for typing.NewType ? Should that be done?
+# TODO: XXX: how to override __bool__ for NewType ? Should that be done?
 #            try inheriting typing.Tuple and override __bool__ ?
 def ArtAlb_is(artalb: ArtAlb) -> bool:
     return bool(artalb[0]) or bool(artalb[1])
@@ -187,7 +186,7 @@ def ArtAlb_new(artist: Union[str, Artist], album: Union[str, Album]) -> ArtAlb:
 
 ArtAlb_empty = ArtAlb_new("", "")
 # ('Dir'ectory, 'Art'ist, 'Alb'um)
-DirArtAlb = typing.NewType("DirArtAlb", Tuple[Path, ArtAlb])
+DirArtAlb = NewType("DirArtAlb", Tuple[Path, ArtAlb])
 DirArtAlb_List = List[DirArtAlb]
 Path_List = List[Path]
 
@@ -215,7 +214,7 @@ class URL(str):
     def __new__(cls, *value):
         if value:
             v0 = value[0]
-            if not type(v0) is str:
+            if not isinstance(v0, str):
                 raise TypeError('Unexpected type for URL: "%s"' % type(v0))
             if not (v0.startswith("http://") or v0.startswith("https://")):
                 raise ValueError('Passed string value "%s" is not an' ' "http*://" URL' % (v0,))
@@ -260,13 +259,16 @@ class ImageSize(enum.Enum):
 
     @classmethod
     def list(cls) -> List[str]:
+        """
+        return list of these enums as str
+        """
         return [is_.value for is_ in ImageSize]
 
 
 # (API Key, CX ID, Image Size)
-# GoogleCSE_Key = typing.NewType('GoogleCSE_Key', str)
+# GoogleCSE_Key = NewType('GoogleCSE_Key', str)
 # GoogleCSE_ID = collections.namedtuple('GoogleCSE_ID', str)
-# GoogleCSE_Opts = typing.NewType('GoogleCSE_Opts', typing.Tuple[GoogleCSE_Key,
+# GoogleCSE_Opts = NewType('GoogleCSE_Opts', typing.Tuple[GoogleCSE_Key,
 #                                GoogleCSE_ID,
 #                                str])):
 
@@ -356,15 +358,22 @@ class Result(NamedTuple):
     """
 
     artalb: Optional[ArtAlb]
-    imagesearcher_type: Any  # TODO: how to narrow this down to ImageSearcher type or inherited?
+    imagesearcher_type: Any
+    """TODO: how to narrow this down to ImageSearcher type or inherited?"""
     image_type: Optional[ImageType]
     image_path: Path
-    result_written: bool  # bytes that comprise an image were written to `image_path`
-    wropts: WrOpts  # was --overwrite or --test enabled?
-    result_nosuitable: bool  # nothing was found, no suitable image was found, nothing was written
-    message: str  # tell the user about what happened
-    error: bool  # was there an error?
-    error_mesg: str  # if error: the error message the user should see
+    result_written: bool
+    """bytes that comprise an image were written to `image_path`"""
+    wropts: WrOpts
+    """was --overwrite or --test enabled?"""
+    result_nosuitable: bool
+    """nothing was found, no suitable image was found, nothing was written"""
+    message: str
+    """tell the user about what happened"""
+    error: bool
+    """was there an error?"""
+    error_mesg: str
+    """if error: the error message the user should see"""
 
     def __bool__(self) -> bool:
         if self.error or self.result_nosuitable:
@@ -486,26 +495,25 @@ def overrides(interface_class):
     implement the overridden function.
     Corollary to @abc.abstractmethod.
     Modified from answer https://stackoverflow.com/a/8313042/471376
+
+    TODO: use `ipromise`
     """
 
     def confirm_override(method):
         if method.__name__ not in dir(interface_class):
             raise NotImplementedError(
-                'function "%s" is an @override but that'
+                "function %r is an @override but that"
                 " function is not implemented in base"
                 " class %s" % (method.__name__, interface_class)
             )
 
-        def func():
-            pass
-
-        attr = getattr(interface_class, method.__name__)
-        if type(attr) is not type(func):
+        attr_ = getattr(interface_class, method.__name__)
+        if not callable(attr_):
             raise NotImplementedError(
                 "function %r is an @override"
                 " but that is implemented as type %s"
-                " in base class %s, expected implemented"
-                " type %s" % (method.__name__, type(attr), interface_class, type(func))
+                " in base class %s, expected a callable"
+                % (method.__name__, type(attr_), interface_class)
             )
         return method
 
@@ -518,10 +526,18 @@ strAAM = "•"  # string AlbumArtist middle separator
 
 
 def str_AA(artist: Artist, album: Album) -> str:
+    """
+    `Artist` and `Album` as a `str`
+    """
     return '%s "%s" %s "%s" %s' % (strAAL, artist, strAAM, album, strAAR)
 
 
 def str_ArtAlb(artalb: ArtAlb) -> str:
+    """
+    `ArtAlb` as a `str`
+
+    TODO: add a `__str__` to `ArtAlb` instead of this
+    """
     return str_AA(artalb[0], artalb[1])
 
 
@@ -538,17 +554,17 @@ def log_new(logformat: str, level: int, logname: Optional[str] = None) -> loggin
 
     if not logname:
         logname = os.path.basename(__file__).split(os.extsep)[0]
-    log = logging.getLogger(logname)
-    log.setLevel(level)
+    log_ = logging.getLogger(logname)
+    log_.setLevel(level)
     # if the logger already has handlers then do not add more handlers
     # otherwise there will be duplicate log messages
-    if log.hasHandlers():
-        return log
+    if log_.hasHandlers():
+        return log_
     logformatter = logging.Formatter(logformat)
     loghandler = logging.StreamHandler()
     loghandler.setFormatter(logformatter)
-    log.addHandler(loghandler)
-    return log
+    log_.addHandler(loghandler)
+    return log_
 
 
 #
@@ -623,6 +639,8 @@ def split_parameters(
 def preferences_file() -> Tuple[Path, Any]:
     """
     find the most suitable `pypref` Preferences path
+
+    TODO: user `platformdirs` which has better support than `pypref`
     """
     # Linux
     home = Path.home()
@@ -668,9 +686,6 @@ def get_artist_album_mp3(ffp: Path) -> ArtAlb:
     :param ffp: full file path of .mp3 file
     :return: (artist, album)
     """
-    from mutagen.easyid3 import EasyID3
-    from mutagen.id3 import ID3NoHeaderError
-    from mutagen.id3 import ID3TagError
 
     try:
         media = EasyID3(ffp)
@@ -703,7 +718,6 @@ def get_artist_album_mp4(ffp: Path) -> ArtAlb:
     :param ffp: full file path of media file
     :return: (artist, album)
     """
-    from mutagen.easymp4 import EasyMP4
 
     media = EasyMP4(ffp)
 
@@ -727,9 +741,6 @@ def get_artist_album_flac(ffp: Path) -> ArtAlb:
     :param ffp: full file path of media file
     :return: (artist, album)
     """
-    from mutagen.flac import FLAC
-    from mutagen.flac import FLACVorbisError
-    from mutagen.flac import FLACNoHeaderError
 
     try:
         media = FLAC(ffp)
@@ -757,8 +768,6 @@ def get_artist_album_ogg(ffp: Path) -> ArtAlb:
     :param ffp: full file path of media file
     :return: (artist, album)
     """
-    from mutagen.oggvorbis import OggVorbis
-    from mutagen.oggvorbis import OggError
 
     try:
         media = OggVorbis(ffp)
@@ -826,8 +835,6 @@ def get_artist_album_asf(ffp: Path) -> ArtAlb:
     :param ffp: full file path of media file
     :return: (artist, album)
     """
-    from mutagen.asf import ASF
-    from mutagen.asf._util import ASFHeaderError
 
     try:
         media = ASF(ffp)
@@ -922,7 +929,18 @@ def similar(title1: str, title2: str) -> float:
 
 
 class ImageSearcher(abc.ABC):
-    NAME = __qualname__
+    """
+    Base class for implementations for image searching.
+    """
+    QNAME: str = __qualname__
+
+    artalb: ArtAlb
+    image_type: ImageType
+    wropts: WrOpts
+    loglevel: int
+    _image_bytes: bytes
+    _logname: str
+    _log: logging.Logger
 
     def __init__(self, artalb: ArtAlb, image_type: ImageType, wropts: WrOpts, loglevel: int):
         """
@@ -934,32 +952,26 @@ class ImageSearcher(abc.ABC):
         :param opts.loglevel: logging level
         :param opts.test: if test do not actually write anything
         """
-        self.artalb = artalb  # type: ArtAlb
-        self.image_type = image_type  # type: ImageType
-        self.wropts = wropts  # type: WrOpts
-        self.loglevel = loglevel  # type: int
-        #
-        self._image_bytes = bytes()  # type: bytes
+        self.artalb = artalb
+        self.image_type = image_type
+        self.wropts = wropts
+        self.loglevel = loglevel
+        self._image_bytes = bytes()
         # setup new logger for this class instance
-        self._logname = self.NAME + "(0x%08x)" % id(self)  # type: str
-        self._log = log_new(LOGFORMAT, loglevel, self._logname)  # type: logging.Logger
+        self._logname = self.QNAME + "(0x%08x)" % id(self)
+        self._log = log_new(LOGFORMAT, loglevel, self._logname)
         super().__init__()
 
-    # TODO: XXX: abstractproperty has been deprecated since Python 3.3
-    #            what technique can abstract a @property now?
     @abc.abstractmethod
     def search_medium(self) -> SearcherMedium:
-        # pass
         raise NotImplementedError("child class failed to implement abstractmethod")
 
     @abc.abstractmethod
     def go(self) -> Optional[Result]:
-        # pass
         raise NotImplementedError("child class failed to implement abstractmethod")
 
     @abc.abstractmethod
     def search_album_image(self) -> bytes:
-        # pass
         raise NotImplementedError("child class failed to implement abstractmethod")
 
     @staticmethod
@@ -992,7 +1004,7 @@ class ImageSearcher(abc.ABC):
             emsg = (
                 "self._image_bytes not set, skip writing album image for %s . "
                 "Was %s.search_album_image called?"
-                % (str_ArtAlb(self.artalb), self.NAME)
+                % (str_ArtAlb(self.artalb), self.QNAME)
             )
             self._log.warning(emsg)
             return Result.Error(self.artalb, self, image_path, emsg)
@@ -1017,14 +1029,20 @@ class ImageSearcher(abc.ABC):
 
 
 class ImageSearcher_Medium_Disk(ImageSearcher):
+    """
+    ImageSearcher base class for image searching on a local system disk
+    """
     @overrides(ImageSearcher)
     def search_medium(self) -> SearcherMedium:
         return SearcherMedium.DISK
 
 
 class ImageSearcher_Medium_Network(ImageSearcher):
-    # specific Request class to allow pytest override with stub
+    """
+    ImageSearcher base class for image searching over a network
+    """
     RequestClass = urllib.request.Request
+    """specific Request class to allow pytest override with stub"""
 
     @overrides(ImageSearcher)
     def search_medium(self) -> SearcherMedium:
@@ -1051,13 +1069,15 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
     then it will copy "Album Front.jpg" to "cover.jpg".
     """
 
-    NAME = __qualname__
+    QNAME = __qualname__
+    copy_src: Optional[Path]
+    copy_dst: Path
 
     def __init__(
         self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
-        self.copy_src = None  # type: Optional[Path]
-        self.copy_dst = image_path  # type: Path
+        self.copy_src = None
+        self.copy_dst = image_path
         super().__init__(artalb, image_type, wropts, loglevel)
 
     def _match_likely_name(self, files: Sequence[Path]) -> Optional[Path]:
@@ -1214,7 +1234,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
             # XXX: mypy says this does not make sense
             if len(cands) > 1:
                 self._log.debug(
-                    "Note: multiple values in copy_src, choosing" " the first from:\n%s",
+                    "Note: multiple values in copy_src, choosing the first from:\n%s",
                     pformat(cands),
                 )
             copy_src = cands[0]
@@ -1335,15 +1355,18 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
     ImageSearcher that searches the media files for an embedded image.
     """
 
-    NAME = __qualname__
+    QNAME = __qualname__
+    image_type_PIL: Optional[ImageType]
+    _image: Optional[PIL.Image.Image]
+    _image_src: Optional[Path]
 
     def __init__(
         self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
     ):
         self.copy_dst = image_path
-        self.image_type_PIL = None  # type: Optional[ImageType]
-        self._image = None  # type: Optional[PIL.Image.Image]
-        self._image_src = None  # type: Optional[Path]
+        self.image_type_PIL = None
+        self._image = None
+        self._image_src = None
         super().__init__(artalb, image_type, wropts, loglevel)
 
     @overrides(ImageSearcher)
@@ -1374,7 +1397,6 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
         # for media files, try to extract an embedded image bytes, constitute
         # the bytes with a PIL.Image class instance, store that as `self._image`
         # help from https://stackoverflow.com/a/54773705/471376
-        from mutagen.id3 import ID3
 
         key_apic = "APIC:"
         for fp in media_files:
@@ -1452,10 +1474,16 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
 
 
 class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
-    NAME = __qualname__
+    QNAME = __qualname__
 
     # google_search_api = 'https://cse.google.com/cse'
     google_search_api = "https://www.googleapis.com/customsearch/v1"
+    __google_opts: GoogleCSE_Opts
+    referer: str
+    key: str
+    cxid: str
+    image_size: str
+    image_path: Path
 
     def __init__(
         self,
@@ -1586,7 +1614,8 @@ class ImageSearcher_GoogleCSE(ImageSearcher_Medium_Network):
 
 
 class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
-    NAME = __qualname__
+    QNAME = __qualname__
+    image_path: Path
 
     def __init__(
         self, artalb: ArtAlb, image_type: ImageType, image_path: Path, wropts: WrOpts, loglevel: int
@@ -1802,17 +1831,16 @@ class Discogs_Downloader(abc.ABC):
     session handling, and @override the @abc.abstractmethod.
     """
 
-    NAME = __qualname__
-
+    QNAME = __qualname__
     HEADER_ACCEPT = "application/vnd.discogs.v2.plaintext+json"
-
+    URL_SEARCH = "https://api.discogs.com/database/search"
     """
     from https://www.discogs.com/developers/#page:database,header:database-search
 
         /database/search?q={query}&{?type,title,release_title,credit,artist,anv,label,genre,style,country,year,format,catno,barcode,track,submitter,contributor}
     """
-    URL_SEARCH = "https://api.discogs.com/database/search"
 
+    k_header_ratelimit = "X-Discogs-Ratelimit"
     """
     Requests are throttled by the server by source IP to 60 per minute for authenticated
     requests, and 25 per minute for unauthenticated requests, with some exceptions.
@@ -1831,11 +1859,11 @@ class Discogs_Downloader(abc.ABC):
     Currently, this causes only one discogs.com HTTP request to occur at a time, which is
     somewhat inefficient but also easiest to implement.
     """
-    k_header_ratelimit = "X-Discogs-Ratelimit"
     k_header_ratelimit_remain = "X-Discogs-Ratelimit-Remaining"
     k_header_ratelimit_used = "X-Discogs-Ratelimit-Used"
     Ratelimit_Reset_Wait = 60 + 1  # wait time in seconds
 
+    __Session: requests.Session = requests.Session()
     """
     class-wide requests.Session
     requests.Session underlying implementation users urllib3.HTTPConnectionPool which is thread-safe
@@ -1843,11 +1871,10 @@ class Discogs_Downloader(abc.ABC):
 
          Thread-safe connection pool for one host.
     """
-    __Session = requests.Session()
     __Session.rate_limit_time_last = float(0)
 
     def __init__(self, loglevel: int):
-        self._logname = self.NAME + "(0x%08x)" % id(self)
+        self._logname = self.QNAME + "(0x%08x)" % id(self)
         self._log = log_new(LOGFORMAT, loglevel, self._logname)
         self._log.debug("class-wide requests.Session object @0x%08X", id(self._session))
 
@@ -2118,7 +2145,7 @@ class Discogs_Downloader_PAT(Discogs_Downloader):
     https://www.discogs.com/settings/developers (requires login)
     """
 
-    NAME = __qualname__
+    QNAME: str = __qualname__
 
     def __init__(self, discogs_token: str, *args: Tuple[Any]):
         self.pat_token = discogs_token
@@ -2135,7 +2162,7 @@ class Discogs_Downloader_PAT(Discogs_Downloader):
 
     @overrides(Discogs_Downloader)
     def download_album_cover(self, artalb: ArtAlb) -> Optional[bytes]:
-        self._log.debug("%s.download_album_cover(%s)", self.NAME, artalb)
+        self._log.debug("%s.download_album_cover(%s)", self.QNAME, artalb)
         url = self._search_url_assemble(artalb)
         request1 = requests.Request(method=HTTP_GET, url=url, headers=self._headers(self.pat_token))
         self._log.info("HTTP Request '%s'", request1.url)
@@ -2177,7 +2204,7 @@ class Discogs_Downloader_OAuth(Discogs_Downloader):
           once per set of Oauth credentials (effectively, once for the entire process run)
     """
 
-    NAME = __qualname__
+    QNAME = __qualname__
 
     """
     URLs from https://www.discogs.com/developers/#page:authentication,header:authentication-discogs-auth-flow
@@ -2515,7 +2542,7 @@ oauth_signature="{oauth_signature}"\
 
         Return album cover image as `bytes`, failure returns `None`
         """
-        self._log.debug("%s.download_album_cover(%s)", self.NAME, artalb)
+        self._log.debug("%s.download_album_cover(%s)", self.QNAME, artalb)
 
         if not self._oauth_identity_test():
             return
@@ -2546,7 +2573,7 @@ oauth_signature="{oauth_signature}"\
 
 class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
 
-    NAME = __qualname__
+    QNAME = __qualname__
 
     def __init__(
         self,
@@ -2925,7 +2952,7 @@ def search_create_image(
 
             res = is_.go()
             if not res:
-                log.debug("  %s did not find an album cover image", is_.NAME)
+                log.debug("  %s did not find an album cover image", is_.QNAME)
                 continue
             result = res
             break
