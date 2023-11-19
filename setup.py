@@ -31,7 +31,6 @@ except ImportError:
     # not needed for typical builds, fails to install on non-Windows Python
     pass
 
-
 # HACK: workaround for `module not found`
 sys.path.append(str(Path(__file__).resolve().parent))
 
@@ -65,6 +64,7 @@ setup(
         "mutagen == 1.47.0",
         "Pillow == 10.1.0",
         "tabulate == 0.9.0",
+        "typing-extensions == 4.8.0",
     ],
     setup_requires=["wheel"],
     extras_require={
