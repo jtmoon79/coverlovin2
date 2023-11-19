@@ -8,6 +8,6 @@ cd "$(dirname -- "${0}")/.."
 set -x
 exec \
   python -m mypy \
-    --config-file ./tools/mypy.ini \
+    --config-file ./mypy.ini \
     "${@}" \
     ./coverlovin2/app.py
