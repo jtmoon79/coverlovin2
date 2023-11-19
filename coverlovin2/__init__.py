@@ -15,7 +15,5 @@ __doc__ = """Recursively process passed directories of audio media files, attemp
  to create a missing album image file, either via local searching and\
  copying, or via downloading from various online services."""
 
-# recommended by https://packaging.python.org/tutorials/packaging-projects/
-name = "coverlovin2"
-
-__package__ = name
+NAME = "coverlovin2"
+"""recommended by https://packaging.python.org/tutorials/packaging-projects/"""
