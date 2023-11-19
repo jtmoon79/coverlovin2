@@ -119,6 +119,7 @@ import urllib.parse
 #
 
 import attr  # https://pypi.org/project/attrs/
+
 # https://pypi.org/project/mutagen/
 from mutagen.asf import ASF
 from mutagen.asf._util import ASFHeaderError
@@ -132,6 +133,7 @@ from mutagen.id3 import ID3NoHeaderError
 from mutagen.id3 import ID3TagError
 from mutagen.oggvorbis import OggVorbis
 from mutagen.oggvorbis import OggError
+
 # https://pypi.org/project/Pillow/
 try:
     import PIL
@@ -272,10 +274,10 @@ class ImageSize(enum.Enum):
 #                                GoogleCSE_ID,
 #                                str])):
 
+
 # Trying out namedtuple for typing this.
 # XXX: AFAICT, cannot type-hint the attributes within the collections.namedtuple
 class GoogleCSE_Opts(collections.namedtuple("GoogleCSE_Opts", "key id image_size")):
-
     # XXX: How to best `assert image_size in ImageSize.list()` ?
 
     def __bool__(self) -> bool:
@@ -599,9 +601,7 @@ def func_name(foffset: int = 0) -> str:
     return sys._getframe(foffset + 1).f_code.co_name
 
 
-def split_parameters(
-    parm_str: str, keys_ret: Sequence[str], maxsplit: int = -1
-) -> Tuple[str, ...]:
+def split_parameters(parm_str: str, keys_ret: Sequence[str], maxsplit: int = -1) -> Tuple[str, ...]:
     """
     given a `parm_str` like "a=1&bb=22&ccc=333", return the values of `keys_ret`
     helper to do some more pro-active checking as it goes
@@ -932,6 +932,7 @@ class ImageSearcher(abc.ABC):
     """
     Base class for implementations for image searching.
     """
+
     QNAME: str = __qualname__
 
     artalb: ArtAlb
@@ -1003,8 +1004,7 @@ class ImageSearcher(abc.ABC):
         if not self._image_bytes:
             emsg = (
                 "self._image_bytes not set, skip writing album image for %s . "
-                "Was %s.search_album_image called?"
-                % (str_ArtAlb(self.artalb), self.QNAME)
+                "Was %s.search_album_image called?" % (str_ArtAlb(self.artalb), self.QNAME)
             )
             self._log.warning(emsg)
             return Result.Error(self.artalb, self, image_path, emsg)
@@ -1032,6 +1032,7 @@ class ImageSearcher_Medium_Disk(ImageSearcher):
     """
     ImageSearcher base class for image searching on a local system disk
     """
+
     @overrides(ImageSearcher)
     def search_medium(self) -> SearcherMedium:
         return SearcherMedium.DISK
@@ -1041,6 +1042,7 @@ class ImageSearcher_Medium_Network(ImageSearcher):
     """
     ImageSearcher base class for image searching over a network
     """
+
     RequestClass = urllib.request.Request
     """specific Request class to allow pytest override with stub"""
 
@@ -1101,9 +1103,7 @@ class ImageSearcher_LikelyCover(ImageSearcher_Medium_Disk):
 
         # file path candidates keyed by integer preference (lower key value is
         # better)
-        candidates_by_pref: DefaultDict[int, List[Path]] = collections.defaultdict(
-            list
-        )
+        candidates_by_pref: DefaultDict[int, List[Path]] = collections.defaultdict(list)
 
         image_type = self.image_type
         # These re patterns are ordered by preference.
@@ -1454,9 +1454,13 @@ class ImageSearcher_EmbeddedMedia(ImageSearcher_Medium_Disk):
             format_ = self.image_type.pil_format
             try:
                 self._image.save(self.copy_dst, format=format_)
-                self._log.info('Extracted %sx%s pixels %s bytes to "%s"',
-                               self._image.width, self._image.height,
-                               self._image.size_pixels, self.copy_dst)
+                self._log.info(
+                    'Extracted %sx%s pixels %s bytes to "%s"',
+                    self._image.width,
+                    self._image.height,
+                    self._image.size_pixels,
+                    self.copy_dst,
+                )
             except PermissionError as pe:
                 log.error(str(pe))
                 return Result.Error(self.artalb, self.__class__, self.copy_dst, str(pe))
@@ -2572,7 +2576,6 @@ oauth_signature="{oauth_signature}"\
 
 
 class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
-
     QNAME = __qualname__
 
     def __init__(
@@ -2709,9 +2712,7 @@ def process_dir(
     image_path = dirp.joinpath(image_nt)
     if image_path.exists():
         if not overwrite:
-            log.info(
-                'cover file "%s" exists and no overwrite, skip directory "%s"', image_nt, dirp
-            )
+            log.info('cover file "%s" exists and no overwrite, skip directory "%s"', image_nt, dirp)
             r_ = Result.SkipDueToNoOverwrite(
                 artalb=None,
                 imagesearcher=None,
