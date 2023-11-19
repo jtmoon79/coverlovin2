@@ -11,8 +11,8 @@ test code and since long lines of repetitive test cases deserve exemption.
 
 """
 
-__author__ = 'James Thomas Moon'
-__url__ = 'https://github.com/jtmoon79/coverlovin2/test'
+__author__ = "James Thomas Moon"
+__url__ = "https://github.com/jtmoon79/coverlovin2/test"
 
 
 import os
@@ -62,8 +62,9 @@ from ..app import (
     parse_args_opts,
 )
 
-# all committed test resources should be under this directory
+
 resources = Path.joinpath(Path(__file__).parent, 'test_resources')
+"""all committed test resources should be under this directory"""
 
 emp_Art = Artist('')
 emp_Alb = Album('')
@@ -323,8 +324,10 @@ class Test_overrides(object):
             ImageSearcher_Medium_Network()
 
 
-# placeholder image url for testing downloading
-image_url = "file://{resources}/2x2.PNG".format(resources=resources)
+IMAGE_URL = "file:///{resources}/2x2.PNG".format(
+    resources=str(resources).replace("\\", "/")
+)
+"""placeholder image url for testing downloading"""
 
 
 class Test_ImageSearcher(object):
@@ -333,46 +336,48 @@ class Test_ImageSearcher(object):
     # class)
     log = log_new(LOGFORMAT, logging.DEBUG, __qualname__)
 
-    @pytest.mark.dependency(name='net_access_ping')
+    @pytest.mark.dependency(name="net_access_ping")
     def test_net_access_ping(self):
         """check Internet access. ping of known stable IP."""
         # TODO: complete this!
         pass
 
-    @pytest.mark.dependency(name='net_access_dns',
-                            depends=['net_access_ping'])
+    @pytest.mark.dependency(name="net_access_dns",
+                            depends=["net_access_ping"])
     def test_net_access_dns(self):
         """check Internet access. attempt DNS lookup."""
         # TODO: complete this!
         pass
 
-    @pytest.mark.dependency(name='net_access', depends=['net_access_ping',
-                                                        'net_access_dns'])
+    @pytest.mark.dependency(name="net_access", depends=["net_access_ping",
+                                                        "net_access_dns"])
     def test_net_access(self):
         """Wrapper of two net access dependency for simpler `depends` params"""
         pass
 
-    @pytest.mark.dependency(name='init_is')
+    @pytest.mark.dependency(name="init_is")
     def test_init(self):
         with pytest.raises(TypeError):
-            ImageSearcher(ArtAlb_empty, '', False)
+            ImageSearcher(ArtAlb_empty, "", False)
 
     def test_download_url_ValueError(self):
+        """bad url should raise"""
         with pytest.raises(ValueError):
-            """bad url should raise"""
             ImageSearcher.download_url(URL(''), self.log)
 
     def test_download_url_return_None(self):
         """non-exists download URL should return None"""
-        assert not ImageSearcher.download_url(r'http://NOTEXISTURL.TESTFOO',
-                                              self.log)
+        assert not ImageSearcher.download_url(
+            "http://NOTEXISTURL.TESTFOOBAR",
+            self.log
+        )
 
     def test_download_url__1(self):
-        assert ImageSearcher.download_url(image_url, self.log)
+        assert ImageSearcher.download_url(IMAGE_URL, self.log)
 
     def test_download_url__2(self):
-        data = ImageSearcher.download_url(image_url, self.log)
-        assert type(data) is bytes
+        data = ImageSearcher.download_url(IMAGE_URL, self.log)
+        assert isinstance(data, bytes)
 
 
 class Test_ImageSearcher_LikelyCover(object):
@@ -415,7 +420,7 @@ class Test_ImageSearcher_LikelyCover(object):
     #   ),
     #   Path_expected_to_match
     # ),
-    @pytest.mark.parametrize('image_type, paths, image_path',
+    @pytest.mark.parametrize("image_type, paths, image_path",
         (
             pytest.param
             (
@@ -709,7 +714,6 @@ class Test_ImageSearcher_LikelyCover(object):
         assert test_expect == mln
         if special_cmp:
             assert special_cmp(mln, test_expect)
-
 
     B_Artist = Artist('Bob Dylan')
     B_Album = Album('Biograph (Disc 1)')
