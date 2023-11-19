@@ -20,3 +20,4 @@ __doc__ = """Recursively process passed directories of audio media files, attemp
 
 NAME = "coverlovin2"
 """recommended by https://packaging.python.org/tutorials/packaging-projects/"""
+name = NAME

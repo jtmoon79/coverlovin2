@@ -31,15 +31,14 @@ accomplish what is needed for the user.
 #       https://gideonbrimleaf.github.io/2021/01/26/relative-imports-python.html
 #       https://stackoverflow.com/questions/2632199/how-do-i-get-the-path-of-the-current-executed-file-in-python
 #       https://stackoverflow.com/a/21233334/471376
-import inspect
 import os.path
 import sys
 
-__frame_filename__ = inspect.getframeinfo(inspect.currentframe()).filename
-__frame_dirpath__ = os.path.dirname(os.path.relpath(__frame_filename__))
+__frame_dirpath__ = os.path.realpath(os.path.dirname(__file__))
 sys.path.insert(0, __frame_dirpath__)
+print("sys.path.insert(%r)" % __frame_dirpath__)
 
-from . import (
+from coverlovin2 import (
     NAME,
     __url__,
     __url_source__,
