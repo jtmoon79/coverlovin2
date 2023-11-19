@@ -9,7 +9,7 @@
 
 """\
 Recursively process subdirectories looking for audio media files. Download
- appropriate cover images for the directory that is presumed to be an album.
+appropriate cover images for the directory that is presumed to be an album.
 
 The author wanted to learn more about the addition of type-hinting in Python.
 Code in this file uses several methods of type-hinting.
@@ -140,10 +140,12 @@ except ImportError as ie:
     #      https://stackoverflow.com/q/48012582/471376
     if "libopenjp2" in str(ie):
         print(
-            "It appears library libopenjp2 is missing. apt install command is:\n    apt install libopenjp2-7\n",
+            "It appears library libopenjp2 is missing. apt install command is:\n"
+            "    apt install libopenjp2-7\n",
             file=sys.stderr,
         )
         raise
+
 # https://pypi.org/project/tabulate/
 from tabulate import tabulate
 
@@ -499,7 +501,7 @@ def overrides(interface_class):
         attr = getattr(interface_class, method.__name__)
         if type(attr) is not type(func):
             raise NotImplementedError(
-                'function "%s" is an @override'
+                "function %r is an @override"
                 " but that is implemented as type %s"
                 " in base class %s, expected implemented"
                 " type %s" % (method.__name__, type(attr), interface_class, type(func))
@@ -552,17 +554,17 @@ def log_new(logformat: str, level: int, logname: str = None) -> logging.Logger:
 # global instances
 #
 
-# recommended format
 LOGFORMAT = "%(levelname)s: [%(threadName)s %(name)s]: %(message)s"
-# the file-wide logger instance
+"""recommended format"""
 log = log_new(LOGFORMAT, logging.WARNING)
+"""the file-wide logger instance"""
 
 REFERER_DEFAULT = __url__
 
 SEMAPHORE_COUNT_DISK = 2
 SEMAPHORE_COUNT_NETWORK = 16
-# task_queue has this many threads consuming tasks
 TASK_QUEUE_THREAD_COUNT = SEMAPHORE_COUNT_DISK + SEMAPHORE_COUNT_NETWORK + 1
+"""task_queue has this many threads consuming tasks"""
 # XXX: for help during development
 # TASK_QUEUE_THREAD_COUNT = 1
 
@@ -967,7 +969,7 @@ class ImageSearcher(abc.ABC):
         """
 
         if not url:
-            raise ValueError('bad URL "%s"', url)
+            raise ValueError("bad URL %r" % url)
 
         try:
             log_.info('image download urllib.request.urlopen("%s")', url)
@@ -986,7 +988,8 @@ class ImageSearcher(abc.ABC):
         """
         if not self._image_bytes:
             emsg = (
-                "self._image_bytes not set, skip writing album image for %s . Was %s.search_album_image called?"
+                "self._image_bytes not set, skip writing album image for %s . "
+                "Was %s.search_album_image called?"
                 % (str_ArtAlb(self.artalb), self.NAME)
             )
             self._log.warning(emsg)
