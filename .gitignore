@@ -23,6 +23,7 @@ CoverLovin2.egg-info/
 htmlcov/
 .coverage
 coverage.xml
+coverage.lcov
 
 # just for me
 Notes.md

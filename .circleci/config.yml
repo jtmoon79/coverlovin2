@@ -99,7 +99,20 @@ jobs:
             SHELL_ENV=.shell-env
             source "${SHELL_ENV}"
             "${PIPENV}" run pip list -v
-            "${PIPENV}" run pytest -v ./coverlovin2/test
+            "${PIPENV}" run pytest -v --cov=coverlovin2 --cov-report=lcov ./coverlovin2/test
+      - run:
+          name: coveralls coverage upload
+          # copied from https://github.com/coverallsapp/coverage-reporter/blob/master/doc/examples/circleci.yml
+          # `coveralls report` requires setting environment variable `COVERALLS_REPO_TOKEN`
+          # get a token from
+          # https://app.circleci.com/settings/project/github/jtmoon79/coverlovin2/environment-variables
+          command: |
+            set -eux
+            curl -sLO "https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz"
+            curl -sLO "https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-checksums.txt"
+            cat coveralls-checksums.txt | grep coveralls-linux.tar.gz | sha256sum --check
+            tar -xzf coveralls-linux.tar.gz
+            ./coveralls report coverage.lcov
   build_pypi:
     docker:
       - image: cimg/python:3.8

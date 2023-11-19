@@ -10,6 +10,3 @@ exclude_lines =
 omit =
     coverlovin2/test/*
     coverlovin2/__init__.py
-
-[xml]
-output = coverage.xml
