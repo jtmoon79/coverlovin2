@@ -19,9 +19,10 @@ Run this `setup.py` with:
 """
 
 import os
-
+from pathlib import Path
 from setuptools import setup
 from setuptools import find_packages
+import sys
 
 # https://pypi.org/project/py2exe/
 try:
@@ -29,6 +30,10 @@ try:
 except ImportError:
     # not needed for typical builds, fails to install on non-Windows Python
     pass
+
+
+# HACK: workaround for `module not found`
+sys.path.append(str(Path(__file__).resolve().parent))
 
 from coverlovin2 import (
     __version__,
