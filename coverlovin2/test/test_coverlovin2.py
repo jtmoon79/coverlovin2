@@ -73,7 +73,7 @@ emp_Alb = Album('')
 class RequestClassNoop(object):
     """stub class to override actual requests"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *_args, **_kwargs):
         self.full_url = ""
 
 
@@ -848,8 +848,7 @@ class Test_ImageSearcher_EmbeddedMedia(object):
         """create a simple instance"""
         return ImageSearcher_EmbeddedMedia(artalb, jpg, Path(), WrOpts(False, True), True)
 
-    @pytest.mark.parametrize('debug', (True, False))
-    def test_init(self, debug):
+    def test_init(self):
         self._new_imagesearch_embeddedmedia(self.E_ArtAlb)
 
     def test_WrongUseError(self):
