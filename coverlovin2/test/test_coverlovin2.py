@@ -15,21 +15,15 @@ __author__ = 'James Thomas Moon'
 __url__ = 'https://github.com/jtmoon79/coverlovin2/test'
 
 
-# standard library imports
 import os
 import logging
 from pathlib import Path
-import pytest
 import tempfile
 import typing
 import queue
 
-# non-standard library imports
-from mutagen.id3 import ID3NoHeaderError
-from mutagen.asf import ASFHeaderError
-from mutagen.flac import FLACNoHeaderError
+import pytest
 
-# custom imports
 from ..app import (
     Artist,
     Album,
@@ -37,8 +31,6 @@ from ..app import (
     ArtAlb_new,
     ArtAlb_empty,
     ArtAlb_is,
-    DirArtAlb,
-    DirArtAlb_List,
     GoogleCSE_Opts,
     Discogs_Args,
     ImageSize,
@@ -54,9 +46,7 @@ from ..app import (
     log_new,
     LOGFORMAT,
     get_artist_album_mp3,
-    get_artist_album_mp4,
     get_artist_album_flac,
-    get_artist_album_ogg,
     get_artist_album_asf,
     get_artist_album,
     ImageSearcher,
