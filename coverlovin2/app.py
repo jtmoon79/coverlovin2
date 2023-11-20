@@ -39,7 +39,7 @@ import sys
 #           NameError: name '__file__' is not defined
 #       force __file__ to be defined
 if "__file__" not in globals():
-    __file__ = ".\\app.py"
+    __file__ = "./app.py"
 
 __path_here__ = os.path.realpath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, __path_here__)
@@ -74,8 +74,8 @@ _: bool = True  # SyntaxError here means file is parsed (but not run) by interpr
 
 # XXX: workaround for https://github.com/pytest-dev/pytest/issues/4843
 if "pytest" not in sys.modules:
-    sys.stdout.reconfigure(encoding="utf-8", errors="namereplace")
-    sys.stderr.reconfigure(encoding="utf-8", errors="namereplace")
+    sys.stdout.reconfigure(encoding="utf-8", errors="namereplace")  # type: ignore
+    sys.stderr.reconfigure(encoding="utf-8", errors="namereplace")  # type: ignore
 
 import abc
 import argparse
@@ -109,9 +109,9 @@ from typing import (
     Union,
 )
 from typing_extensions import Self
-import urllib.request
 import urllib.error
 import urllib.parse
+import urllib.error
 
 #
 # vendor/3rd party imports
@@ -327,10 +327,10 @@ class ImageType(enum.Enum):
         if fmt == "jpeg":  # this darn special case!
             return ImageType.JPG
         try:
-            ImageType(fmt)
+            return ImageType(fmt)
         except ValueError:
-            return None
-        return ImageType(fmt)
+            pass
+        return None
 
     @property
     def pil_format(self) -> str:
@@ -342,7 +342,7 @@ class ImageType(enum.Enum):
         """
         if self == ImageType.JPG:
             return "JPEG"
-        return self.value.upper()
+        return str(self.value.upper())
 
 
 class Result(NamedTuple):
