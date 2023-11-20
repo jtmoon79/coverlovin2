@@ -12,6 +12,7 @@ no-docstring-rgx = "^_"
 disable = [
     "raw-checker-failed",
     "bad-inline-option",
+    "consider-using-f-string",
     "invalid-name",
     "locally-disabled",
     "file-ignored",
