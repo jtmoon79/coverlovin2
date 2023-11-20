@@ -63,6 +63,7 @@ setup(
         "musicbrainzngs == 0.7.1",
         "mutagen == 1.47.0",
         "Pillow == 10.1.0",
+        "pypref == 3.3.0",
         "tabulate == 0.9.0",
         "typing-extensions == 4.8.0",
     ],
