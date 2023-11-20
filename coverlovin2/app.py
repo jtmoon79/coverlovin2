@@ -77,21 +77,22 @@ if "pytest" not in sys.modules:
     sys.stdout.reconfigure(encoding="utf-8", errors="namereplace")
     sys.stderr.reconfigure(encoding="utf-8", errors="namereplace")
 
-import abc  # ABC, abstractmethod
-import argparse  # ArgumentParser
-import collections  # namedtuple
+import abc
+import argparse
+import collections
 import datetime
-import difflib  # SequenceMatcher
-import enum  # Enum
-import io  # BytesIO
+import difflib
+import enum
+import io
 import json
 import logging
+import musicbrainzngs as mb
 import os
 from pathlib import Path
 from pprint import pformat
-import queue  # Queue, SimpleQueue Empty
+import queue
 import re
-import shutil  # copy2
+import shutil
 import tempfile
 import threading
 import time
@@ -339,7 +340,7 @@ class ImageType(enum.Enum):
         Pass this for `format` keyword
         Accurate as of Pillow version 6.1.0
         """
-        if self is ImageType.JPG:
+        if self == ImageType.JPG:
             return "JPEG"
         return self.value.upper()
 
@@ -434,9 +435,9 @@ class Result(NamedTuple):
         wropts: WrOpts,
     ) -> Self:
         source = "?"
-        if imagesearcher is ImageSearcher_EmbeddedMedia:
+        if imagesearcher == ImageSearcher_EmbeddedMedia:
             source = 'embedded image in "%s"' % copy_src.name
-        elif imagesearcher is ImageSearcher_LikelyCover:
+        elif imagesearcher == ImageSearcher_LikelyCover:
             source = 'likely cover "%s"' % copy_src.name
         message = "%sCopied %d bytes from %s" % (cls.strt(wropts.test), size, source)
         return Result(
@@ -644,11 +645,11 @@ def preferences_file() -> Tuple[Path, Any]:
     tmpd = Path(tempfile.gettempdir())
     # Windows
     localappdata = os.environ.get("LOCALAPPDATA")
-    if localappdata:
-        localappdata = Path(localappdata)
+    if localappdata is not None:
+        localappdata = Path(localappdata)  # type: ignore
     appdata = os.environ.get("APPDATA")
-    if appdata:
-        appdata = Path(appdata)
+    if appdata is not None:
+        appdata = Path(appdata)  # type: ignore
     # search in order of preferred path
     for configd in (
         localappdata,
@@ -659,6 +660,8 @@ def preferences_file() -> Tuple[Path, Any]:
     ):
         if configd is None:
             continue
+        if isinstance(configd, str):
+            configd = Path(configd)
         if configd.is_dir() and os.access(configd, os.W_OK):
             break
         configd = None
@@ -1635,12 +1638,12 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
             return None
         return self.write_album_image(self.image_path)
 
-    def _search_artists(self, mb, artist: Artist) -> dict:
+    def _search_artists(self, mb, artist: Artist) -> Dict[Any, Any]:
         """extract this function call to allow for pytest stubbing"""
         self._log.debug('· mb.search_artists(query="%s", limit=1)', artist)
         return mb.search_artists(query=artist, limit=1)
 
-    def _browse_releases(self, mb, artist_id: str) -> dict:
+    def _browse_releases(self, mb, artist_id: str) -> Dict[Any, Any]:
         """extract this function call to allow for pytest stubbing"""
         self._log.debug('· mb.browse_releases(artist="%s", limit=500)', artist_id)
         return mb.browse_releases(artist=artist_id, limit=500)
@@ -1674,9 +1677,6 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         if not album:
             return False
 
-        import musicbrainzngs
-
-        mb = musicbrainzngs  # helper alias
         ua_app = mb.__package__
         ua_ver = mb.musicbrainz._version
         self._log.debug("· import %s version %s", ua_app, ua_ver)
@@ -1781,13 +1781,13 @@ class ImageSearcher_MusicBrainz(ImageSearcher_Medium_Network):
         try:
             self._log.debug('· mb.get_image_list("%s")', album_id)
             image_list = mb.get_image_list(album_id)
-        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
+        except (mb.musicbrainz.ResponseError, mb.musicbrainz.NetworkError):
             self._log.debug('Exception during get_image_list("%s")', album_id, exc_info=True)
             pass
         try:
             self._log.debug('· mb.get_release_group_image_list("%s")', album_id)
             image_list.update(mb.get_release_group_image_list(album_id))
-        except (musicbrainzngs.musicbrainz.ResponseError, musicbrainzngs.musicbrainz.NetworkError):
+        except (mb.musicbrainz.ResponseError, mb.musicbrainz.NetworkError):
             self._log.debug(
                 'Exception during get_release_group_image_list("%s")', album_id, exc_info=True
             )
@@ -2107,13 +2107,13 @@ response:
             log_.debug("JSON:\n%s", pformat(resp_json).replace("\n", "\n\t").strip())
         except Exception as ex:
             log_.warning("Response fails to parse as json %s", ex)
-            return
+            return None
         cover_image_url = None
         try:
             results = resp_json["results"]
             if not results:
                 log_.debug("'results' is empty")
-                return
+                return None
             result0 = results[0]
             # prefer the `cover_image` image but fallback to `thumb` image
             if "cover_image" in result0:
@@ -2122,7 +2122,7 @@ response:
                 cover_image_url = result0["thumb"]
         except Exception as ex:
             log_.warning("Request response fails to find expected json structure %s", ex)
-            return
+            return None
 
         return cover_image_url
 
@@ -2169,7 +2169,7 @@ class Discogs_Downloader_PAT(Discogs_Downloader):
         self._log.info("HTTP Request '%s'", request1.url)
         response1 = self._do_request(request1)
         if not Discogs_Downloader.is_response_success(response1):
-            return
+            return None
         cover_image_url = Discogs_Downloader.extract_cover_image(response1.text, self._log)
         if cover_image_url:
             request2 = requests.Request(
@@ -2180,9 +2180,9 @@ class Discogs_Downloader_PAT(Discogs_Downloader):
             self._log.info("HTTP Request '%s'", request2.url)
             response2 = self._do_request(request2)
             if not Discogs_Downloader.is_response_success(response2):
-                return
+                return None
             return response2.content
-        return
+        return None
 
 
 # global thread lock for all `Discogs_Downloader_OAuth` instances
@@ -2546,7 +2546,7 @@ oauth_signature="{oauth_signature}"\
         self._log.debug("%s.download_album_cover(%s)", self.QNAME, artalb)
 
         if not self._oauth_identity_test():
-            return
+            return None
 
         url = self._search_url_assemble(artalb)
         request1 = requests.Request(
@@ -2557,7 +2557,7 @@ oauth_signature="{oauth_signature}"\
         self._log.info("HTTP Request '%s'", request1.url)
         response1 = self._do_request(request1)
         if not Discogs_Downloader.is_response_success(response1):
-            return
+            return None
         cover_image_url = Discogs_Downloader.extract_cover_image(response1.text, self._log)
         if cover_image_url:
             request2 = requests.Request(
@@ -2568,8 +2568,9 @@ oauth_signature="{oauth_signature}"\
             self._log.info("HTTP Request '%s'", request2.url)
             response2 = self._do_request(request2)
             if not Discogs_Downloader.is_response_success(response2):
-                return
+                return None
             return response2.content
+        return None
 
 
 class ImageSearcher_Discogs(ImageSearcher_Medium_Network):
@@ -2872,12 +2873,12 @@ def process_dirs(
             daa_list += daal
 
     # remove duplicates
-    daa_list: DirArtAlb_List = list(set(daa for daa in daa_list))
-    log.debug("directories to process:\n\t%s", pformat(daa_list))
+    daa_list_: DirArtAlb_List = list(set(daa for daa in daa_list))
+    log.debug("directories to process:\n\t%s", pformat(daa_list_))
     # sort
-    daa_list.sort()
+    daa_list_.sort()
 
-    return daa_list
+    return daa_list_
 
 
 disk_semaphore = threading.Semaphore(value=SEMAPHORE_COUNT_DISK)
@@ -3436,7 +3437,7 @@ def main() -> int:
 
     # results of attempting to update directories
     # (SimpleQueue is an unbounded queue, new in Python 3.7!)
-    result_queue = queue.SimpleQueue()
+    result_queue: queue.SimpleQueue = queue.SimpleQueue()
 
     # gather list of directories where Album • Artist info can be derived.
     # 'daa' is a DirArtAlb tuple
@@ -3448,7 +3449,7 @@ def main() -> int:
     # to multiplex those tasks
     #
 
-    task_queue = queue.Queue()
+    task_queue: queue.Queue = queue.Queue()
     for daa in daa_list:
         task_queue.put(
             (
